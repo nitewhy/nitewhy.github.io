@@ -59,7 +59,7 @@
   }
   @keyframes shimmer{ 0%{ background-position: 200% 0; } 100%{ background-position: -200% 0; } }
   .sub{ color:#B9AE93; font-size:0.92rem; max-width:520px; margin:10px auto 0; }
-  body.light .sub{ color:#77705A; }
+  body.light .sub{ color:#6B6350; }
 
   /* ---- Control bar ---- */
   .header-toggle{
@@ -85,12 +85,15 @@
   .controlbar.open{ transform: translateY(0); }
   body.light .controlbar{ background: rgba(239,232,216,0.85); }
   .row{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; width:100%; max-width:720px; }
+  .settings-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:520px; }
+  .settings-grid .pill{ width:100%; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:8px 10px; }
   #searchBox{
     width:100%; max-width:720px; padding:9px 14px; border-radius:20px; border:1px solid rgba(127,227,216,0.4);
     background: rgba(127,227,216,0.05); color:inherit; font-family:'JetBrains Mono',monospace; font-size:0.82rem;
   }
   #searchBox:focus{ outline:none; box-shadow: 0 0 0 3px rgba(127,227,216,0.15); }
   #searchBox::placeholder{ color:#9A907A; }
+  body.light #searchBox::placeholder{ color:#7A7260; }
   .pill{
     font-family:'JetBrains Mono',monospace; font-size:0.7rem; padding:6px 12px; border-radius:16px;
     border:1px solid var(--gold); color: var(--gold); background: rgba(201,162,39,0.05); cursor:pointer;
@@ -165,10 +168,13 @@
   .era-title{ font-family:'Marcellus',serif; font-size:1.6rem; color: var(--copper); margin-bottom:24px; }
 
   .card{
-    background: var(--parchment); color: var(--charcoal); border-radius:6px;
-    padding: 22px 22px 30px; margin-bottom:30px; box-shadow:0 16px 28px -14px rgba(0,0,0,0.5);
+    background: var(--parchment); color: var(--charcoal); border-radius:12px;
+    padding: 24px 24px 28px; margin-bottom:28px;
+    box-shadow: 0 10px 24px -14px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.08);
     border-top:3px solid var(--gold); position:relative;
+    transition: box-shadow .25s ease, transform .25s ease;
   }
+  .card:hover{ box-shadow: 0 14px 30px -14px rgba(0,0,0,0.45), 0 3px 8px rgba(0,0,0,0.1); transform: translateY(-2px); }
   .card-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
   .card h3{ font-family:'Marcellus',serif; font-size:1.25rem; margin:0; color: var(--copper-dark); }
   .card-controls{ display:flex; gap:4px; align-items:center; }
@@ -177,7 +183,7 @@
     border:1px solid var(--copper-dark); background:transparent; color: var(--copper-dark); cursor:pointer;
   }
   .mini-lvl.active{ background: var(--copper-dark); color:#fff; }
-  .revise-row{ display:flex; align-items:center; gap:6px; font-size:0.72rem; font-family:'JetBrains Mono',monospace; color:#7A7260; margin: 6px 0 14px; }
+  .revise-row{ display:flex; align-items:center; gap:6px; font-size:0.72rem; font-family:'JetBrains Mono',monospace; color:#5F5741; margin: 6px 0 14px; }
 
   .card-content{ font-size: 1rem; color: var(--main-text-color, inherit); }
   .card-content ul{ padding-left:20px; margin:0; }
@@ -219,8 +225,9 @@
   /* ---- quiz ---- */
   .quiz-wrap{ max-width:760px; margin:40px auto; padding:0 16px; }
   .quiz-box{
-    background: var(--parchment); color: var(--charcoal); border-radius:6px; padding:22px;
+    background: var(--parchment); color: var(--charcoal); border-radius:12px; padding:24px;
     border-top:3px solid var(--sindoor);
+    box-shadow: 0 10px 24px -14px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.08);
   }
   .quiz-box h3{ font-family:'Marcellus',serif; color: var(--sindoor-dark); margin-top:0; }
   .q-item{ margin-bottom:18px; padding-bottom:14px; border-bottom:1px dashed rgba(0,0,0,0.15); }
@@ -234,6 +241,16 @@
     padding:10px 18px; border-radius:20px; cursor:pointer; font-size:0.8rem; letter-spacing:0.03em;
   }
   .btn-main.alt{ background: var(--copper-dark); }
+
+  .paper-card{ margin-bottom:16px; padding:14px; border:1px solid rgba(0,0,0,0.12); border-radius:10px; background:rgba(0,0,0,0.02); }
+  .paper-tag{ font-family:'JetBrains Mono',monospace; font-size:0.65rem; color: var(--copper-dark); text-transform:uppercase; letter-spacing:0.05em; }
+  .paper-q{ font-weight:600; margin:6px 0 10px; }
+  .paper-opt{ display:block; width:100%; text-align:left; padding:7px 10px; margin-bottom:6px; border-radius:6px; border:1px solid rgba(0,0,0,0.15); background:transparent; color:inherit; cursor:pointer; font-size:0.9rem; font-family:inherit; }
+  .paper-opt:hover{ border-color: var(--sindoor); }
+  .paper-opt.correct{ background: rgba(91,123,109,0.25); border-color: var(--copper); font-weight:700; }
+  .paper-opt.wrong{ background: rgba(179,63,63,0.2); border-color: var(--sindoor); }
+  .paper-exp{ display:none; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(0,0,0,0.15); font-size:0.85rem; }
+  .paper-exp.open{ display:block; }
 
   #wordPopup{
     position:absolute; z-index:200; background: var(--gold); color:#14161F; padding:12px 14px;
@@ -249,14 +266,17 @@
   }
   .hl-toolbar.open{ display:flex; }
 
-  .tonight{ max-width:760px; margin:30px auto 0; padding:20px; border:1px dashed rgba(201,162,39,0.5); border-radius:6px; text-align:center; }
+  .tonight{ max-width:760px; margin:30px auto 0; padding:20px; border:1px dashed rgba(201,162,39,0.5); border-radius:10px; text-align:center; }
   .tonight p{ margin:0; color:#C7BCA0; font-size:0.9rem; }
+  body.light .tonight p{ color:#6B6350; }
 
   /* ---- overview banner + topic image button + image modal ---- */
+  .banner-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 auto 14px; max-width:640px; padding:0 16px; }
+  .banner-row .overview-banner{ margin:0; width:auto; flex:0 1 auto; }
   .overview-banner{
-    display:block; margin: 0 auto 14px; max-width:360px; width:calc(100% - 32px);
+    display:block; max-width:360px;
     background: rgba(127,227,216,0.06); border:1px solid var(--glow); color:var(--glow); border-radius:20px;
-    padding:9px 18px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; cursor:pointer; text-align:center;
+    padding:8px 16px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; cursor:pointer; text-align:center;
     letter-spacing:0.02em; box-shadow: 0 0 14px rgba(127,227,216,0.15); transition: box-shadow .2s;
   }
   .overview-banner:hover{ box-shadow: 0 0 22px rgba(127,227,216,0.3); }
@@ -407,6 +427,7 @@
     font-family:'JetBrains Mono',monospace; font-size:0.7rem; color: rgba(243,233,210,0.5); letter-spacing:0.05em;
     min-width:56px; text-align:center;
   }
+  body.light .story-page-count{ color: rgba(59,46,30,0.6); }
   @media(max-width:480px){
     .story-book{ padding:20px 16px 16px; border-radius:14px; }
     .story-title{ font-size:1.1rem; }
@@ -437,6 +458,7 @@
   .intro-tag{ font-family:'JetBrains Mono',monospace; font-size:0.8rem; letter-spacing:0.3em; text-transform:uppercase; color: var(--glow); margin-top:10px; }
   .platform-title{ font-family:'Marcellus',serif; font-size:clamp(1.8rem,7vw,2.6rem); color:var(--gold); text-shadow:0 0 18px rgba(201,162,39,0.35); margin:0; }
   .subject-sub{ color:#B9AE93; font-family:'JetBrains Mono',monospace; font-size:0.8rem; margin-top:8px; letter-spacing:0.05em; }
+  body.light .subject-sub{ color:#6B6350; }
   .subject-header{ margin-bottom: 28px; }
   .subject-grid{
     display:grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap:14px;
@@ -455,8 +477,28 @@
     position:absolute; top:18px; left:18px; background: rgba(127,227,216,0.05); border:1px solid var(--glow); color:var(--glow);
     border-radius:20px; padding:8px 16px; font-family:'JetBrains Mono',monospace; font-size:0.75rem; cursor:pointer;
   }
+
+  /* ---- Full page sections (Papers / Quiz) ---- */
+  .fullpage-section{
+    position:fixed; inset:0; z-index:1000; overflow-y:auto;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(127,227,216,0.10), transparent 40%),
+      radial-gradient(circle at 90% 0%, rgba(201,162,39,0.10), transparent 45%),
+      radial-gradient(circle at 50% 120%, rgba(179,63,63,0.08), transparent 50%),
+      var(--ink);
+    padding: 70px 16px 60px; margin:0 auto !important;
+  }
+  body.light .fullpage-section{ background: var(--parchment); }
+  .panel-back-btn{
+    position:fixed; top:14px; left:14px; z-index:1001;
+    background: rgba(127,227,216,0.08); border:1px solid var(--glow); color:var(--glow);
+    border-radius:20px; padding:8px 16px; font-family:'JetBrains Mono',monospace; font-size:0.75rem; cursor:pointer;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  body.light .panel-back-btn{ background: rgba(239,232,216,0.85); }
   .coming-soon-content h2{ font-family:'Marcellus',serif; color:var(--gold); font-size:1.8rem; margin-bottom:8px; }
   .coming-soon-content p{ color:#B9AE93; font-family:'JetBrains Mono',monospace; font-size:0.85rem; }
+  body.light .coming-soon-content p{ color:#6B6350; }
 
   /* ---- Intro screen extras ---- */
   .intro-screen{ overflow:hidden; }
@@ -502,226 +544,11 @@
   .intro-loadbar-fill{ height:100%; width:0%; background: linear-gradient(90deg,var(--glow),var(--gold)); box-shadow:0 0 8px var(--glow); animation: loadFill 3s ease forwards; }
   @keyframes loadFill{ from{ width:0%; } to{ width:100%; } }
   .intro-loadtext{ position:relative; z-index:1; font-family:'JetBrains Mono',monospace; font-size:0.65rem; letter-spacing:0.15em; color:#8a8264; margin-top:8px; text-transform:uppercase; }
-</style>
-
-<style>
-/* ===== PASSWORD & CORRUPTION LAYER ===== */
-#nw-lock{
-  position:fixed;inset:0;z-index:99999;
-  background:radial-gradient(ellipse at 50% 40%, #0d1117, #020408);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:24px;padding:32px;
-}
-#nw-lock .nw-logo{
-  font-family:'Marcellus',serif;font-size:2.2rem;
-  background:linear-gradient(135deg,#c9a227,#7fe3d8);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:0.08em;margin-bottom:4px;
-}
-#nw-lock .nw-sub{
-  font-family:'JetBrains Mono',monospace;font-size:0.7rem;
-  color:rgba(127,227,216,0.5);letter-spacing:0.2em;text-transform:uppercase;
-  margin-top:-16px;margin-bottom:8px;
-}
-#nw-lock .nw-hint{
-  font-family:'JetBrains Mono',monospace;font-size:0.72rem;
-  color:rgba(243,233,210,0.4);letter-spacing:0.08em;
-}
-#nw-pin-wrap{
-  display:flex;gap:12px;
-}
-.nw-pin-digit{
-  width:48px;height:60px;border-radius:10px;
-  border:1px solid rgba(127,227,216,0.3);
-  background:rgba(127,227,216,0.06);
-  color:#7fe3d8;font-size:1.6rem;font-family:'JetBrains Mono',monospace;
-  text-align:center;outline:none;caret-color:transparent;
-  transition:border-color .2s,box-shadow .2s;
-}
-.nw-pin-digit:focus{
-  border-color:#7fe3d8;
-  box-shadow:0 0 16px rgba(127,227,216,0.3);
-}
-.nw-pin-digit.nw-error{
-  border-color:#e05252;box-shadow:0 0 16px rgba(224,82,82,0.35);
-  animation:nwShake .35s ease;
-}
-@keyframes nwShake{
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-6px)}
-  40%{transform:translateX(6px)}
-  60%{transform:translateX(-4px)}
-  80%{transform:translateX(4px)}
-}
-#nw-err{
-  font-family:'JetBrains Mono',monospace;font-size:0.72rem;
-  color:#e05252;letter-spacing:0.06em;height:18px;
-}
-
-/* corruption screen */
-#nw-corrupt{
-  position:fixed;inset:0;z-index:99999;
-  background:#000;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:18px;padding:32px;overflow:hidden;
-}
-#nw-corrupt.show{ display:flex; }
-.nw-glitch{
-  font-family:'JetBrains Mono',monospace;font-size:1.4rem;
-  color:#e05252;letter-spacing:0.1em;text-align:center;
-  animation:nwGlitch 0.6s infinite alternate;
-}
-@keyframes nwGlitch{
-  0%{text-shadow:2px 0 #0ff,-2px 0 #f0f;transform:skewX(0deg)}
-  25%{text-shadow:-3px 0 #0ff,3px 0 #f0f;transform:skewX(-2deg)}
-  50%{text-shadow:3px 0 #0ff,-1px 0 #f0f;transform:skewX(1deg)}
-  75%{text-shadow:-2px 0 #0ff,2px 0 #f0f;transform:skewX(-1deg)}
-  100%{text-shadow:2px 0 #0ff,-3px 0 #f0f;transform:skewX(0.5deg)}
-}
-.nw-err-lines{
-  font-family:'JetBrains Mono',monospace;font-size:0.65rem;
-  color:rgba(224,82,82,0.55);line-height:1.9;text-align:left;
-  max-width:320px;
-}
-.nw-corrupt-bar{
-  width:200px;height:3px;background:#111;border-radius:2px;overflow:hidden;
-}
-.nw-corrupt-bar-inner{
-  height:100%;width:100%;
-  background:repeating-linear-gradient(90deg,#e05252 0px,#e05252 8px,transparent 8px,transparent 16px);
-  animation:nwBarMove 0.4s linear infinite;
-}
-@keyframes nwBarMove{from{transform:translateX(0)}to{transform:translateX(-16px)}}
-.nw-noise{
-  position:absolute;inset:0;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
-  animation:nwNoise 0.15s steps(2) infinite;
-}
-@keyframes nwNoise{0%{opacity:0.05}100%{opacity:0.12}}
+  body.light .intro-loadtext{ color:#6B6350; }
 </style>
 </head>
 <body class="protected">
 
-<!-- CORRUPTION SCREEN -->
-<div id="nw-corrupt">
-  <div class="nw-noise"></div>
-  <div class="nw-glitch">CORRUPTED</div>
-  <div class="nw-corrupt-bar"><div class="nw-corrupt-bar-inner"></div></div>
-  <div class="nw-err-lines">
-    ERR_SESSION_TERMINATED<br>
-    MEMORY BLOCK: 0x00000000<br>
-    CHECKSUM FAILED: 0xDEADBEEF<br>
-    ACCESS VIOLATION — SEGMENT 0x4<br>
-    RECOVERY NOT POSSIBLE<br>
-    <br>
-    ████████████████ 100%<br>
-    DATA PURGED.
-  </div>
-</div>
-
-<!-- PASSWORD SCREEN -->
-<div id="nw-lock">
-  <div class="nw-logo">Nitewhy</div>
-  <div class="nw-sub">Secure Access</div>
-  <div class="nw-hint">Enter 5-digit password</div>
-  <div id="nw-pin-wrap">
-    <input class="nw-pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="p0">
-    <input class="nw-pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="p1">
-    <input class="nw-pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="p2">
-    <input class="nw-pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="p3">
-    <input class="nw-pin-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" id="p4">
-  </div>
-  <div id="nw-err"></div>
-</div>
-
-<script>
-(function(){
-  const PASS = '88088';
-  const EXPIRE_KEY = 'nw_exp';
-  const SESSION_KEY = 'nw_sess';
-  const LIMIT_MS = 3 * 60 * 1000; // 3 minutes
-
-  const lockEl = document.getElementById('nw-lock');
-  const corruptEl = document.getElementById('nw-corrupt');
-  const digits = [0,1,2,3,4].map(i=>document.getElementById('p'+i));
-  const errEl = document.getElementById('nw-err');
-
-  function showCorrupt(){
-    lockEl.style.display = 'none';
-    corruptEl.classList.add('show');
-    // scramble body behind
-    document.body.style.filter = 'blur(8px) brightness(0)';
-  }
-
-  // Already expired for this browser?
-  if(localStorage.getItem(EXPIRE_KEY) === '1'){
-    showCorrupt();
-    return;
-  }
-
-  // Already logged in this session & started timer?
-  const sessStart = parseInt(localStorage.getItem(SESSION_KEY)||'0');
-  if(sessStart){
-    const elapsed = Date.now() - sessStart;
-    if(elapsed >= LIMIT_MS){
-      localStorage.setItem(EXPIRE_KEY,'1');
-      localStorage.removeItem(SESSION_KEY);
-      showCorrupt();
-      return;
-    } else {
-      // Still valid — unlock and resume countdown
-      lockEl.style.display = 'none';
-      startCountdown(LIMIT_MS - elapsed);
-      return;
-    }
-  }
-
-  // Show password screen
-  digits[0].focus();
-
-  digits.forEach((d,i)=>{
-    d.addEventListener('input',()=>{
-      d.value = d.value.replace(/[^0-9]/g,'');
-      if(d.value && i < 4) digits[i+1].focus();
-      checkPin();
-    });
-    d.addEventListener('keydown',(e)=>{
-      if(e.key==='Backspace' && !d.value && i>0){
-        digits[i-1].focus();
-        digits[i-1].value='';
-      }
-    });
-  });
-
-  function checkPin(){
-    const entered = digits.map(d=>d.value).join('');
-    if(entered.length < 5) return;
-    if(entered === PASS){
-      // Correct!
-      lockEl.style.display = 'none';
-      localStorage.setItem(SESSION_KEY, Date.now().toString());
-      startCountdown(LIMIT_MS);
-    } else {
-      // Wrong
-      errEl.textContent = 'Incorrect password';
-      digits.forEach(d=>{ d.classList.add('nw-error'); d.value=''; });
-      setTimeout(()=>{
-        digits.forEach(d=>d.classList.remove('nw-error'));
-        errEl.textContent='';
-        digits[0].focus();
-      },700);
-    }
-  }
-
-  function startCountdown(remaining){
-    setTimeout(()=>{
-      localStorage.setItem(EXPIRE_KEY,'1');
-      localStorage.removeItem(SESSION_KEY);
-      showCorrupt();
-    }, remaining);
-  }
-})();
-</script>
 <div class="protect-watermark" id="protectWatermark" aria-hidden="true"></div>
 
 <div class="screen intro-screen" id="introScreen">
@@ -770,15 +597,19 @@
   <p class="sub" id="headerSub">Yug chuniye, star badliye — shabdon ko chhuiye, rekhankit kijiye, aur prashnottari se apni taiyari parkhiye. Sab kuch, ekdum offline.</p>
 </header>
 
+<div class="banner-row">
 <button class="overview-banner" id="backToMenuBtn" style="border-color:var(--sindoor);color:var(--sindoor);">&#8592; Subject Menu</button>
 <button class="overview-banner" id="overviewBanner">&#128220; <span id="overviewBannerText">Poora Itihaas Ek Nazar Mein</span></button>
+</div>
 
 <button class="header-toggle" id="headerToggle">&#9776;</button>
 <div class="controlbar" id="controlBar">
   <input type="text" id="searchBox" placeholder="Topic ya word dhundo...">
   <div class="row" id="eraRow"></div>
   <div class="row" id="levelRow"></div>
-  <div class="row">
+  <div class="row settings-grid">
+    <button class="pill" id="papersBtn" style="border-color:var(--gold);color:var(--gold);">&#128209; Previous Year Papers</button>
+    <button class="pill" id="quizOpenBtn" style="border-color:var(--gold);color:var(--gold);">&#128221; Quiz</button>
     <button class="pill" id="translateBtn">Translate Mode: OFF</button>
     <button class="pill" id="highlightBtn">Highlight Mode: OFF</button>
     <button class="pill" id="langBtn">Lang: Hinglish</button>
@@ -786,6 +617,7 @@
     <button class="pill" id="customizeBtn">Aa &#9998;</button>
   </div>
 </div>
+
 
 <div class="popover" id="customizePanel">
   <h5>Text &amp; Highlight</h5>
@@ -846,7 +678,8 @@
 
 <div id="topicsContainer"></div>
 
-<div class="quiz-wrap">
+<div class="quiz-wrap" id="quizWrap" style="display:none;">
+  <button class="panel-back-btn" id="quizBackBtn">&larr; Back</button>
   <div class="quiz-box">
     <h3 id="quizTitle">Quiz</h3>
     <div class="row" id="quizEraRow" style="justify-content:flex-start; margin-bottom:10px;"></div>
@@ -855,6 +688,17 @@
     <div id="quizArea"></div>
     <div id="quizResult"></div>
     <div id="quizHistory" style="margin-top:14px;"></div>
+  </div>
+</div>
+
+<div class="quiz-wrap" id="papersWrap" style="display:none;">
+  <button class="panel-back-btn" id="papersBackBtn">&larr; Back</button>
+  <div class="quiz-box">
+    <h3>Previous Year Papers</h3>
+    <p class="sub" style="margin:0 0 12px;text-align:left;">Real UPSC Prelims History PYQs, year-wise. Answer dekhne ke liye tap karo.</p>
+    <div class="row" id="papersYearRow" style="justify-content:flex-start; margin-bottom:10px;"></div>
+    <div class="progress-label" id="papersMeta" style="text-align:left; margin:0 0 10px;"></div>
+    <div id="papersArea"></div>
   </div>
 </div>
 </div>
@@ -940,16 +784,17 @@ let TOPICS = [
         <li><b>Chalcolithic (~3,000 – 1,500 BCE):</b> pathar ke saath tabme ka istemal bhi shuru hua — ye Indus Valley se thoda pehle ka daur hai, aur Ahar-Banas, Malwa jaisi Chalcolithic sanskritiyan isi daur mein phali-phuli</li>
       </ul>`,
       `<ul>
-        <li>Paleolithic yug lagbhag 25 lakh saal chala — is poore samay mein insaan sirf prakritik sansadhano par nirbhar tha, koi sthayi ghar ya kheti nahi thi, aur is wajah se abadi bahut chhoti aur bikhri hui rehti thi</li>
-        <li>Mesolithic (~10,000 – 8,000 BCE) ek transition period tha — ghumantu se basi hui zindagi ki taraf badhta daur; isi mein jaanwaron ko pehli baar palna shuru hua, jo aage kheti-pashupalan ke liye zaroori saabit hua</li>
-        <li>Neolithic Revolution (~8,000 BCE se) ko duniya ki sabse badi tabdeeliyon mein se ek mana jata hai — kheti ne insaan ko ek jagah rehne, surplus food jama karne, aur samaj banane ka mauka diya; Mehrgarh jaisi jagah is badlaav ka sabse purana saboot hai</li>
-        <li>Chalcolithic yug (~3,000 – 1,500 BCE) ne dhatu ke istemal ka darwaza khola — pathar aur tabme dono saath istemal hote the, jisne aage Bronze Age sabhyataon (jaise Indus Valley, jo isi ke turant baad shuru hoti hai) ki neev rakhi</li>
+        <li>Paleolithic yug 25 lakh saal se zyada chala — insaani itihaas ka sabse lamba adhyaay, phir bhi is poore samay mein badlaav mushkil se nazar aata tha. Na kheti, na ghar — bas roz ka shikar aur roz ki talaash</li>
+        <li>Mesolithic (~10,000–8,000 BCE) mein औzaar achanak chhote aur nazuk ho gaye. Ye microliths lakdi ke handle mein fit hokar teer-kamaan jaisi cheezein banate the — pehli baar shikar mein kuch "precision" jaisa aaya</li>
+        <li>Isi daur mein ek jaanwar (shayad kutta) insaan ke aag ke kareeb aane laga — na poori tarah dost, na poori tarah jangli, lekin ek shuruaat jo aage jaakar poore pashupalan system ki neev banegi</li>
+        <li>Phir aayi Neolithic Revolution — aur ye sach mein ek revolution thi. Mehrgarh mein kisi ne pehli baar zameen mein beej dabaya aur intezaar kiya; usi intezaar ne poori insaaniyat ka jeene ka tareeka badal diya</li>
+        <li>Chalcolithic yug mein tabme ka istemal shuru hote hi insaan pathar se aage badh raha tha — Ahar-Banas aur Malwa jaisi sanskritiyan isi daur mein pheeli, aur khamoshi se Indus Valley ki taiyari kar rahi thin</li>
       </ul>`,
-      `<p><b>Paleolithic Age (~25 lakh – 10,000 BCE):</b> is poore samay mein insaan sirf prakritik sansadhano par nirbhar tha — na kheti thi na sthayi ghar, sirf shikar aur khaana ikattha karna hi jeevan ka tarika tha. Bhimbetka (MP) jaisi gufaon ki painting is daur ki kalaakari ka proof deti hain. Bina kheti ke bade samuh mein rehna mushkil tha, isliye insaani abadi bahut chhoti aur bikhri hui rehti thi.</p>
-      <p><b>Mesolithic Age (~10,000 – 8,000 BCE):</b> ek dheere-dheere hone wala transition tha, jisme chhote aur zyada precise pathar ke auzar (microliths) bane aur jaanwaron ko pehli baar palna shuru hua. Ye ek zaroori kadam tha kyunki isi ne aage Neolithic Revolution ka raasta banaya — jaanwaron ko palna hi aage kheti ke saath-saath pashupalan ka bhi aadhar bana.</p>
-      <p><b>Neolithic Age (~8,000 – 3,000 BCE):</b> sabse mahatvapoorna mod tha. Kheti ki shuruaat (Mehrgarh, ~7000 BCE, iska sabse purana proof hai) ne insaan ko ek hi jagah basne par majboor kiya, aur isi se gaon, samaj, aur pehli baar "sthayi sabhyata" ka concept janm liya. Mitti ke bartan banna bhi isi settled lifestyle ka seedha nateeja tha, kyunki ab anaaj store karne ki zaroorat thi.</p>
-      <p><b>Chalcolithic Age (~3,000 – 1,500 BCE):</b> pathar ke saath tabme (copper) ka istemal shuru hokar, insaan ne dhatu-yug ki taraf pehla kadam badhaya. Ahar-Banas aur Malwa jaisi Chalcolithic sanskritiyan isi daur mein phali-phuli, aur isne seedhe Indus Valley jaisi Bronze Age sabhyata (jo ~2600 BCE se shuru hoti hai) ki buniyaad rakh di.</p>
-      <p><b>Significance:</b> Prehistory ka har yug agla yug ke liye zaroori sansadhan aur skill taiyar karta gaya, aur ye poora silsila hazaaron saalon mein dheere-dheere hua, kisi ek din ki ghatna nahi thi.</p>`
+      `<p><b>Paleolithic Age (~25 lakh – 10,000 BCE):</b> zara socho — insaan ka poora jeevan sirf do kaamon ke ird-gird ghoomta tha: shikar karna aur khaana dhundhna. Na koi ghar, na koi kheti, sirf gufaon mein sharan aur pathar ke bhaari औzaar jinhe banane mein hafton lag jaate the. Bhimbetka ki deewaron par aaj bhi wo lal-bhoore rang ke drishya dikhte hain — daudte hiran, bhaale liye shikari. Chhoti, bikhri hui abadiyan hi is yug ki pehchaan thi.</p>
+      <p><b>Mesolithic Age (~10,000 – 8,000 BCE):</b> mausam badla, aur usi ke saath औzaar bhi badle. Bade pathar ki jagah ab microliths aa gaye — chhote, tez, precise. Yahi wo daur tha jab shayad pehli baar koi jaanwar insaan ke aag ke kareeb baithna seekha. Choti si baat lagti hai, lekin isi ne aage jaakar pashupalan aur kheti, dono ka raasta khola.</p>
+      <p><b>Neolithic Age (~8,000 – 3,000 BCE):</b> yahi wo mod hai jise "revolution" kaha jaata hai. Mehrgarh mein karib 7000 BCE mein kisi ne pehli baar beej boya — aur uske baad kuch kabhi wapas pehle jaisa nahi raha. Log ek jagah rukne lage, gaon bane, aur anaaj store karne ke liye mitti ke bartan banaye gaye. Insaan ab sirf zameen se lene wala nahi tha — wo ab uski dekhbhaal bhi karta tha.</p>
+      <p><b>Chalcolithic Age (~3,000 – 1,500 BCE):</b> pathar abhi bhi istemal ho raha tha, lekin ab uske saath tamba bhi tha. Ahar-Banas aur Malwa jaisi jagahon par log dono cheezein saath istemal karte the — औzaar bhi, gehne bhi. Ye Bronze Age ki taraf pehla kadam tha, aur seedhe Indus Valley Civilization tak le jaata hai, jo isi ke turant baad shuru hoti hai.</p>
+      <p>In charon yugon ko alag-alag khaano mein daal kar padhna aasan lagta hai, lekin asal mein ye ek lagataar badalta hua safar tha — hazaaron saal ka, jahan har peedhi ne agli ko thoda aage badha diya.</p>`
     ],
     en:[
       `<ul>
@@ -965,16 +810,17 @@ let TOPICS = [
         <li><b>Chalcolithic (~3,000 – 1,500 BCE):</b> copper use began alongside stone — the period just before the Indus Valley Civilization, with cultures like Ahar-Banas and Malwa flourishing</li>
       </ul>`,
       `<ul>
-        <li>The Paleolithic Age lasted roughly 2.5 million years — humans depended entirely on natural resources with no permanent homes or farming, keeping populations small and scattered</li>
-        <li>The Mesolithic (~10,000 – 8,000 BCE) was a transition period toward settled life; animal domestication first began here, an essential step toward later farming and herding</li>
-        <li>The Neolithic Revolution (from ~8,000 BCE) is one of history's biggest turning points — farming let humans settle down, store surplus food, and build societies; Mehrgarh is the earliest evidence of this shift</li>
-        <li>The Chalcolithic Age (~3,000 – 1,500 BCE) opened the door to metal use — stone and copper were used side by side, laying the foundation for Bronze Age civilizations like the Indus Valley that followed soon after</li>
+        <li>The Paleolithic Age stretched over 2.5 million years — the longest chapter in human history, and yet change barely showed within a single lifetime. No farming, no homes, just the daily hunt and the daily search</li>
+        <li>In the Mesolithic (~10,000–8,000 BCE), tools suddenly got smaller and sharper. These microliths, fitted into wooden handles, turned into arrows and spears — hunting gained something like precision for the first time</li>
+        <li>Around the same time, an animal (likely a dog) edged closer to the human campfire — not quite a pet, not quite wild, but a beginning that would eventually shape the whole practice of domestication</li>
+        <li>Then came the Neolithic Revolution — and it really was one. At Mehrgarh, someone pressed a seed into the ground and waited; that wait changed how humans lived, everywhere</li>
+        <li>By the Chalcolithic Age, copper entered the picture alongside stone — cultures like Ahar-Banas and Malwa flourished, quietly setting the stage for the Indus Valley Civilization</li>
       </ul>`,
-      `<p><b>Paleolithic Age (~2.5 million – 10,000 BCE):</b> humans depended completely on nature — with no farming and no permanent homes, hunting and gathering were the only way of life. Cave paintings at sites like Bhimbetka are evidence of this era's art. Populations stayed small and scattered because large settled groups were impossible without farming.</p>
-      <p><b>Mesolithic Age (~10,000 – 8,000 BCE):</b> a gradual transition, producing smaller, more precise stone tools (microliths) and the first domestication of animals. This was a necessary step toward the Neolithic Revolution, since domestication underpinned both farming and herding later on.</p>
-      <p><b>Neolithic Age (~8,000 – 3,000 BCE):</b> the most significant turning point. Farming (Mehrgarh, ~7000 BCE, is the earliest known evidence) forced humans to settle in one place, giving birth to villages, societies, and the concept of permanent civilization for the first time. Pottery was a direct result of this settled lifestyle, since grain now needed to be stored.</p>
-      <p><b>Chalcolithic Age (~3,000 – 1,500 BCE):</b> copper began to be used alongside stone, marking humanity's first step into the metal age. Cultures like Ahar-Banas and Malwa flourished in this period, directly laying the groundwork for Bronze Age civilizations such as the Indus Valley (which begins around 2600 BCE).</p>
-      <p><b>Significance:</b> each prehistoric era prepared the resources and skills needed for the next, and this entire progression unfolded over thousands of years, not as a single event.</p>`
+      `<p><b>Paleolithic Age (~2.5 million – 10,000 BCE):</b> picture a life built around just two things — hunting and searching for food. No homes, no farms, only caves for shelter and heavy stone tools that took weeks to shape. At Bhimbetka, those reddish-brown paintings still survive on cave walls — fleeing deer, hunters mid-throw. Small, scattered populations were simply how survival worked.</p>
+      <p><b>Mesolithic Age (~10,000 – 8,000 BCE):</b> the climate shifted, and tools shifted with it. Heavy stone gave way to microliths — small, sharp, precise. This was also, quite possibly, when a dog first sat by a human fire. It sounds minor, but it opened the door to both domestication and, eventually, farming.</p>
+      <p><b>Neolithic Age (~8,000 – 3,000 BCE):</b> this is the turning point historians call a revolution. At Mehrgarh, around 7000 BCE, someone planted a seed — and after that, nothing stayed quite the same. People settled down, villages formed, and pottery appeared to store the grain they were now growing. Humans stopped merely taking from the land and started tending it.</p>
+      <p><b>Chalcolithic Age (~3,000 – 1,500 BCE):</b> stone was still in use, but copper joined it. In places like Ahar-Banas and Malwa, people worked both materials side by side — tools, ornaments, everyday objects. It was the first step toward the Bronze Age, leading almost directly into the Indus Valley Civilization that follows.</p>
+      <p>Splitting these into four neat ages makes them easy to study, but in reality this was one long, continuous drift — thousands of years in which each generation nudged the next a little further forward.</p>`
     ]
   },
   sticky:{
@@ -1011,15 +857,15 @@ let TOPICS = [
         <li>Mesopotamia se vyapar hone ke seals aur weight system se pata chalta hai</li>
       </ul>`,
       `<ul>
-        <li>Town planning itni advanced thi ki har ghar ka apna drainage connection tha — us zamane ke hisaab se unusual</li>
-        <li>Seals par jaanwaron ki tasveerein milti hain, jo shayad dharmik ya vyapar se juda symbol tha</li>
-        <li>Vyapar sirf Mesopotamia tak simit nahi tha — standardized weight system se lambi doori tak vyapar aasan hota tha</li>
-        <li>Purani "Aryan invasion" decline theory ab zyada mान्य nahi — aaj Saraswati-Ghaggar nadi ka sookhna aur climate change zyada mane jaate hain; decline ~1900 BCE se shuru hokar ~1300 BCE tak dheere-dheere hua</li>
+        <li>Town planning itni advanced thi ki har ghar apne drainage se juda hota tha — us zamane ke hisaab se ye bilkul alag baat thi</li>
+        <li>Seals par jaanwaron ki tasveerein milti hain, jo shayad dharmik ya vyapar se juda symbol thi</li>
+        <li>Vyapar sirf Mesopotamia tak simit nahi tha — standardized weight system ki wajah se lambi doori tak vyapar aasan ho jaata tha</li>
+        <li>Purani "Aryan invasion" wali decline theory ab zyada manya nahi hai — aaj Saraswati-Ghaggar nadi ka sookhna aur climate change zyada mane jaate hain; decline ~1900 BCE se shuru hokar ~1300 BCE tak dheere-dheere hua</li>
       </ul>`,
-      `<p><b>Town Planning:</b> Indus Valley ko duniya ki sabse advanced prachin sabhyataon mein isliye gina jaata hai kyunki iski town planning aaj bhi hairan karti hai — Harappa, Mohenjodaro jaise sheharon mein grid-pattern sadkein, pakki eenton ke ghar, aur har ghar se judi drainage system thi, jo us daur ki kisi doosri sabhyata mein nahi milti.</p>
-      <p><b>Vyapar aur Arthvyavastha:</b> Dholavira ka paani-prabandhan aur Lothal ka dockyard batate hain ki ye log sirf kheti par nahi, samundari vyapar par bhi nirbhar the — Mesopotamia tak unke seals aur standardized weight system milne se pata chalta hai ki vyapar kaafi dooro tak failaa hua tha.</p>
-      <p><b>Script ka Rahasya:</b> Iski script aaj tak decode nahi ho paayi hai, isliye bhasha ya dharmik vishwaas ke baare mein koi pakki jaankari nahi hai — ye is sabhyata ko aur bhi rahasyamayi banata hai.</p>
-      <p><b>Decline (~1900 – 1300 BCE):</b> Iske decline ke peeche purani "Aryan invasion" theory ab kaafi hadd tak reject ho chuki hai; aaj Saraswati-Ghaggar jaisi nadiyon ka sookhna aur badalta climate ismein zimmedar mane jaate hain — matlab ye ant kisi ek yudh se nahi, dheere-dheere environmental badlaav se hua.</p>`
+      `<p>Sabse pehle jo cheez chaunkati hai, wo hai iski town planning. Harappa aur Mohenjodaro jaise sheharon mein sadkein seedhi, ek grid mein bichhi hui thi — jaise kisi ne poori tarah plan karke banaya ho. Har ghar apne aap mein ek dhaki hui drainage se juda tha, jo us daur ki kisi bhi doosri sabhyata mein nahi milti.</p>
+      <p>Vyapar bhi sirf sthanik nahi tha. Dholavira ka paani-prabandhan aur Lothal ka dockyard batate hain ki ye log samundar tak vyapar karte the — aur Mesopotamia tak mile unke seals aur ek standardized weight system se pata chalta hai ki ye network kaafi door tak failaa hua tha.</p>
+      <p>Fir bhi ek raaz hai jo aaj tak nahi khula: iski script. Seals par likhe symbol aaj tak decode nahi ho paaye, isliye na unki bhasha ka pata hai, na dharmik vishwaas ka — aur yahi anjaana hissa is sabhyata ko sabse zyada dilchasp banata hai.</p>
+      <p>Decline ki kahani bhi badal chuki hai. Kabhi "Aryan invasion" ko iske ant ka zimmedar mana jaata tha, lekin aaj zyada support us theory ko milta hai jismein Saraswati-Ghaggar jaisi nadiyon ka sookhna aur badalta mausam wajah bataya jaata hai. Matlab, ye sabhyata kisi ek yudh mein nahi mari — ye dheere-dheere, kai sadiyon mein khatm hui.</p>`
     ],
     en:[
       `<ul>
@@ -1035,15 +881,15 @@ let TOPICS = [
         <li>Seals and a standardized weight system suggest trade with Mesopotamia</li>
       </ul>`,
       `<ul>
-        <li>Town planning was advanced enough that nearly every house had its own drainage connection — highly unusual for that era</li>
+        <li>Town planning was advanced enough that nearly every house had its own drainage connection — genuinely unusual for that era</li>
         <li>Seals depict animals, possibly tied to religious or trade symbolism</li>
         <li>A standardized weight and measurement system made long-distance trade practical</li>
-        <li>The old "Aryan invasion" theory is now largely rejected; drying rivers and climate change are considered more likely</li>
+        <li>The old "Aryan invasion" decline theory is now largely rejected; drying rivers and climate change are considered far more likely</li>
       </ul>`,
-      `<p><b>Town Planning:</b> The Indus Valley is regarded as one of the most advanced ancient civilizations because its town planning still impresses today — cities like Harappa and Mohenjodaro had grid-pattern streets, baked-brick houses, and drainage connected to nearly every home, unmatched by any other civilization of that era.</p>
-      <p><b>Trade and Economy:</b> Dholavira's water management and Lothal's dockyard show this society depended not just on farming but on maritime trade — seals and a standardized weight system found as far as Mesopotamia suggest wide trade networks.</p>
-      <p><b>The Script Mystery:</b> Its script remains undeciphered to this day, so nothing is certain about its language or religious beliefs — which only deepens the mystery around this civilization.</p>
-      <p><b>Decline (~1900 – 1300 BCE):</b> The old "Aryan invasion" decline theory is now largely rejected; more support today goes to drying rivers like the Saraswati-Ghaggar combined with climate change — meaning the end came from a slow environmental shift, not a single war.</p>`
+      `<p>The first thing that stands out is the town planning. In cities like Harappa and Mohenjodaro, streets ran in perfectly straight grids, as if someone had planned every block in advance. Nearly every house connected to its own covered drain — something no other civilization of that era managed.</p>
+      <p>Trade went well beyond the immediate region too. Dholavira's water-management systems and Lothal's dockyard show a society that leaned on maritime trade, not just farming — and seals along with a standardized weight system, found as far as Mesopotamia, suggest the network stretched a long way.</p>
+      <p>Even so, one mystery has never been cracked: the script. The symbols on their seals remain undeciphered, so nobody really knows their language or religious beliefs — and that unknown piece is part of what makes this civilization so fascinating.</p>
+      <p>The story of its decline has also changed. The old "Aryan invasion" theory once got the blame, but today far more evidence points to drying rivers like the Saraswati-Ghaggar and a shifting climate. In other words, this civilization didn't die in a single war — it faded out slowly, over centuries.</p>`
     ]
   },
   sticky:{
@@ -1081,12 +927,12 @@ let TOPICS = [
         <li>Early Vedic samaj mein Sabha-Samiti jaisi council thi — aaj ke democratic setup ka bahut early sanket maana ja sakta hai, halaanki ye poori tarah representative nahi thi</li>
         <li>Later Vedic mein loha ke istemal se ghane jangal saaf karna mumkin hua, jisse Ganga ghati mein basna aasan ho gaya aur naye janpad bane</li>
         <li>Varna system shuru mein kaam (profession) ke aadhar par tha, lekin Later Vedic tak ye janm-aadharit aur rigid ho gaya</li>
-        <li>Badhti yajna-parampara ne Brahmin varg ko samaj mein sabse oonchi sthiti dilai, jo aage chal ke samajik असमानता ki jad bani</li>
+        <li>Badhti yajna-parampara ne Brahmin varg ko samaj mein sabse oonchi sthiti dilai, jo aage chal ke samajik asamanata ki jad bani</li>
       </ul>`,
-      `<p><b>Early Vedic Period (~1500–1000 BCE):</b> is daur mein Rigveda ki rachna hui, jo Bharat ka sabse purana likhit granth mana jaata hai. Samaj pashupalak tha — pashu, khaas taur par gaay, sampatti ka mukhya paimana thi, aur ghoda-rath yudh mein important the. "Jana" naam ke tribal groups the, jinme Sabha aur Samiti jaisi council faisle lene mein madad karti thi.</p>
-      <p><b>Later Vedic Period (~1000–600 BCE):</b> Sama, Yajur, aur Atharva Veda isi daur mein rachit hue. Loha ke istemal se ghane jangal saaf karna mumkin hua, jisne Ganga ghati mein kheti aur basne ko aasan bana diya — isi se naye Janpad (chhote rajya) banne shuru hue, jo aage Mahajanapadas ki neev bane.</p>
-      <p><b>Varna System ka Vikas:</b> shuru mein varna kaam/profession ke aadhar par tha, lekin dheere-dheere ye janm-aadharit ho gaya — Brahmin, Kshatriya, Vaishya, aur Shudra ka structure Later Vedic tak kaafi rigid ho chuka tha.</p>
-      <p><b>Significance:</b> yajna aur rituals ki badhti importance ne Brahmin purohiton ko samaj mein sabse oonchi sthiti dilai. Ye poora daur aage ke Mahajanapada yug aur Buddhism-Jainism jaisi reform movements ki zameen taiyar karta hai.</p>`
+      `<p>Early Vedic period (~1500–1000 BCE) mein sabse pehli aur sabse mahatvapoorna cheez hui — Rigveda ki rachna, jo aaj bhi Bharat ka sabse purana zinda text mana jaata hai. Samaj us waqt pashupalak tha; gaay-bail sampatti ka paimana thi, aur yudh mein ghoda-rath ki bhoomika badi thi. "Jana" naam ke tribal group Sabha aur Samiti jaisi council ke through faisle lete the — kisi hadd tak early participatory setup, halaanki poori tarah representative nahi.</p>
+      <p>Later Vedic aate-aate (~1000–600 BCE) teeno baaki Ved — Sama, Yajur, Atharva — rach diye gaye the. Ab loha ka istemal shuru hua, jisse ghane jangal saaf karke Ganga ghati mein basna mumkin hua. Yahi wo daur hai jab chhote-chhote Janpad bante gaye — aage jaakar yehi Mahajanapadas ki neev bane.</p>
+      <p>Varna system ka safar bhi dilchasp hai: shuru mein ye kaam ke aadhar par tha — jo jo kaam karta, wahi uski pehchaan hoti. Lekin dheere-dheere ye janm ke aadhar par tay hone laga, aur Later Vedic tak Brahmin, Kshatriya, Vaishya, Shudra ka structure kaafi rigid ho chuka tha.</p>
+      <p>Isi daur mein yajna aur rituals ki ahamiyat itni badhi ki Brahmin purohit samaj mein sabse oonchi jagah pa gaye — ek aisi social hierarchy jisne aage chal kar Mahajanapada yug aur Buddhism-Jainism jaisi reform movements ke liye zameen taiyar ki.</p>`
     ],
     en:[
       `<ul>
@@ -1105,10 +951,10 @@ let TOPICS = [
         <li>The varna system began as profession-based but became birth-based and rigid by the Later Vedic period</li>
         <li>The growing yajna tradition gave Brahmins the highest social standing, a root cause of later social inequality</li>
       </ul>`,
-      `<p><b>Early Vedic Period (~1500–1000 BCE):</b> the Rigveda was composed in this era, considered India's oldest surviving text. Society was pastoral — cattle, especially cows, were the main measure of wealth, and horses and chariots mattered in warfare. Tribal "Jana" groups relied on Sabha and Samiti councils to help make decisions.</p>
-      <p><b>Later Vedic Period (~1000–600 BCE):</b> the Sama, Yajur, and Atharva Vedas were composed here. Iron tools made clearing dense forests possible, easing farming and settlement in the Ganges valley — giving rise to new Janapadas (small states) that later formed the basis of the Mahajanapadas.</p>
-      <p><b>Evolution of the Varna System:</b> varna began as profession-based, but gradually became birth-based — the Brahmin, Kshatriya, Vaishya, and Shudra structure was quite rigid by the Later Vedic period.</p>
-      <p><b>Significance:</b> the growing importance of yajnas and rituals gave Brahmin priests the highest social standing. This entire era laid the groundwork for the coming Mahajanapada period and reform movements like Buddhism and Jainism.</p>`
+      `<p>The single most important thing to happen in the Early Vedic period (~1500–1000 BCE) was the composition of the Rigveda, still regarded as India's oldest surviving text. Society at the time was pastoral — cattle were the real measure of wealth, and horses and chariots mattered a great deal in warfare. Tribal groups called "Jana" made decisions through Sabha and Samiti councils, an early and imperfect form of participatory decision-making.</p>
+      <p>By the Later Vedic period (~1000–600 BCE), the remaining three Vedas — Sama, Yajur, and Atharva — had been composed. Iron tools came into use, making it possible to clear dense forests and settle the Ganges valley. This is when small Janapadas began forming — the very foundation the later Mahajanapadas would be built on.</p>
+      <p>The varna system's journey is worth noticing too. It started out profession-based — your role defined your identity. But over time it hardened into something based on birth, and by the Later Vedic period the Brahmin-Kshatriya-Vaishya-Shudra structure had become fairly rigid.</p>
+      <p>Meanwhile, yajnas and rituals grew so central to society that Brahmin priests rose to the top of the social order — a hierarchy that would go on to shape the coming Mahajanapada era and give rise to reform movements like Buddhism and Jainism.</p>`
     ]
   },
   sticky:{
@@ -1149,12 +995,12 @@ let TOPICS = [
         <li>Magadha ki powerful hone ki wajah thi uske paas iron ore, upjaau zameen, aur Ganga jaisi nadi ka fayda — jo trade aur military dono mein madadgar tha</li>
         <li>Buddha aur Mahavira dono ne us waqt ke rigid varna system aur Brahminical rituals ke against reform diya, isliye dono ko "Shraman parampara" ka hissa mana jata hai</li>
         <li>Chanakya ki "Arthashastra" ek political-economic granth hai, jo Mauryan administration ki neev bani</li>
-        <li>Ashoka ke edicts (rock aur pillar dono par) Brahmi lipi mein hain, aur inhi se hume unke Dhamma policy ke baare mein pata chalta hai</li>
+        <li>Ashoka ke edicts (rock aur pillar dono par) Brahmi lipi mein hain, aur inhi se hume unki Dhamma policy ke baare mein pata chalta hai</li>
       </ul>`,
-      `<p><b>Mahajanapadas (~600 BCE):</b> 16 chhote-chhote rajya bane, jinme Magadha sabse powerful ubhara — iski wajah thi uske paas iron ore, upjaau zameen, aur Ganga nadi ka strategic fayda. Bimbisara aur uske beta Ajatashatru ne Magadha ko is daur ka sabse dominant rajya bana diya.</p>
-      <p><b>Buddhism aur Jainism:</b> dono hi us waqt ke rigid varna system aur mehenge Brahminical rituals ke khilaf reform movements the, isliye inhe "Shraman parampara" ka hissa mana jata hai. Gautam Buddha (~563 BCE) ne Four Noble Truths aur Eightfold Path diya, jabki Mahavira, 24ve Tirthankar, ne Ahimsa aur Anekantavad par zor diya.</p>
-      <p><b>Mauryan Empire (321 BCE se):</b> Chandragupta Maurya ne apne guru Chanakya (Kautilya) ki madad se saltanat sthapit ki — Chanakya ki likhi "Arthashastra" ek political-economic granth hai jo Mauryan administration ki neev bani. Bindusara ke baad Ashoka aaya, jisne Kalinga yudh (261 BCE) mein hue khoon-kharabe se dukhi hokar Buddhism apnaya.</p>
-      <p><b>Ashoka ka Dhamma:</b> unke rock aur pillar edicts (Brahmi lipi mein) se hume unki Dhamma policy ke baare mein pata chalta hai — ismein ahimsa, dharmik sahishnuta, aur samajik kalyan par zor diya gaya tha. Ye ek samrat dwara apni galtiyon se seekh ke niti badalne ka ek durlabh udaharan hai.</p>`
+      `<p>16 chhote-chhote Mahajanapadas mein se Magadha kyun sabse aage nikla? Iski wajah simple thi — iron ore, upjaau zameen, aur Ganga nadi ka strategic fayda, jo trade aur military dono ke liye kaam aata tha. Bimbisara aur uske beta Ajatashatru ne isi advantage ka istemal karke Magadha ko apne daur ka sabse dominant rajya bana diya.</p>
+      <p>Isi maahaul mein do naye dharmik vichaar ubhre — Buddhism aur Jainism. Dono hi rigid varna system aur mehenge Brahminical rituals se thake logon ko ek nayi disha dikha rahe the, isliye inhe "Shraman parampara" ka hissa mana jaata hai. Gautam Buddha (~563 BCE) ne Four Noble Truths aur Eightfold Path diya, jabki Mahavira, 24ve Tirthankar, ne Ahimsa aur Anekantavad par zor diya.</p>
+      <p>Fir aaya 321 BCE — jab Chandragupta Maurya ne apne guru Chanakya (Kautilya) ki madad se Mauryan Empire ki neev rakhi. Chanakya ki likhi "Arthashastra" sirf ek kitaab nahi thi, balki poori Mauryan administration ka blueprint ban gayi. Bindusara ke baad Ashoka gaddi par baitha, aur Kalinga yudh (261 BCE) ke khoon-kharabe ne use andar se hila diya — usne Buddhism apna liya.</p>
+      <p>Uske baad jo hua, wo kisi bhi prachin samrat ke liye rare tha: Ashoka ne apne rock aur pillar edicts (Brahmi lipi mein) mein ahimsa, dharmik sahishnuta, aur samajik kalyan ka sandesh khudwaya. Ek samrat jisne apni galti se seekh kar poori niti badal di — itihaas mein aisi misaal kam hi milti hai.</p>`
     ],
     en:[
       `<ul>
@@ -1176,10 +1022,10 @@ let TOPICS = [
         <li>Chanakya's "Arthashastra" is a political-economic treatise that became the foundation of Mauryan administration</li>
         <li>Ashoka's edicts (on both rocks and pillars) are in Brahmi script, and they are our main source for his Dhamma policy</li>
       </ul>`,
-      `<p><b>Mahajanapadas (~600 BCE):</b> 16 small states formed, of which Magadha emerged the most powerful — due to its iron ore, fertile land, and the strategic advantage of the Ganges. Bimbisara and his son Ajatashatru made Magadha the dominant power of the era.</p>
-      <p><b>Buddhism and Jainism:</b> both were reform movements against the rigid varna system and costly Brahminical rituals of the time, so they are considered part of the "Shramana tradition." Gautam Buddha (~563 BCE) gave the Four Noble Truths and Eightfold Path, while Mahavira, the 24th Tirthankara, emphasized Ahimsa and Anekantavada.</p>
-      <p><b>Mauryan Empire (from 321 BCE):</b> Chandragupta Maurya founded the empire with the help of his mentor Chanakya (Kautilya) — Chanakya's "Arthashastra" is a political-economic treatise that became the foundation of Mauryan administration. Ashoka succeeded Bindusara, and adopted Buddhism after being devastated by the bloodshed of the Kalinga war (261 BCE).</p>
-      <p><b>Ashoka's Dhamma:</b> his rock and pillar edicts (in Brahmi script) are our source for his Dhamma policy — emphasizing non-violence, religious tolerance, and social welfare. It's a rare example of an emperor changing policy after learning from his own mistakes.</p>`
+      `<p>Why did Magadha pull ahead of the other 15 Mahajanapadas? The advantages were simple enough — iron ore, fertile soil, and the strategic pull of the Ganges, useful for both trade and military campaigns. Bimbisara and his son Ajatashatru made the most of that edge, turning Magadha into the dominant power of the age.</p>
+      <p>In this same climate, two new religious movements took shape — Buddhism and Jainism. Both offered a fresh direction to people worn down by a rigid varna system and expensive Brahminical rituals, which is why they're grouped together as the "Shramana tradition." Gautam Buddha (~563 BCE) taught the Four Noble Truths and the Eightfold Path, while Mahavira, the 24th Tirthankara, placed his emphasis on Ahimsa and Anekantavada.</p>
+      <p>Then, in 321 BCE, Chandragupta Maurya laid the foundation of the Mauryan Empire with the guidance of his mentor Chanakya (Kautilya). Chanakya's "Arthashastra" wasn't just a book — it became the blueprint for the entire Mauryan administration. After Bindusara, Ashoka took the throne, and the bloodshed of the Kalinga war (261 BCE) shook him enough to embrace Buddhism.</p>
+      <p>What followed was rare for any ancient ruler: Ashoka had his rock and pillar edicts (in Brahmi script) inscribed with messages of non-violence, religious tolerance, and public welfare. An emperor who changed his entire policy after learning from his own mistake — history doesn't offer many examples like that.</p>`
     ]
   },
   sticky:{
@@ -1223,36 +1069,22 @@ let TOPICS = [
         <li>Aryabhata ka zero aur decimal system ka concept aage chal ke Arab dunia ke through Europe tak pahuncha</li>
         <li>Huna invasions (5vi sadi ke baad) ne trade routes tod diye aur central control kamzor kiya, jiski wajah se empire chhote rajyon mein bikhar gaya</li>
       </ul>`,
-      `<p><b>Foundation aur Vistaar:</b> Chandragupta I ne 320 CE mein Gupta Empire ki neev rakhi. Uske beta Samudragupta ne itna vistaar kiya ki use "Napoleon of India" kaha jaata hai — uski digvijay ka pura record Allahabad Pillar Inscription mein darj hai.</p>
-      <p><b>Chandragupta II aur Navratna:</b> Chandragupta II (Vikramaditya) ke daur ko sabse samriddh mana jaata hai. Unke darbar mein Navratna the, jinme Kalidasa (Shakuntala ke rachyita) sabse famous the — ye daur sanskrit sahitya ka swarnim yug tha.</p>
-      <p><b>Science aur Kala:</b> Aryabhata ne "shunya" (zero) aur decimal system par kaam kiya, jo aage Arab dunia ke through Europe tak pahuncha aur modern ganit ki neev bana. Ajanta caves ki painting bhi isi period se hain.</p>
-      <p><b>Decline (5vi–6vi sadi):</b> Huna invasions ne trade routes tod diye aur central control kamzor kiya, jiski wajah se ye samriddh empire dheere-dheere chhote regional rajyon mein bikhar gaya.</p>`
+      `<p>320 CE mein Chandragupta I ne jo neev rakhi, usne bahut jald ek poore golden age ka roop le liya. Uske beta Samudragupta ne itni conquests ki ki use "Napoleon of India" tak kaha jaane laga — uski jeeton ka poora record aaj bhi Allahabad Pillar Inscription mein padha ja sakta hai.</p>
+      <p>Lekin asli chamak aayi Chandragupta II (Vikramaditya) ke daur mein. Unke darbar mein Navratna baithte the — nau vidwaan jinme Kalidasa (Shakuntala ke rachyita) sabse zyada yaad kiye jaate hain. Ye sanskrit sahitya ka waqai swarnim daur tha.</p>
+      <p>Isi maahaul mein Aryabhata ne aisi khoj ki jo apne waqt se saalon aage ki soch thi — "shunya" (zero) aur decimal system par unka kaam aage chal ke Arab dunia se hote hue Europe tak pahuncha, aur modern ganit ki neev bana. Kala bhi peeche nahi thi — Ajanta ki gufaon ki painting isi period ki dein hain.</p>
+      <p>Fir bhi har golden age ka ant hota hai. 5vi sadi ke baad Huna aakramankariyon ne trade routes tod diye aur central control kamzor kar diya, aur ye samriddh samrajya dheere-dheere chhote-chhote regional rajyon mein bikhar gaya.</p>`
     ],
     en:[
-      `<ul>
-        <li><b>Golden Age (320–550 CE):</b> Chandragupta I laid the foundation</li>
-        <li>Samudragupta = "Napoleon of India" — a great conqueror</li>
-        <li>Chandragupta II (Vikramaditya) = Navaratnas, Kalidasa</li>
-        <li>Aryabhata = zero + decimal system</li>
-      </ul>`,
-      `<ul>
-        <li>Chandragupta I (320 CE) founded the Gupta Empire</li>
-        <li>Samudragupta was such a great conqueror he is called the "Napoleon of India"</li>
-        <li>Chandragupta II's (Vikramaditya) court had the Navaratnas — Kalidasa (author of Shakuntala) the most famous</li>
-        <li>Aryabhata worked on "zero" and the decimal system</li>
-        <li>The Ajanta cave paintings date from this period</li>
-        <li>Huna invasions weakened the empire, which broke into regional kingdoms</li>
-      </ul>`,
       `<ul>
         <li>The Gupta period is called the "Golden Age" because science, mathematics, art, and literature all saw major breakthroughs</li>
         <li>Samudragupta's conquests are recorded on the Allahabad Pillar Inscription</li>
         <li>Aryabhata's concept of zero and the decimal system later travelled to Europe via the Arab world</li>
         <li>Huna invasions (after the 5th century) disrupted trade routes and weakened central control, causing the empire to fragment</li>
       </ul>`,
-      `<p><b>Foundation and Expansion:</b> Chandragupta I founded the Gupta Empire in 320 CE. His son Samudragupta expanded it so extensively that he is called the "Napoleon of India" — his conquests are fully recorded on the Allahabad Pillar Inscription.</p>
-      <p><b>Chandragupta II and the Navaratnas:</b> the reign of Chandragupta II (Vikramaditya) is considered the most prosperous. His court held the Navaratnas, of whom Kalidasa (author of Shakuntala) was the most famous — this was the golden age of Sanskrit literature.</p>
-      <p><b>Science and Art:</b> Aryabhata worked on "zero" and the decimal system, which later travelled through the Arab world to Europe and underpins modern mathematics. The Ajanta cave paintings also date from this period.</p>
-      <p><b>Decline (5th–6th century):</b> Huna invasions disrupted trade routes and weakened central control, causing this prosperous empire to gradually fragment into smaller regional kingdoms.</p>`
+      `<p>The foundation Chandragupta I laid in 320 CE quickly grew into something close to a golden age. His son Samudragupta expanded it through so many conquests that he came to be called the "Napoleon of India" — his victories are still recorded in full on the Allahabad Pillar Inscription.</p>
+      <p>But the real shine came under Chandragupta II (Vikramaditya). His court held the Navaratnas — nine scholars, the most remembered of whom is Kalidasa, author of Shakuntala. This was, quite genuinely, a golden age for Sanskrit literature.</p>
+      <p>In this same environment, Aryabhata made discoveries that were decades ahead of their time — his work on "zero" and the decimal system eventually travelled through the Arab world into Europe, becoming a foundation of modern mathematics. Art kept pace too — the Ajanta cave paintings date from this same period.</p>
+      <p>Yet every golden age ends. After the 5th century, Huna invasions disrupted trade routes and weakened central authority, and this once-prosperous empire slowly broke apart into smaller regional kingdoms.</p>`
     ]
   },
   sticky:{
@@ -1297,10 +1129,10 @@ let TOPICS = [
         <li>Muhammad Ghori Mahmud se alag tha — wo empire banana chahta tha, isliye 1192 ki jeet ke baad usne apne general Qutb-ud-din Aibak ko Delhi mein chhod diya, jo aage jaakar Sultanate ka pehla sultan bana</li>
         <li>Ye poora daur dikhata hai ki political fragmentation (bikhraav) kisi bhi region ko bahari shakti ke saamne kamzor bana deta hai</li>
       </ul>`,
-      `<p><b>Rajput Age ka bikhraav:</b> Harshavardhan ke baad North India mein koi ek samrat nahi raha. Rajput clans (Chauhan, Pratihara, Chandela, Paramara) chhote-chhote rajyon mein bat gaye aur aapas mein hi ladte rahe. Tripartite Struggle mein Pratihara, Pala aur Rashtrakuta teeno Kannauj ke liye itna lade ki teeno ki taakat khatam ho gayi — koi bhi ek strong central power nahi ban paaya.</p>
-      <p><b>Mahmud Ghazni ke raids:</b> 997–1030 ke beech Mahmud ne 17 baar India pe hamla kiya, lekin har baar sirf lootne aaya, rajya banane nahi. 1025 mein Somnath mandir loota gaya, jo India ke itihaas ki sabse yaad rakhi jaane wali ghatnaon mein se ek hai. Uske raids ne North-West India ki kamzori zaahir kar di.</p>
-      <p><b>Muhammad Ghori aur Tarain ki ladaiyan:</b> 1191 mein Prithviraj Chauhan ne pehli Tarain ladai jeeti, lekin Ghori 1192 mein wapas aaya aur is baar jeet gaya. Ghori, Mahmud se alag tha — wo empire banana chahta tha. Isliye jeet ke baad usne apne general Qutb-ud-din Aibak ko Delhi mein governor banaya.</p>
-      <p><b>Significance:</b> Ye daur North India mein Delhi Sultanate ki neev banta hai. Ye dikhata hai ki bikhre hue, aapas mein ladte rajya kisi bhi bahari shakti ke saamne kitne kamzor pad jaate hain.</p>`
+      `<p>Harshavardhan ki maut ke baad North India ek jaisa raha nahi. Koi ek samrat nahi tha ab — Chauhan, Pratihara, Chandela, Paramara jaise Rajput clans chhote-chhote rajyon mein bat gaye, aur ek doosre se hi ladte rahe. Kannauj shehar par control ke liye Pratihara, Pala, aur Rashtrakuta itni sadiyon lade ki teeno hi kamzor ho gaye — koi bhi strong central power ban hi nahi paaya.</p>
+      <p>Isi bikhraav ka fayda uthaya uttar-pashchim se aane wale ek naye khatre ne. Mahmud Ghazni 997 se 1030 ke beech 17 baar India aaya — har baar sirf loot ke liye, 1025 mein Somnath mandir ko bhi nahi bakhsha. Uske hamle rajya banane ke liye nahi the, isliye koi sthayi structure nahi chhoda — lekin unhone ek baat zaroor zaahir kar di: North-West India ka defense kamzor tha, aur ye baat aage ke invaders ke kaam aayi.</p>
+      <p>Fir aaya Muhammad Ghori, jo Mahmud se bilkul alag tha — wo sirf lootne nahi, raaj karne aaya tha. 1191 mein Prithviraj Chauhan ne use Tarain mein haraya, lekin Ghori 1192 mein wapas aaya, aur is baar jeet gaya. Jeet ke baad usne apne general Qutb-ud-din Aibak ko Delhi mein chhod diya — kisi ko us waqt pata nahi tha, lekin ek naye yug ki neev pad chuki thi.</p>
+      <p>Ye poora daur ek simple baat sikhata hai: jab koi region andar hi ladta rehta hai, to bahar se aayi ek sangathit shakti use aasani se todh sakti hai.</p>`
     ],
     en:[
       `<ul>
@@ -1323,10 +1155,10 @@ let TOPICS = [
         <li>Muhammad Ghori was different from Mahmud — he wanted to build an empire, so after his 1192 victory he left his general Qutb-ud-din Aibak behind in Delhi, who later became the Sultanate's first sultan</li>
         <li>This entire period shows how political fragmentation leaves a region exposed to outside power</li>
       </ul>`,
-      `<p><b>Fragmentation of the Rajput Age:</b> After Harshavardhan, no single emperor ruled North India. Rajput clans (Chauhan, Pratihara, Chandela, Paramara) split into small kingdoms and kept fighting each other. In the Tripartite Struggle, the Pratihara, Pala, and Rashtrakuta dynasties fought so hard over Kannauj that all three exhausted their strength — none emerged as a strong central power.</p>
-      <p><b>Mahmud of Ghazni's raids:</b> Between 997–1030, Mahmud invaded India 17 times, but every time purely to plunder, never to build a kingdom. In 1025 he plundered the Somnath temple, one of the most remembered events in Indian history. His raids exposed the weakness of North-West India's defenses.</p>
-      <p><b>Muhammad Ghori and the Battles of Tarain:</b> Prithviraj Chauhan won the First Battle of Tarain in 1191, but Ghori returned in 1192 and won this time. Ghori was different from Mahmud — he wanted to build an empire. After his victory, he made his general Qutb-ud-din Aibak governor of Delhi.</p>
-      <p><b>Significance:</b> This period lays the foundation for the Delhi Sultanate in North India. It shows how fragmented, infighting kingdoms become vulnerable to any determined outside power.</p>`
+      `<p>After Harshavardhan's death, North India was never the same again. There was no single emperor now — only Rajput clans like the Chauhan, Pratihara, Chandela, and Paramara, each ruling small kingdoms, forever fighting one another. Over control of the city of Kannauj, the Pratihara, Pala, and Rashtrakuta dynasties fought so hard that all three exhausted themselves — none emerged as a strong central power.</p>
+      <p>Amid this fragmentation, a new threat arrived from the northwest. Mahmud of Ghazni invaded India seventeen times between 997 and 1030 — each time purely for plunder, sparing not even the Somnath temple in 1025. His raids weren't about building a kingdom, so they left no lasting structure — but they exposed one thing clearly: North-West India's defenses were weak, and later invaders would exploit that.</p>
+      <p>Then came Muhammad Ghori, entirely different from Mahmud — he had not come merely to loot, but to rule. In 1191, Prithviraj Chauhan defeated him at Tarain, but Ghori returned in 1192, and this time, he won. After his victory, he left his general Qutb-ud-din Aibak behind in Delhi. No one knew it at the time, but the foundation of a new era had just been laid.</p>
+      <p>The whole period teaches a simple lesson: when a region keeps fighting itself, an organized outside force can break it apart with relative ease.</p>`
     ]
   },
   sticky:{
@@ -1370,10 +1202,10 @@ let TOPICS = [
         <li>Muhammad bin Tughlaq ke experiments intent mein ache the (empire ko strengthen karna) lekin execution mein galat the — isse Sultanate kamzor hui aur regional rebellions (Bengal, Deccan mein Bahmani/Vijayanagara) shuru hui</li>
         <li>Lodi dynasty ke waqt Sultanate bahut kamzor ho chuki thi — Ibrahim Lodi ke apne hi Rajput/Afghan sardaron ne Babur ko India aane ka nimantran diya</li>
       </ul>`,
-      `<p><b>Foundation aur Stability:</b> Qutb-ud-din Aibak ne 1206 mein Sultanate shuru ki. Uske baad Iltutmish ne isse asli stability di — Delhi ko capital banaya aur Chahalgani (40 amiron ka group) banaya jisne administration chalayi. Razia Sultan, Iltutmish ki beti, Sultanate ki akeli female ruler thi.</p>
-      <p><b>Khilji Dynasty ki taakat:</b> Alauddin Khilji ne apni market control policy se prices fix kiye, jisse ek bahut bada army kam kharche mein chal saka. Isi taakat se usne Mongol attacks bhi rokey aur Deccan tak apna vistaar kiya.</p>
-      <p><b>Tughlaq ke experiments:</b> Muhammad bin Tughlaq ne 2 bade experiment kiye — capital ko Delhi se Daulatabad shift karna (paani ki kami se fail hua, log wapas Delhi laut aaye) aur token currency chalu karna (copper coins jo aasani se fake ban jaate the, isliye fail hui). In dono galtiyon ne Sultanate ki treasury aur reputation dono kamzor kar di.</p>
-      <p><b>Decline aur ant:</b> Sayyid aur Lodi dynasty ke daur tak Sultanate bahut kamzor ho chuki thi. Ibrahim Lodi ke kamzor aur unpopular rule ne 1526 mein Babur ko Panipat ki pehli ladai mein jeetne ka mauka diya — jisse Delhi Sultanate khatam hokar Mughal Empire shuru hui.</p>`
+      `<p>1206 mein Qutb-ud-din Aibak ne jo shuru kiya, wo asli stability paaya Iltutmish ke daur mein — usne Delhi ko capital banaya aur Chahalgani banaya, chalis amiron ka ek group jo administration chalata tha. Interesting baat ye hai ki isi Chahalgani ne power bhi di aur andar ki politics bhi paida ki — takht ke liye ladaiyan hoti rahin, aur Sultanate kabhi poori tarah stable nahi ho paayi. Iltutmish ki beti Razia Sultan is daur ki akeli female ruler bani.</p>
+      <p>Khilji dynasty mein Alauddin Khilji ne ek alag hi rasta apnaya — usne market prices seedhe fix kar diye, taaki ek bahut bada army kam kharche mein maintain ho sake. Isi strategy ki wajah se wo Mongol attacks rokh paaya aur Deccan tak apna vistaar kar saka. Ye dikhata hai ki economy par control rakhna military power ke liye kitna zaroori ho sakta hai — lekin ye policy sirf uske jeete-ji hi kaam kar payi.</p>
+      <p>Fir aaya Muhammad bin Tughlaq, jiski niyat achi thi lekin execution nahi. Usne capital Delhi se Daulatabad shift kar di — paani ki kami ki wajah se ye prayog fail hua, aur log thake-haare, naraaz hokar wapas Delhi laut aaye. Uska token currency ka experiment (copper coins jo aasani se fake ban jaate the) bhi fail hua, aur dono galtiyon ne Sultanate ki treasury aur reputation dono kamzor kar di — Bengal aur Deccan mein regional rebellions (Bahmani, Vijayanagara) shuru ho gayin.</p>
+      <p>Sayyid aur Lodi dynasty tak aate-aate Sultanate itni kamzor ho chuki thi ki Ibrahim Lodi ke apne hi kuch Rajput aur Afghan sardaron ne Babur ko India aane ka nimantran de diya. 1526 mein Panipat ke maidano mein Babur ne Lodi ko haraya — aur Delhi Sultanate ka ant, ek naye Mughal yug ki shuruaat mein badal gaya.</p>`
     ],
     en:[
       `<ul>
@@ -1396,10 +1228,10 @@ let TOPICS = [
         <li>Muhammad bin Tughlaq's experiments had good intentions (strengthening the empire) but poor execution — this weakened the Sultanate and sparked regional rebellions (Bengal, and the Bahmani/Vijayanagara kingdoms in the Deccan)</li>
         <li>By the Lodi period the Sultanate had grown very weak — some of Ibrahim Lodi's own Rajput/Afghan nobles invited Babur into India</li>
       </ul>`,
-      `<p><b>Foundation and Stability:</b> Qutb-ud-din Aibak founded the Sultanate in 1206. Iltutmish, who followed, gave it real stability — making Delhi the capital and forming the Chahalgani, a group of 40 nobles who ran the administration. Razia Sultan, Iltutmish's daughter, was the Sultanate's only female ruler.</p>
-      <p><b>Power under the Khiljis:</b> Alauddin Khilji fixed market prices through his market control policy, allowing him to maintain a very large army at low cost. This strength let him repel Mongol attacks and extend his reach into the Deccan.</p>
-      <p><b>The Tughlaq experiments:</b> Muhammad bin Tughlaq ran two major experiments — shifting the capital from Delhi to Daulatabad (failed due to water shortage, forcing people back to Delhi) and introducing token currency (copper coins that were easily counterfeited, causing it to fail). Both mistakes badly weakened the Sultanate's treasury and reputation.</p>
-      <p><b>Decline and end:</b> By the Sayyid and Lodi periods, the Sultanate had grown very weak. Ibrahim Lodi's weak and unpopular rule gave Babur his opening to win the First Battle of Panipat in 1526 — ending the Delhi Sultanate and beginning the Mughal Empire.</p>`
+      `<p>What Qutb-ud-din Aibak started in 1206 found real stability under Iltutmish, who made Delhi the capital and formed the Chahalgani — forty nobles who ran the administration. Interestingly, that same council both gave power and generated internal politics; succession struggles kept flaring up, and the Sultanate was never fully stable. Iltutmish's daughter, Razia Sultan, became its only female ruler.</p>
+      <p>Under the Khiljis, Alauddin Khilji took a different approach entirely — he fixed market prices directly, letting him maintain a very large army at low cost. That strategy let him repel Mongol attacks and push his reach into the Deccan. It shows just how much control over the economy can matter for military strength — though the policy only held while he was alive to enforce it.</p>
+      <p>Then came Muhammad bin Tughlaq, whose intentions were sound but whose execution wasn't. He shifted the capital from Delhi to Daulatabad — the experiment failed due to water shortages, and an exhausted, angry population trudged back to Delhi. His token currency experiment (copper coins that were easily counterfeited) failed too, and together these mistakes badly damaged the Sultanate's treasury and reputation, sparking regional rebellions in Bengal and the Deccan (the Bahmani and Vijayanagara kingdoms).</p>
+      <p>By the time of the Sayyid and Lodi dynasties, the Sultanate had grown so weak that some of Ibrahim Lodi's own Rajput and Afghan nobles invited Babur into India. In 1526, on the plains of Panipat, Babur defeated Lodi — and the end of the Delhi Sultanate became the beginning of a new Mughal age.</p>`
     ]
   },
   sticky:{
@@ -1443,10 +1275,10 @@ let TOPICS = [
         <li>Bahmani Sultanate ka 5 chote states mein toot na ek pattern dikhata hai — jaise Delhi Sultanate mein hua, badi power bhi internal disagreement se bikhar sakti hai</li>
         <li>Talikota ki haar dikhati hai ki chaar chote rivals bhi agar ek saath aa jaayen to ek bade empire ko haraa sakte hain — is haar ne South India mein Vijayanagara ka dominance hamesha ke liye khatam kar diya</li>
       </ul>`,
-      `<p><b>Do rival shaktiyan:</b> 1336 mein Harihara aur Bukka ne Vijayanagara Empire ki sthapna ki, jo South India ka sabse bada Hindu rajya bana. Isi ke aas-paas, 1347 mein Bahmani Sultanate ne Delhi se azaadi lekar apna raaj Deccan mein jamaya. Dono empires ek dusre ke rivals rahe, kyunki wo alag religion aur culture represent karte the.</p>
-      <p><b>Krishnadevaraya ka Golden Age:</b> Vijayanagara apne sabse ooncha shikhar par Krishnadevaraya (1509–29) ke daur mein pahuncha. Uske raaj mein trade, art, aur literature sab pheli-phuli, aur Portuguese travelers ne uske Hampi darbar ki samriddhi likh kar rakhi.</p>
-      <p><b>Bahmani ka bikhraav:</b> Bahmani Sultanate dheere-dheere kamzor hui aur 5 chote Deccan Sultanates (Bijapur, Golconda, Ahmadnagar, Bidar, Berar) mein toot gayi — ye Delhi Sultanate jaisa hi ek pattern hai jahan internal disagreement se bade rajya chhote hisso mein bant jaate hain.</p>
-      <p><b>Talikota aur ant:</b> 1565 mein in chaar Deccan Sultanates ne mil kar Vijayanagara ko Talikota ki ladai mein haraya. Hampi barbaad kar diya gaya, aur Vijayanagara ka South India par dominance hamesha ke liye khatam ho gaya — dikhata hai ki ekta, chahe chhote rajyon ki ho, ek bade akele empire ko haraa sakti hai.</p>`
+      `<p>1336 mein Harihara aur Bukka ne jo shuru kiya, wo South India ka sabse bada Hindu rajya ban gaya — Vijayanagara Empire. Isi ke aas-paas, 1347 mein Bahmani Sultanate ne Delhi se azaadi lekar Deccan mein apna raaj jamaya. Dono ki dushmani sirf zameen ke liye nahi thi — ye do alag dharm aur do alag sanskriti ke beech ka takraav tha, isliye ye conflict sadiyon tak khinchta gaya.</p>
+      <p>Vijayanagara apne shikhar par pahuncha Krishnadevaraya (1509–29) ke daur mein. Usne sirf military se nahi, diplomacy se bhi apna empire mazboot kiya — Portuguese traders se acche rishte banaye, jisse coastal trade khoob badha. Hampi ke bazaar sona-chandi se chamakte the, aur Portuguese travelers ne uski samriddhi apne likhon mein darj ki.</p>
+      <p>Doosri taraf, Bahmani Sultanate ka haal Delhi Sultanate jaisa hi hua — internal disagreement ne use tod diya, aur ye 5 chote rajyon mein bikhar gayi: Bijapur, Golconda, Ahmadnagar, Bidar, aur Berar. Ye pattern batata hai ki kitni bhi badi power ho, andar ki phoot use kamzor kar sakti hai.</p>
+      <p>1565 mein ek gehra mod aaya — in chaar chote Sultanates ne mil kar, Talikota ki ladai mein Vijayanagara ko haraya. Hampi ke bazaar barbaad ho gaye, aur South India mein Vijayanagara ka dominance hamesha ke liye khatam ho gaya — ek yaad dilaate hue ki ekta, chahe chhote rajyon ki hi kyun na ho, ek bade akele empire ko bhi haraa sakti hai.</p>`
     ],
     en:[
       `<ul>
@@ -1469,10 +1301,10 @@ let TOPICS = [
         <li>The Bahmani Sultanate's split into 5 smaller states shows a pattern seen elsewhere too — as with the Delhi Sultanate, even a large power can fragment through internal disagreement</li>
         <li>The defeat at Talikota shows that even four smaller rivals, if united, can defeat one large empire — this defeat permanently ended Vijayanagara's dominance in South India</li>
       </ul>`,
-      `<p><b>Two rival powers:</b> In 1336, Harihara and Bukka founded the Vijayanagara Empire, which became South India's largest Hindu kingdom. Around the same time, in 1347, the Bahmani Sultanate broke away from Delhi and established itself in the Deccan. The two empires remained rivals because they represented different religions and cultures.</p>
-      <p><b>Krishnadevaraya's Golden Age:</b> Vijayanagara reached its peak under Krishnadevaraya (1509–29). Trade, art, and literature flourished under his reign, and Portuguese travelers recorded the prosperity of his court at Hampi.</p>
-      <p><b>Fragmentation of the Bahmani Sultanate:</b> The Bahmani Sultanate gradually weakened and split into 5 smaller Deccan Sultanates (Bijapur, Golconda, Ahmadnagar, Bidar, Berar) — a pattern similar to the Delhi Sultanate, where internal disagreement fragments large kingdoms.</p>
-      <p><b>Talikota and the end:</b> In 1565 these four Deccan Sultanates united to defeat Vijayanagara at the Battle of Talikota. Hampi was destroyed, and Vijayanagara's dominance over South India ended permanently — showing that unity, even among smaller kingdoms, can defeat one large lone empire.</p>`
+      `<p>What Harihara and Bukka started in 1336 grew into South India's largest Hindu kingdom — the Vijayanagara Empire. Around the same time, in 1347, the Bahmani Sultanate broke away from Delhi and set up its own rule in the Deccan. The rivalry between them wasn't just about land — it was a clash of two different religions and two different cultures, which is why it dragged on for centuries.</p>
+      <p>Vijayanagara reached its peak under Krishnadevaraya (1509–29), who strengthened his empire through diplomacy as much as military power. He built strong relations with Portuguese traders, boosting coastal trade — Hampi's markets gleamed with gold and silver, and Portuguese travelers recorded the wealth of his court in their writings.</p>
+      <p>The Bahmani Sultanate, meanwhile, followed a path much like the Delhi Sultanate — internal disagreement pulled it apart, splitting it into five smaller states: Bijapur, Golconda, Ahmadnagar, Bidar, and Berar. It's a pattern worth noticing — no matter how large a power is, internal division can still break it.</p>
+      <p>Then, in 1565, came a turning point. These four smaller Sultanates joined forces and defeated Vijayanagara at the Battle of Talikota. Hampi's markets were destroyed, and Vijayanagara's dominance over South India ended for good — a reminder that unity, even among smaller kingdoms, can bring down one large empire on its own.</p>`
     ]
   },
   sticky:{
@@ -1516,10 +1348,10 @@ let TOPICS = [
         <li>Aurangzeb ka Deccan mein vistaar sabse bada tha area-wise, lekin lambi ladaiyon (khaas kar Marathas ke khilaf) ne treasury khaali kar di</li>
         <li>Mughal Empire ka decline sirf ek reason se nahi hua — weak successors, khaali treasury, aur regional powers (Marathas, Sikhs) ka ubharna, sab mila kar 18vi sadi mein Mughal power ko khatam kar diya</li>
       </ul>`,
-      `<p><b>Foundation aur early struggle:</b> Babur ne 1526 mein Panipat I jeet kar Mughal Empire ki neev rakhi. Uske beta Humayun ko Sher Shah Suri ne haraya aur 15 saal exile mein bitane par majboor kiya — lekin Humayun 1555 mein wapas Delhi jeetne mein safal raha, jisse Mughal dynasty bach gayi.</p>
-      <p><b>Akbar ka Golden Age:</b> Akbar ne mansabdari system banayi jisse administration efficient hui, aur Rajput rajaon se alliances karke non-Muslim population ka bharosa jeeta. Uska "Din-i-Ilahi" religious tolerance ka symbol tha. Ye combination hi Mughal Empire ko itna strong bana gaya.</p>
-      <p><b>Shah Jahan ka architectural peak:</b> Shah Jahan ke daur mein Mughal architecture apne highest point par pahuncha — Taj Mahal (Mumtaz Mahal ki yaad mein), Red Fort, aur Jama Masjid sab isi period ki dein hain.</p>
-      <p><b>Aurangzeb: vistaar aur decline ki shuruaat:</b> Aurangzeb ne Deccan tak empire ko sabse zyada faila diya, lekin uski religious sakhti (jizya wapas lagana) ne Akbar ke banaye Rajput support ko khatam kar diya. Lambi Maratha ladaiyon ne treasury khaali kar di. Uski 1707 ki maut ke baad, weak successors aur regional powers (Marathas, Sikhs) ke ubharne se Mughal Empire tezi se kamzor hota gaya.</p>`
+      `<p>1526 mein Babur ne Panipat ki pehli ladai jeetkar Mughal Empire ki neev rakh di. Lekin ye neev jaldi hi hilne lagi — uske beta Humayun ko Sher Shah Suri ne haraya, aur 15 saal tak Iran mein exile mein rehna pada. Fir bhi Humayun haar nahi maani, aur 1555 mein wapas Delhi jeet kar dynasty ko bacha liya.</p>
+      <p>Asli mod Akbar ke daur mein aaya. Uski success ka raaz sirf military nahi tha — usne mansabdari system se administration ko efficient banaya, aur Rajput rajaon se alliances karke wo support jeeta jo koi pehla Sultan nahi jeet paaya tha. Uska "Din-i-Ilahi" isi religious tolerance ka symbol tha. Yahi combination — diplomacy plus strong administration — Mughal Empire ko itna majboot bana gaya.</p>
+      <p>Shah Jahan ke daur mein power kaam, art zyada dikhi. Mughal architecture apne highest point par pahunchi — Taj Mahal (Mumtaz Mahal ki yaad mein), Red Fort, Jama Masjid, sab isi period ki dein hain.</p>
+      <p>Fir aaya Aurangzeb, jisne Deccan tak empire ko sabse zyada faila diya — lekin usi ke saath Akbar ki policy ko ulta bhi kar diya. Jizya tax wapas laga di, mandir todhe — aur isi sakhti ne wo Rajput support khatam kar diya jo Akbar ne itni mehnat se banaya tha. Lambi Maratha ladaiyon ne treasury bhi khaali kar di. 1707 mein uski maut ke baad, weak successors aur naye ubharte regional powers (Marathas, Sikhs) ne mil kar Mughal Empire ko tezi se kamzor kar diya.</p>`
     ],
     en:[
       `<ul>
@@ -1542,10 +1374,10 @@ let TOPICS = [
         <li>Aurangzeb's Deccan expansion gave the empire its largest territorial size, but prolonged wars (especially against the Marathas) drained the treasury</li>
         <li>The Mughal decline wasn't caused by one factor alone — weak successors, an empty treasury, and the rise of regional powers (Marathas, Sikhs) combined to end Mughal power by the 18th century</li>
       </ul>`,
-      `<p><b>Foundation and early struggle:</b> Babur laid the foundation of the Mughal Empire by winning Panipat I in 1526. His son Humayun was defeated by Sher Shah Suri and forced into 15 years of exile — but Humayun succeeded in reconquering Delhi in 1555, saving the Mughal dynasty.</p>
-      <p><b>Akbar's Golden Age:</b> Akbar built the mansabdari system for efficient administration, and won the trust of the non-Muslim population through alliances with Rajput kings. His "Din-i-Ilahi" was a symbol of religious tolerance. This combination is what made the Mughal Empire so strong.</p>
-      <p><b>Shah Jahan's architectural peak:</b> Mughal architecture reached its highest point under Shah Jahan — the Taj Mahal (in memory of Mumtaz Mahal), the Red Fort, and Jama Masjid are all gifts of this period.</p>
-      <p><b>Aurangzeb: expansion and the start of decline:</b> Aurangzeb expanded the empire furthest into the Deccan, but his religious strictness (reimposing jizya) undid the Rajput support Akbar had built. Prolonged wars against the Marathas emptied the treasury. After his death in 1707, weak successors and the rise of regional powers (Marathas, Sikhs) caused the Mughal Empire to weaken rapidly.</p>`
+      `<p>In 1526, Babur won the First Battle of Panipat and laid the foundation of the Mughal Empire. That foundation shook almost immediately — his son Humayun was defeated by Sher Shah Suri and forced into 15 years of exile in Iran. But Humayun didn't give up, and in 1555 he reconquered Delhi, saving the dynasty.</p>
+      <p>The real turning point came under Akbar. His success wasn't built on military strength alone — he made administration efficient through the mansabdari system, and won support through Rajput alliances that no earlier Sultan had managed to secure. His "Din-i-Ilahi" was a symbol of that same religious tolerance. This combination of diplomacy and strong administration is what made the Mughal Empire so formidable.</p>
+      <p>Under Shah Jahan, power gave way to art. Mughal architecture reached its peak — the Taj Mahal (built in memory of Mumtaz Mahal), the Red Fort, and the Jama Masjid all date from this era.</p>
+      <p>Then came Aurangzeb, who pushed the empire's borders furthest into the Deccan — but in doing so, he reversed everything Akbar had built. He reimposed the jizya tax and destroyed temples, and that strictness undid the very Rajput support Akbar had worked so hard to secure. Prolonged wars against the Marathas drained the treasury too. After his death in 1707, weak successors and rising regional powers (the Marathas, the Sikhs) combined to weaken the Mughal Empire rapidly.</p>`
     ]
   },
   sticky:{
@@ -1592,11 +1424,10 @@ let TOPICS = [
         <li>1761 ki Panipat haar ne military strength khatam nahi ki, balki leadership vacuum paida kiya — aur yahi vacuum, Madhav Rao I ki maut ke baad, andaruni jhagdo mein badal gaya jisne empire ko andar se khokhla kar diya</li>
         <li>British ne Marathas ko seedhi ladai se nahi, balki unki andaruni phoot ka fayda uthakar, ek-ek karke Maratha chiefs (Sindhia, Holkar, Bhonsle, Gaikwad) ko alag-alag treaties mein baandh kar hi haraya — yehi "divide and conquer" policy Anglo-Maratha wars ki asli kahani hai</li>
       </ul>`,
-      `<p><b>Foundation aur Shivaji ka vision:</b> Shivaji Maharaj (1630–1680) ne ek chhoti hill kingdom se shuruaat karke, Adilshahi Sultanate aur Mughal Empire dono ke khilaf ladte hue, ek naya rajya khada kiya jiski buniyaad "Swaraj" — apne logon ke apne raaj — ke vichar par thi. 1674 mein Raigad Fort par unka rajyabhishek is naye rajya ki formal shuruaat thi. Unhone sirf military hi nahi, balki ek disciplined Ashtapradhan council aur revenue system bhi banaya, jisne aage aane wale Peshwaon ke liye ek stable neev di.</p>
-      <p><b>Guerrilla warfare aur vistaar:</b> Chhote resources ke saath bade armies se seedhi takkar mumkin nahi thi, isliye Marathas ne "Ganimi Kava" — speed, surprise attacks, aur pahaadi kile ka istemal — apnaya, jo unki military pehchaan ban gaya. Aurangzeb ki maut (1707) ke baad ye rananiti aur bhi asardaar sabit hui, aur Peshwa Baji Rao I (1720–1740) ke daur mein Maratha Empire apne sabse bade vistaar tak pahunchi — Afghanistan ke kinare se lekar Bengal tak.</p>
-      <p><b>1761: Panipat ka jhatka:</b> Yahi rapid expansion Marathas ko unke core base se bahut door le gayi, aur 1761 mein Ahmad Shah Abdali ke haathon Third Battle of Panipat mein unhe bhaari haar mili. Ye haar military strength se zyada ek leadership vacuum chhod gayi.</p>
-      <p><b>Decline aur British ka fayda:</b> Madhav Rao I ki maut (1772) ke baad kamzor uttaradhikari aur Maratha chiefs (Sindhia, Holkar, Bhonsle, Gaikwad) ke beech andaruni phoot badh gayi. British East India Company ne seedhi ladai ke bajaye isi phoot ka fayda uthaya — alag-alag chiefs ke saath alag treaties karke, aur akhir mein 1817–1818 ki Third Anglo-Maratha War mein Maratha Empire ko poori tarah khatam kar diya.</p>
-      <p><b>Significance:</b> Maratha Empire India ka aakhri bada indigenous (swadeshi) empire tha jisne Mughal supremacy ko seedhi chunauti di. Iske "Swaraj" ke vichar ne aage chal kar bhavishya ke swatantrata senaniyon ko bhi prerna di.</p>`
+      `<p>Shivaji Maharaj (1630–1680) ne ek chhoti hill kingdom se shuruaat karke, Adilshahi Sultanate aur Mughal Empire dono ke khilaf ladte hue, ek naya rajya khada kiya jiski buniyaad "Swaraj" — apne logon ke apne raaj — ke vichar par thi. 1674 mein Raigad Fort par unka rajyabhishek is naye rajya ki formal shuruaat thi. Unhone sirf military hi nahi, balki ek disciplined Ashtapradhan council aur revenue system bhi banaya, jisne aage aane wale Peshwaon ke liye ek stable neev di.</p>
+      <p>Chhote resources ke saath bade armies se seedhi takkar mumkin nahi thi, isliye Marathas ne "Ganimi Kava" — speed, surprise attacks, aur pahaadi kile ka istemal — apnaya, jo unki military pehchaan ban gaya. Aurangzeb ki maut (1707) ke baad ye rananiti aur bhi asardaar sabit hui, aur Peshwa Baji Rao I (1720–1740) ke daur mein Maratha Empire apne sabse bade vistaar tak pahunchi — Afghanistan ke kinare se lekar Bengal tak.</p>
+      <p>Yahi rapid expansion Marathas ko unke core base se bahut door le gayi, aur 1761 mein Ahmad Shah Abdali ke haathon Third Battle of Panipat mein unhe bhaari haar mili. Ye haar military strength se zyada ek leadership vacuum chhod gayi.</p>
+      <p>Madhav Rao I ki maut (1772) ke baad kamzor uttaradhikari aur Maratha chiefs (Sindhia, Holkar, Bhonsle, Gaikwad) ke beech andaruni phoot badh gayi. British East India Company ne seedhi ladai ke bajaye isi phoot ka fayda uthaya — alag-alag chiefs ke saath alag treaties karke, aur akhir mein 1817–1818 ki Third Anglo-Maratha War mein Maratha Empire ko poori tarah khatam kar diya. Ye India ka aakhri bada indigenous empire tha jisne Mughal supremacy ko seedhi chunauti di — aur iske "Swaraj" ke vichar ne aage chal kar swatantrata senaniyon ko bhi prerna di.</p>`
     ],
     en:[
       `<ul>
@@ -1622,11 +1453,10 @@ let TOPICS = [
         <li>The 1761 defeat at Panipat didn't destroy their military strength so much as create a leadership vacuum — and after Madhav Rao I's death, that same vacuum turned into internal conflict that hollowed the empire out from within</li>
         <li>The British didn't defeat the Marathas through direct battle alone, but by exploiting their internal divisions — binding Maratha chiefs (Sindhia, Holkar, Bhonsle, Gaikwad) into separate treaties one by one; this "divide and conquer" approach is the real story of the Anglo-Maratha Wars</li>
       </ul>`,
-      `<p><b>Foundation and Shivaji's vision:</b> Shivaji Maharaj (1630–1680) started with a small hill kingdom, fighting both the Adilshahi Sultanate and the Mughal Empire, and built a new state founded on the idea of "Swaraj" — self-rule for his people. His coronation at Raigad Fort in 1674 marked the formal beginning of this new state. He built not just a military but also a disciplined Ashtapradhan council and revenue system, giving the Peshwas who followed a stable foundation.</p>
-      <p><b>Guerrilla warfare and expansion:</b> Direct confrontation with larger armies wasn't feasible with limited resources, so the Marathas adopted "Ganimi Kava" — speed, surprise attacks, and the use of hill forts — which became their military identity. This strategy proved even more effective after Aurangzeb's death (1707), and under Peshwa Baji Rao I (1720–1740) the Maratha Empire reached its greatest extent — from the edge of Afghanistan to Bengal.</p>
-      <p><b>1761: The shock of Panipat:</b> This same rapid expansion took the Marathas far from their core base, and in 1761 they suffered a crushing defeat at the Third Battle of Panipat at the hands of Ahmad Shah Abdali. The defeat left behind a leadership vacuum more than it destroyed military strength.</p>
-      <p><b>Decline and British opportunity:</b> After Madhav Rao I's death (1772), weak successors and growing internal divisions among Maratha chiefs (Sindhia, Holkar, Bhonsle, Gaikwad) took hold. Rather than fighting them directly, the British East India Company exploited this division — signing separate treaties with different chiefs — and finally ended the Maratha Empire completely in the Third Anglo-Maratha War (1817–1818).</p>
-      <p><b>Significance:</b> The Maratha Empire was India's last great indigenous empire, and the one that directly challenged Mughal supremacy. Its idea of "Swaraj" would go on to inspire future freedom fighters.</p>`
+      `<p>Shivaji Maharaj (1630–1680) started with a small hill kingdom, fighting both the Adilshahi Sultanate and the Mughal Empire, and built a new state founded on the idea of "Swaraj" — self-rule for his people. His coronation at Raigad Fort in 1674 marked the formal beginning of this new state. He built not just a military but also a disciplined Ashtapradhan council and revenue system, giving the Peshwas who followed a stable foundation.</p>
+      <p>Direct confrontation with larger armies wasn't feasible with limited resources, so the Marathas adopted "Ganimi Kava" — speed, surprise attacks, and the use of hill forts — which became their military identity. This strategy proved even more effective after Aurangzeb's death (1707), and under Peshwa Baji Rao I (1720–1740) the Maratha Empire reached its greatest extent — from the edge of Afghanistan to Bengal.</p>
+      <p>This same rapid expansion took the Marathas far from their core base, and in 1761 they suffered a crushing defeat at the Third Battle of Panipat at the hands of Ahmad Shah Abdali. The defeat left behind a leadership vacuum more than it destroyed military strength.</p>
+      <p>After Madhav Rao I's death (1772), weak successors and growing internal divisions among Maratha chiefs (Sindhia, Holkar, Bhonsle, Gaikwad) took hold. Rather than fighting them directly, the British East India Company exploited this division — signing separate treaties with different chiefs — and finally ended the Maratha Empire completely in the Third Anglo-Maratha War (1817–1818). It was India's last great indigenous empire, and the one that directly challenged Mughal supremacy — its idea of "Swaraj" would go on to inspire future freedom fighters.</p>`
     ]
   },
   sticky:{
@@ -1670,10 +1500,10 @@ let TOPICS = [
         <li>Plassey ki jeet itni important isliye hai kyunki ye pehli baar tha jab EIC ne ek poore rajya (Bengal) par seedha control paaya — sirf trading post nahi, balki tax-collection ka adhikaar bhi</li>
         <li>Mir Jafar jaisi conspiracy dikhati hai ki Indian rajyon mein andar ki phoot ka EIC ne kaise faayda uthaya — divide and rule ki neev yahin se pad gayi</li>
       </ul>`,
-      `<p><b>Trade se shuru hua safar:</b> 1498 mein Vasco da Gama ke Calicut pahunchne se European powers ke liye India ka darwaza khula. Portuguese sabse pehle aaye, unke baad Dutch, English (1600 mein EIC bani), aur French bhi apna trade jamane aaye. Ye sab sirf commercial interest se aaye the, spices aur textiles jaisi goods ke liye.</p>
-      <p><b>EIC ki safalta ke reasons:</b> English East India Company doosri companies se isliye aage nikli kyunki unhone Mughal court se acche diplomatic relations banaye (jaise Jahangir se Sir Thomas Roe ke through 1615 mein Surat trade permission), aur apni khud ki sepoy army bana li jo unhe military advantage deti thi.</p>
-      <p><b>Battle of Plassey (1757):</b> Robert Clive ne Bengal ke Nawab Siraj-ud-Daulah ke khilaf ladai ladi — lekin asli jeet military se zyada conspiracy se hui, jab Clive ne Nawab ke apne general Mir Jafar ko rishwat dekar apni taraf kar liya. Siraj-ud-Daulah haar gaya, aur Mir Jafar EIC ke ishaare pe naya Nawab bana.</p>
-      <p><b>Significance:</b> Plassey EIC ke liye ek turning point tha — pehli baar unhe ek poore rajya (Bengal) ka control mila, jisse unhe seedha tax collect karne ka haq mila. Trading company ab dheere-dheere political shakti mein badalne lagi thi.</p>`
+      `<p>1498 mein Vasco da Gama ke Calicut pahunchne se European powers ke liye India ka darwaza khula. Portuguese sabse pehle aaye, unke baad Dutch, English (1600 mein EIC bani), aur French bhi apna trade jamane aaye. Ye sab sirf commercial interest se aaye the, spices aur textiles jaisi goods ke liye.</p>
+      <p>English East India Company doosri companies se isliye aage nikli kyunki unhone Mughal court se acche diplomatic relations banaye (jaise Jahangir se Sir Thomas Roe ke through 1615 mein Surat trade permission), aur apni khud ki sepoy army bana li jo unhe military advantage deti thi.</p>
+      <p>Robert Clive ne Bengal ke Nawab Siraj-ud-Daulah ke khilaf ladai ladi — lekin asli jeet military se zyada conspiracy se hui, jab Clive ne Nawab ke apne general Mir Jafar ko rishwat dekar apni taraf kar liya. Siraj-ud-Daulah haar gaya, aur Mir Jafar EIC ke ishaare pe naya Nawab bana.</p>
+      <p>1757 ki ye Plassey ki jeet EIC ke liye ek turning point ban gayi — pehli baar unhe ek poore rajya (Bengal) ka control mila, jisse unhe seedha tax collect karne ka haq mila. Ek trading company ab dheere-dheere ek political shakti mein badalne lagi thi.</p>`
     ],
     en:[
       `<ul>
@@ -1696,10 +1526,10 @@ let TOPICS = [
         <li>The Plassey victory matters so much because it was the first time the EIC gained direct control over an entire kingdom (Bengal) — not just a trading post, but the right to collect taxes</li>
         <li>The Mir Jafar conspiracy shows how the EIC exploited internal divisions within Indian kingdoms — the foundation of "divide and rule" was laid right here</li>
       </ul>`,
-      `<p><b>A journey that began with trade:</b> Vasco da Gama's arrival at Calicut in 1498 opened India's doors to European powers. The Portuguese came first, followed by the Dutch, the English (the EIC formed in 1600), and the French, all seeking to establish trade. All of them arrived purely for commercial interest, seeking goods like spices and textiles.</p>
-      <p><b>Reasons for the EIC's success:</b> The English East India Company outpaced other companies by building good diplomatic relations with the Mughal court (such as gaining trade permission at Surat from Jahangir through Sir Thomas Roe in 1615), and by forming its own sepoy army, which gave it a military edge.</p>
-      <p><b>The Battle of Plassey (1757):</b> Robert Clive fought against Bengal's Nawab, Siraj-ud-Daulah — but the real victory came more from conspiracy than military strength, when Clive bribed the Nawab's own general, Mir Jafar, to switch sides. Siraj-ud-Daulah was defeated, and Mir Jafar became the new Nawab at the EIC's direction.</p>
-      <p><b>Significance:</b> Plassey was a turning point for the EIC — for the first time they gained control of an entire kingdom (Bengal), giving them the direct right to collect taxes. A trading company was now gradually turning into a political power.</p>`
+      `<p>Vasco da Gama's arrival at Calicut in 1498 opened India's doors to European powers. The Portuguese came first, followed by the Dutch, the English (the EIC formed in 1600), and the French, all seeking to establish trade. All of them arrived purely for commercial interest, seeking goods like spices and textiles.</p>
+      <p>The English East India Company outpaced other companies by building good diplomatic relations with the Mughal court (such as gaining trade permission at Surat from Jahangir through Sir Thomas Roe in 1615), and by forming its own sepoy army, which gave it a military edge.</p>
+      <p>Robert Clive fought against Bengal's Nawab, Siraj-ud-Daulah — but the real victory came more from conspiracy than military strength, when Clive bribed the Nawab's own general, Mir Jafar, to switch sides. Siraj-ud-Daulah was defeated, and Mir Jafar became the new Nawab at the EIC's direction.</p>
+      <p>This 1757 victory at Plassey became a turning point for the EIC — for the first time they gained control of an entire kingdom (Bengal), giving them the direct right to collect taxes. A trading company was now gradually turning into a political power.</p>`
     ]
   },
   sticky:{
@@ -1743,10 +1573,10 @@ let TOPICS = [
         <li>Subsidiary Alliance aur Doctrine of Lapse dono ek hi maksad ke tarike the — bina seedhi ladai lade Indian rajyon ko EIC control mein le aana. Ek diplomacy se (Subsidiary Alliance), doosra legal loophole se (Doctrine of Lapse)</li>
         <li>In policies ne itni zyada Indian rajaon aur unke logon ko naraaz kiya ki 1857 tak ek badi revolt ke liye zameen taiyar ho gayi thi</li>
       </ul>`,
-      `<p><b>Buxar aur Diwani rights:</b> 1764 ki Battle of Buxar Plassey se bhi bada turning point thi, kyunki EIC ne teen bade powers — Mughal Emperor Shah Alam II, Awadh ke Nawab, aur Bengal ke Nawab — ko ek saath haraya. Iske baad, 1765 mein EIC ko Bengal, Bihar aur Odisha ki Diwani (tax-collection rights) mil gayi — ab EIC formally "ruler" ban chuki thi, sirf trader nahi.</p>
-      <p><b>Subsidiary Alliance:</b> Lord Wellesley ki policy ke tehat, Indian rajya apni khud ki sena bhang kar dete the aur badle mein EIC ki "protection" lete the — lekin protection ka kharcha unhe khud uthana padta tha, jisse unki treasury khaali ho jaati thi. Ye dheere-dheere unhe EIC par nirbhar bana deta tha.</p>
-      <p><b>Doctrine of Lapse:</b> Lord Dalhousie ki is policy ke tehat, agar kisi raja ka natural heir nahi hota tha, to uske adopted heir ko manyata nahi di jaati thi aur EIC seedha rajya annex kar leti thi. Isi tarah Jhansi, Satara, aur Nagpur jaise rajya EIC mein mil gaye.</p>
-      <p><b>Significance:</b> In dono policies ne Indian rajaon mein gehri naraazgi paida ki — kyunki unhe lagne laga ki EIC unki sovereignty aur traditions dono ko khatm kar rahi hai. Yehi naraazgi aage 1857 ki badi revolt ka ek mool karan bani.</p>`
+      `<p>1764 ki Battle of Buxar Plassey se bhi bada turning point thi, kyunki EIC ne teen bade powers — Mughal Emperor Shah Alam II, Awadh ke Nawab, aur Bengal ke Nawab — ko ek saath haraya. Iske baad, 1765 mein EIC ko Bengal, Bihar aur Odisha ki Diwani (tax-collection rights) mil gayi — ab EIC formally "ruler" ban chuki thi, sirf trader nahi.</p>
+      <p>Lord Wellesley ki Subsidiary Alliance policy ke tehat, Indian rajya apni khud ki sena bhang kar dete the aur badle mein EIC ki "protection" lete the — lekin protection ka kharcha unhe khud uthana padta tha, jisse unki treasury khaali ho jaati thi. Ye dheere-dheere unhe EIC par nirbhar bana deta tha.</p>
+      <p>Lord Dalhousie ki Doctrine of Lapse policy aur bhi seedhi thi: agar kisi raja ka natural heir nahi hota tha, to uske adopted heir ko manyata nahi di jaati thi aur EIC seedha rajya annex kar leti thi. Isi tarah Jhansi, Satara, aur Nagpur jaise rajya EIC mein mil gaye.</p>
+      <p>In dono policies ne Indian rajaon mein gehri naraazgi paida ki — unhe lagne laga ki EIC unki sovereignty aur traditions dono ko khatm kar rahi hai. Yehi naraazgi aage 1857 ki badi revolt ka ek mool karan bani.</p>`
     ],
     en:[
       `<ul>
@@ -1769,10 +1599,10 @@ let TOPICS = [
         <li>Subsidiary Alliance and Doctrine of Lapse were two methods toward the same goal — bringing Indian kingdoms under EIC control without direct war. One through diplomacy (Subsidiary Alliance), the other through a legal loophole (Doctrine of Lapse)</li>
         <li>These policies angered so many Indian rulers and their people that by 1857 the ground was ready for a major revolt</li>
       </ul>`,
-      `<p><b>Buxar and the Diwani rights:</b> The 1764 Battle of Buxar was an even bigger turning point than Plassey, because the EIC defeated three major powers together — Mughal Emperor Shah Alam II, the Nawab of Awadh, and the Nawab of Bengal. Following this, in 1765 the EIC gained the Diwani (tax-collection rights) of Bengal, Bihar, and Odisha — the EIC had now formally become a "ruler," not merely a trader.</p>
-      <p><b>Subsidiary Alliance:</b> Under Lord Wellesley's policy, Indian kingdoms disbanded their own armies in exchange for EIC "protection" — but they had to bear the cost of that protection themselves, which drained their treasuries. This gradually made them dependent on the EIC.</p>
-      <p><b>Doctrine of Lapse:</b> Under Lord Dalhousie's policy, if a ruler died without a natural heir, his adopted heir would not be recognized and the EIC would directly annex the kingdom. Kingdoms like Jhansi, Satara, and Nagpur were absorbed into the EIC this way.</p>
-      <p><b>Significance:</b> Both policies created deep resentment among Indian rulers — they felt the EIC was destroying both their sovereignty and their traditions. This resentment became one of the root causes of the great revolt of 1857.</p>`
+      `<p>The 1764 Battle of Buxar was an even bigger turning point than Plassey, because the EIC defeated three major powers together — Mughal Emperor Shah Alam II, the Nawab of Awadh, and the Nawab of Bengal. Following this, in 1765 the EIC gained the Diwani (tax-collection rights) of Bengal, Bihar, and Odisha — the EIC had now formally become a "ruler," not merely a trader.</p>
+      <p>Under Lord Wellesley's Subsidiary Alliance policy, Indian kingdoms disbanded their own armies in exchange for EIC "protection" — but they had to bear the cost of that protection themselves, which drained their treasuries. This gradually made them dependent on the EIC.</p>
+      <p>Lord Dalhousie's Doctrine of Lapse was even more direct: if a ruler died without a natural heir, his adopted heir would not be recognized and the EIC would directly annex the kingdom. Kingdoms like Jhansi, Satara, and Nagpur were absorbed into the EIC this way.</p>
+      <p>Both policies created deep resentment among Indian rulers — they felt the EIC was destroying both their sovereignty and their traditions. This resentment became one of the root causes of the great revolt of 1857.</p>`
     ]
   },
   sticky:{
@@ -1817,10 +1647,10 @@ let TOPICS = [
         <li>Revolt ka fail hona ek badi wajah ye thi ki ye ek coordinated national movement nahi thi — alag-alag regions apne-apne local reasons se lade, koi ek unified leadership ya plan nahi tha</li>
         <li>1858 mein Government of India Act ke through EIC ka control khatam hua aur British Crown ne seedha shaasan sambhal liya — is event ko history mein "British Raj" ki shuruaat mana jaata hai</li>
       </ul>`,
-      `<p><b>Long-term aur immediate causes:</b> 1857 ki revolt ka bunyaad kai saalon ki naraazgi thi — Doctrine of Lapse se annexations, bhari land taxes, aur British ki racial discrimination sab mil kar ek dabba hua gussa taiyar kar rahe the. Isi mein cartridge afwaah ne aag laga di — Enfield rifle ke cartridges mein cow aur pig ki charbi hone ki baat sepoys ke dharm ke seedha khilaf thi.</p>
-      <p><b>Meerut se shuruaat:</b> Mangal Pandey ne March 1857 mein Barrackpore mein sabse pehle protest kiya, lekin asli revolt Meerut mein 10 May 1857 ko shuru hui, jab 85 sepoys ko cartridge use na karne ki saza mili aur baaki sepoys unke saath bagawat mein utar aaye.</p>
-      <p><b>Leaders aur unki ladai:</b> Bahadur Shah Zafar ko symbolic leader banaya gaya kyunki wo Mughal legitimacy the, lekin real ladai Rani Lakshmibai (Jhansi), Tantia Tope, Nana Sahib, aur Begum Hazrat Mahal jaise local leaders ne ladi — har koi apne-apne region ki azaadi ke liye.</p>
-      <p><b>Fail hone ke reasons aur significance:</b> Revolt fail hui kyunki ye ek coordinated national movement nahi thi — koi ek unified leadership ya plan nahi tha, aur South India jaise bade area involved hi nahi hue. Lekin iska asar bada tha — 1858 mein British Crown ne seedha EIC se control le liya, jisse "British Raj" ki shuruaat hui.</p>`
+      `<p>1857 ki revolt ka bunyaad kai saalon ki naraazgi thi — Doctrine of Lapse se annexations, bhari land taxes, aur British ki racial discrimination sab mil kar ek dabba hua gussa taiyar kar rahe the. Isi mein cartridge afwaah ne aag laga di — Enfield rifle ke cartridges mein cow aur pig ki charbi hone ki baat sepoys ke dharm ke seedha khilaf thi.</p>
+      <p>Mangal Pandey ne March 1857 mein Barrackpore mein sabse pehle protest kiya, lekin asli revolt Meerut mein 10 May 1857 ko shuru hui, jab 85 sepoys ko cartridge use na karne ki saza mili aur baaki sepoys unke saath bagawat mein utar aaye.</p>
+      <p>Bahadur Shah Zafar ko symbolic leader banaya gaya kyunki wo Mughal legitimacy the, lekin real ladai Rani Lakshmibai (Jhansi), Tantia Tope, Nana Sahib, aur Begum Hazrat Mahal jaise local leaders ne ladi — har koi apne-apne region ki azaadi ke liye.</p>
+      <p>Revolt aakhir fail hui kyunki ye ek coordinated national movement nahi thi — koi ek unified leadership ya plan nahi tha, aur South India jaise bade area involved hi nahi hue. Lekin iska asar bada tha — 1858 mein British Crown ne seedha EIC se control le liya, jisse "British Raj" ki shuruaat hui.</p>`
     ],
     en:[
       `<ul>
@@ -1844,10 +1674,10 @@ let TOPICS = [
         <li>A major reason the revolt failed was that it wasn't a coordinated national movement — different regions fought for their own local reasons, with no unified leadership or plan</li>
         <li>In 1858, the Government of India Act ended EIC control and the British Crown took over direct rule — this event is considered the beginning of the "British Raj" in history</li>
       </ul>`,
-      `<p><b>Long-term and immediate causes:</b> The 1857 revolt was built on years of accumulated resentment — annexations under the Doctrine of Lapse, heavy land taxes, and British racial discrimination were all creating pent-up anger. The cartridge rumor lit the fuse — the presence of cow and pig fat on Enfield rifle cartridges directly violated the religious beliefs of sepoys.</p>
-      <p><b>Beginning at Meerut:</b> Mangal Pandey was the first to protest, in March 1857 at Barrackpore, but the actual revolt began at Meerut on 10 May 1857, when 85 sepoys were punished for refusing to use the cartridges and the rest of the sepoys rose in rebellion alongside them.</p>
-      <p><b>Leaders and their fight:</b> Bahadur Shah Zafar was made the symbolic leader because he represented Mughal legitimacy, but the actual fighting was led by local leaders like Rani Lakshmibai (Jhansi), Tantia Tope, Nana Sahib, and Begum Hazrat Mahal — each fighting for their own region's freedom.</p>
-      <p><b>Reasons for failure and significance:</b> The revolt failed because it wasn't a coordinated national movement — there was no unified leadership or plan, and large areas like South India didn't join at all. But its impact was significant — in 1858 the British Crown took direct control from the EIC, marking the beginning of the "British Raj."</p>`
+      `<p>The 1857 revolt was built on years of accumulated resentment — annexations under the Doctrine of Lapse, heavy land taxes, and British racial discrimination were all creating pent-up anger. The cartridge rumor lit the fuse — the presence of cow and pig fat on Enfield rifle cartridges directly violated the religious beliefs of sepoys.</p>
+      <p>Mangal Pandey was the first to protest, in March 1857 at Barrackpore, but the actual revolt began at Meerut on 10 May 1857, when 85 sepoys were punished for refusing to use the cartridges and the rest of the sepoys rose in rebellion alongside them.</p>
+      <p>Bahadur Shah Zafar was made the symbolic leader because he represented Mughal legitimacy, but the actual fighting was led by local leaders like Rani Lakshmibai (Jhansi), Tantia Tope, Nana Sahib, and Begum Hazrat Mahal — each fighting for their own region's freedom.</p>
+      <p>The revolt ultimately failed because it wasn't a coordinated national movement — there was no unified leadership or plan, and large areas like South India didn't join at all. But its impact was significant — in 1858 the British Crown took direct control from the EIC, marking the beginning of the "British Raj."</p>`
     ]
   },
   sticky:{
@@ -1894,10 +1724,10 @@ let TOPICS = [
         <li>Extremists ka ubharna dikhata hai ki Moderates ki "petition politics" se sabhi santusht nahi the — kuch logon ko lagta tha ki seedha, aggressive tareeka hi kaam karega</li>
         <li>Muslim League ki sthapna dikhati hai ki India ki politics mein religion-based identity bhi ek important factor bankar ubhar rahi thi — jo aage chal ke Partition tak le gayi</li>
       </ul>`,
-      `<p><b>British Raj ki shuruaat:</b> 1858 ke Government of India Act ne EIC ka raaj khatam kar diya, aur Queen Victoria ne seedha British Crown ka control declare kiya. Isi naye system ke andar, 1885 mein Indian National Congress (A.O. Hume dwara) bani — lekin shuru mein ye sirf ek moderate forum tha jo petitions ke through reforms maangta tha.</p>
-      <p><b>Bengal Partition aur Swadeshi:</b> Lord Curzon ne 1905 mein Bengal ko do hisso mein baant diya, jiska asli maksad "divide and rule" tha. Iske khilaf Swadeshi Movement shuru hua — British goods ka boycott aur Indian goods ka promotion. Ye itna successful raha ki 1911 mein Partition wapas lena pada — nationalist movement ki pehli badi jeet.</p>
-      <p><b>Moderates vs Extremists:</b> INC ke andar hi do dhaare ban gaye — Moderates (jaise Gokhale) jo British system ke andar reforms chahte the, aur Extremists (Lal-Bal-Pal — Lala Lajpat Rai, Bal Gangadhar Tilak, Bipin Chandra Pal) jo seedha aur aggressive tareeka apnate the. Tilak ka "Swaraj is my birthright" is daur ka sabse famous slogan hai.</p>
-      <p><b>Muslim League aur Jallianwala Bagh:</b> 1906 mein Muslim League bani, jo separate Muslim political identity represent karti thi. 1919 mein Jallianwala Bagh massacre (General Dyer dwara nihatthe logon par goli chalana) ne poore desh ko gussa dila diya — is ghatna ne aage Gandhi ke neta banne ka raasta taiyar kiya.</p>`
+      `<p>1858 ke Government of India Act ne EIC ka raaj khatam kar diya, aur Queen Victoria ne seedha British Crown ka control declare kiya. Isi naye system ke andar, 1885 mein Indian National Congress (A.O. Hume dwara) bani — lekin shuru mein ye sirf ek moderate forum tha jo petitions ke through reforms maangta tha.</p>
+      <p>Lord Curzon ne 1905 mein Bengal ko do hisso mein baant diya, jiska asli maksad "divide and rule" tha. Iske khilaf Swadeshi Movement shuru hua — British goods ka boycott aur Indian goods ka promotion. Ye itna successful raha ki 1911 mein Partition wapas lena pada — nationalist movement ki pehli badi jeet.</p>
+      <p>INC ke andar hi do dhaare ban gaye — Moderates (jaise Gokhale) jo British system ke andar reforms chahte the, aur Extremists (Lal-Bal-Pal — Lala Lajpat Rai, Bal Gangadhar Tilak, Bipin Chandra Pal) jo seedha aur aggressive tareeka apnate the. Tilak ka "Swaraj is my birthright" is daur ka sabse famous slogan hai.</p>
+      <p>1906 mein Muslim League bani, jo separate Muslim political identity represent karti thi. 1919 mein Jallianwala Bagh massacre (General Dyer dwara nihatthe logon par goli chalana) ne poore desh ko gussa dila diya — is ghatna ne aage Gandhi ke neta banne ka raasta taiyar kiya.</p>`
     ],
     en:[
       `<ul>
@@ -1923,10 +1753,10 @@ let TOPICS = [
         <li>The rise of the Extremists shows that not everyone was satisfied with the Moderates' "petition politics" — some believed only a direct, aggressive approach would work</li>
         <li>The founding of the Muslim League shows that religion-based identity was emerging as an important factor in Indian politics — which eventually led to Partition</li>
       </ul>`,
-      `<p><b>The beginning of the British Raj:</b> The 1858 Government of India Act ended EIC rule, and Queen Victoria declared direct British Crown control. Within this new system, the Indian National Congress was founded in 1885 (by A.O. Hume) — but initially it was just a moderate forum seeking reforms through petitions.</p>
-      <p><b>Bengal Partition and Swadeshi:</b> Lord Curzon split Bengal into two parts in 1905, with the real aim of "divide and rule." This sparked the Swadeshi Movement — boycotting British goods and promoting Indian-made ones. It was so successful that the Partition had to be reversed in 1911 — the nationalist movement's first major victory.</p>
-      <p><b>Moderates vs Extremists:</b> Two factions emerged within the INC — the Moderates (like Gokhale), who wanted reform within the British system, and the Extremists (Lal-Bal-Pal — Lala Lajpat Rai, Bal Gangadhar Tilak, Bipin Chandra Pal), who took a more direct, aggressive approach. Tilak's "Swaraj is my birthright" is the era's most famous slogan.</p>
-      <p><b>Muslim League and Jallianwala Bagh:</b> The Muslim League was founded in 1906, representing a separate Muslim political identity. In 1919, the Jallianwala Bagh massacre (General Dyer's forces firing on unarmed civilians) enraged the entire country — this event paved the way for Gandhi's rise to leadership.</p>`
+      `<p>The 1858 Government of India Act ended EIC rule, and Queen Victoria declared direct British Crown control. Within this new system, the Indian National Congress was founded in 1885 (by A.O. Hume) — but initially it was just a moderate forum seeking reforms through petitions.</p>
+      <p>Lord Curzon split Bengal into two parts in 1905, with the real aim of "divide and rule." This sparked the Swadeshi Movement — boycotting British goods and promoting Indian-made ones. It was so successful that the Partition had to be reversed in 1911 — the nationalist movement's first major victory.</p>
+      <p>Two factions emerged within the INC — the Moderates (like Gokhale), who wanted reform within the British system, and the Extremists (Lal-Bal-Pal — Lala Lajpat Rai, Bal Gangadhar Tilak, Bipin Chandra Pal), who took a more direct, aggressive approach. Tilak's "Swaraj is my birthright" is the era's most famous slogan.</p>
+      <p>The Muslim League was founded in 1906, representing a separate Muslim political identity. In 1919, the Jallianwala Bagh massacre (General Dyer's forces firing on unarmed civilians) enraged the entire country — this event paved the way for Gandhi's rise to leadership.</p>`
     ]
   },
   sticky:{
@@ -1974,10 +1804,10 @@ let TOPICS = [
         <li>Subhas Chandra Bose ka approach Gandhi se alag tha — wo armed resistance mein believe karte the, dikhata hai ki freedom struggle mein alag-alag vichardharaon ka istemal hua</li>
         <li>Partition ki tragedy dikhati hai ki azaadi ke saath-saath religious/political divisions bhi utni hi important ban gayi thi jitni British se azaadi khud</li>
       </ul>`,
-      `<p><b>Gandhi ka udhay aur Non-Cooperation:</b> Jallianwala Bagh massacre (1919) ke baad Gandhi India ke sabse bade leader bankar ubhre. Unka Non-Cooperation Movement (1920–22) pehla true mass movement tha, jisme lakhon logon ne British institutions ka boycott kiya. Lekin Chauri Chaura ghatna (police station jalna) ke baad, Gandhi ne apne ahimsa ke principle ki wajah se movement khud rok diya.</p>
-      <p><b>Civil Disobedience aur Dandi March:</b> Simon Commission (1928) mein Indian representation na hone se naraazgi badhi. 1930 mein Gandhi ne Dandi March kiya — 240 miles, 24 din paidal, salt tax ke khilaf. Ye symbolic protest itna powerful tha ki poore desh mein Civil Disobedience Movement shuru ho gaya.</p>
-      <p><b>Quit India aur INA:</b> WWII ke beech, 1942 mein Gandhi ne Quit India Movement shuru kiya, "Do or Die" ka call diya. British ne poori leadership ko jail mein daal diya. Isi daur mein Subhas Chandra Bose ne alag raasta chuna — Indian National Army (INA) banayi, armed resistance ka rasta apnaya, aur "Tum mujhe khoon do, main tumhe azaadi dunga" jaisa jazbaati slogan diya.</p>
-      <p><b>Independence aur Partition:</b> 15 August 1947 ko India azaad hua, lekin saath hi Pakistan bhi bana — Partition ki wajah se lakhon log migrate hue aur bahut zyada violence hui. Ye azaadi ki khushi aur ek badi tragedy dono ek saath lekar aayi.</p>`
+      `<p>Jallianwala Bagh massacre (1919) ke baad Gandhi India ke sabse bade leader bankar ubhre. Unka Non-Cooperation Movement (1920–22) pehla true mass movement tha, jisme lakhon logon ne British institutions ka boycott kiya. Lekin Chauri Chaura ghatna (police station jalna) ke baad, Gandhi ne apne ahimsa ke principle ki wajah se movement khud rok diya.</p>
+      <p>Simon Commission (1928) mein Indian representation na hone se naraazgi badhi. 1930 mein Gandhi ne Dandi March kiya — 240 miles, 24 din paidal, salt tax ke khilaf. Ye symbolic protest itna powerful tha ki poore desh mein Civil Disobedience Movement shuru ho gaya.</p>
+      <p>WWII ke beech, 1942 mein Gandhi ne Quit India Movement shuru kiya, "Do or Die" ka call diya. British ne poori leadership ko jail mein daal diya. Isi daur mein Subhas Chandra Bose ne alag raasta chuna — Indian National Army (INA) banayi, armed resistance ka rasta apnaya, aur "Tum mujhe khoon do, main tumhe azaadi dunga" jaisa jazbaati slogan diya.</p>
+      <p>15 August 1947 ko India azaad hua, lekin saath hi Pakistan bhi bana — Partition ki wajah se lakhon log migrate hue aur bahut zyada violence hui. Ye azaadi ki khushi aur ek badi tragedy dono ek saath lekar aayi.</p>`
     ],
     en:[
       `<ul>
@@ -2004,10 +1834,10 @@ let TOPICS = [
         <li>Subhas Chandra Bose's approach differed from Gandhi's — he believed in armed resistance, showing that the freedom struggle involved multiple, differing ideologies</li>
         <li>The tragedy of Partition shows that by the time of independence, religious/political divisions had become just as important as freedom from British rule itself</li>
       </ul>`,
-      `<p><b>Gandhi's rise and Non-Cooperation:</b> After the Jallianwala Bagh massacre (1919), Gandhi emerged as India's foremost leader. His Non-Cooperation Movement (1920–22) was the first true mass movement, with millions boycotting British institutions. But after the Chauri Chaura incident (a police station burned), Gandhi called off the movement himself, staying true to his principle of ahimsa.</p>
-      <p><b>Civil Disobedience and the Dandi March:</b> The Simon Commission (1928) lacked Indian representation, increasing resentment. In 1930, Gandhi undertook the Dandi March — 240 miles on foot over 24 days, protesting the salt tax. This symbolic protest was so powerful that it sparked the nationwide Civil Disobedience Movement.</p>
-      <p><b>Quit India and the INA:</b> During WWII, in 1942, Gandhi launched the Quit India Movement with the call "Do or Die." The British jailed nearly the entire leadership. During this same period, Subhas Chandra Bose chose a different path — forming the Indian National Army (INA), embracing armed resistance, and giving the emotional slogan "Give me blood, and I will give you freedom."</p>
-      <p><b>Independence and Partition:</b> On 15 August 1947, India became independent, but Pakistan was also created alongside it — Partition caused millions to migrate and enormous violence. This brought the joy of independence and a massive tragedy together at once.</p>`
+      `<p>After the Jallianwala Bagh massacre (1919), Gandhi emerged as India's foremost leader. His Non-Cooperation Movement (1920–22) was the first true mass movement, with millions boycotting British institutions. But after the Chauri Chaura incident (a police station burned), Gandhi called off the movement himself, staying true to his principle of ahimsa.</p>
+      <p>The Simon Commission (1928) lacked Indian representation, increasing resentment. In 1930, Gandhi undertook the Dandi March — 240 miles on foot over 24 days, protesting the salt tax. This symbolic protest was so powerful that it sparked the nationwide Civil Disobedience Movement.</p>
+      <p>During WWII, in 1942, Gandhi launched the Quit India Movement with the call "Do or Die." The British jailed nearly the entire leadership. During this same period, Subhas Chandra Bose chose a different path — forming the Indian National Army (INA), embracing armed resistance, and giving the emotional slogan "Give me blood, and I will give you freedom."</p>
+      <p>On 15 August 1947, India became independent, but Pakistan was also created alongside it — Partition caused millions to migrate and enormous violence. This brought the joy of independence and a massive tragedy together at once.</p>`
     ]
   },
   sticky:{
@@ -2320,7 +2150,59 @@ let QUIZ_BANK = [
     options:{hi:['Ahmad Shah Abdali','Nadir Shah','Babur','Aurangzeb'], en:['Ahmad Shah Abdali','Nadir Shah','Babur','Aurangzeb']}, answer:0},
   {type:'fill', era:'medieval', q:{hi:'Maratha guerrilla warfare style ko ________ kehte hain.', en:'The Maratha style of guerrilla warfare is called ________.'}, answers:['ganimi kava','ganimikava']},
   {type:'mcq', era:'medieval', q:{hi:'Maratha Empire ka ant kis war mein hua?', en:'Which war ended the Maratha Empire?'},
-    options:{hi:['Third Anglo-Maratha War','First Anglo-Maratha War','Second Anglo-Maratha War','Anglo-Sikh War'], en:['Third Anglo-Maratha War','First Anglo-Maratha War','Second Anglo-Maratha War','Anglo-Sikh War']}, answer:0}
+    options:{hi:['Third Anglo-Maratha War','First Anglo-Maratha War','Second Anglo-Maratha War','Anglo-Sikh War'], en:['Third Anglo-Maratha War','First Anglo-Maratha War','Second Anglo-Maratha War','Anglo-Sikh War']}, answer:0},
+
+  {type:'mcq', era:'prehistory', q:{hi:'Paleolithic Yug ke औzaar kis cheez ke bane hote the?', en:'What were Paleolithic Age tools made of?'},
+    options:{hi:['Pathar','Copper','Loha','Kaansy (Bronze)'], en:['Stone','Copper','Iron','Bronze']}, answer:0},
+  {type:'mcq', era:'prehistory', q:{hi:'Mesolithic Yug ke chhote, tez dhaar wale pathar ke औzaar kya kehlate hain?', en:'What are the small, sharp-edged stone tools of the Mesolithic Age called?'},
+    options:{hi:['Microliths','Megaliths','Menhirs','Handaxes'], en:['Microliths','Megaliths','Menhirs','Handaxes']}, answer:0},
+  {type:'mcq', era:'prehistory', q:{hi:'Bhimbetka ke rock shelters (prehistoric paintings ke liye famous) kis rajya mein sthit hain?', en:'In which state are the Bhimbetka rock shelters (famous for prehistoric paintings) located?'},
+    options:{hi:['Madhya Pradesh','Rajasthan','Maharashtra','Chhattisgarh'], en:['Madhya Pradesh','Rajasthan','Maharashtra','Chhattisgarh']}, answer:0},
+  {type:'fill', era:'prehistory', q:{hi:'Mehrgarh (aaj ke Balochistan mein) ko subcontinent ka sabse purana ________ site mana jaata hai.', en:'Mehrgarh (in present-day Balochistan) is considered the subcontinent\'s oldest ________ site.'}, answers:['farming','agriculture','kheti']},
+  {type:'mcq', era:'prehistory', q:{hi:'Kheti ke saath-saath Neolithic Yug mein insaan ne aur kya seekha?', en:'Along with farming, what else did humans learn in the Neolithic Age?'},
+    options:{hi:['Pashupalan (animal domestication)','Loha banana','Script likhna','Sikka banana'], en:['Animal domestication','Making iron','Writing script','Minting coins']}, answer:0},
+  {type:'mcq', era:'prehistory', q:{hi:'Aag ka istemal sabse pehle kis yug mein shuru hua tha?', en:'In which age did humans first start using fire?'},
+    options:{hi:['Paleolithic (Old Stone Age)','Neolithic','Chalcolithic','Iron Age'], en:['Paleolithic (Old Stone Age)','Neolithic','Chalcolithic','Iron Age']}, answer:0},
+  {type:'fill', era:'prehistory', q:{hi:'Prehistory ko generally teen bhaagon mein baanta jaata hai — Paleolithic, Mesolithic aur ________.', en:'Prehistory is generally divided into three parts — Paleolithic, Mesolithic, and ________.'}, answers:['neolithic']},
+
+  {type:'mcq', era:'ancient', q:{hi:'Mauryan Empire ki sthapna kisne ki thi?', en:'Who founded the Mauryan Empire?'},
+    options:{hi:['Chandragupta Maurya','Ashoka','Bindusara','Chanakya'], en:['Chandragupta Maurya','Ashoka','Bindusara','Chanakya']}, answer:0},
+  {type:'fill', era:'ancient', q:{hi:'Chandragupta Maurya ke guru aur salahkar ka naam ________ tha.', en:"Chandragupta Maurya's guru and advisor was named ________."}, answers:['chanakya','kautilya']},
+  {type:'mcq', era:'ancient', q:{hi:'Kalinga War (261 BCE) ke baad Ashoka ne kaunsa dharma apnaya?', en:'Which religion did Ashoka adopt after the Kalinga War (261 BCE)?'},
+    options:{hi:['Buddhism','Jainism','Shaivism','Vaishnavism'], en:['Buddhism','Jainism','Shaivism','Vaishnavism']}, answer:0},
+  {type:'mcq', era:'ancient', q:{hi:'Gupta period ko Bharat ka "Golden Age" kyun kaha jaata hai?', en:'Why is the Gupta period called India\'s "Golden Age"?'},
+    options:{hi:['Art, science aur literature mein pragati','Sabse bada empire hone ki wajah se','Sabse lambi war jeetne ki wajah se','Sabse zyada sona hone ki wajah se'], en:['Progress in art, science and literature','Because it was the largest empire','Because of winning the longest war','Because of having the most gold']}, answer:0},
+  {type:'mcq', era:'ancient', q:{hi:'Aryabhata ne kis vishay mein important contribution diya?', en:'In which field did Aryabhata make an important contribution?'},
+    options:{hi:['Ganit aur Khagol Vigyan (Maths & Astronomy)','Medicine','Vastu Shastra','Sangeet'], en:['Mathematics & Astronomy','Medicine','Architecture','Music']}, answer:0},
+  {type:'mcq', era:'ancient', q:{hi:'Nalanda University prachin bharat mein kis liye famous thi?', en:'What was Nalanda University famous for in ancient India?'},
+    options:{hi:['Ek prachin international learning center','Ek military academy','Ek trading port','Ek royal palace'], en:['An ancient international center of learning','A military academy','A trading port','A royal palace']}, answer:0},
+  {type:'mcq', era:'ancient', q:{hi:'Rigveda kis yug ka sabse purana granth mana jaata hai?', en:'The Rigveda is considered the oldest text of which period?'},
+    options:{hi:['Vedic period','Mauryan period','Gupta period','Harappan period'], en:['Vedic period','Mauryan period','Gupta period','Harappan period']}, answer:0},
+  {type:'fill', era:'ancient', q:{hi:'Chola dynasty apni strong ________ (naval power) ke liye jaani jaati thi.', en:'The Chola dynasty was known for its strong ________ (naval power).'}, answers:['navy','naval power']},
+
+  {type:'mcq', era:'medieval', q:{hi:'Delhi Sultanate ki sthapna kisne ki thi?', en:'Who founded the Delhi Sultanate?'},
+    options:{hi:['Qutb-ud-din Aibak','Muhammad Ghori','Iltutmish','Balban'], en:['Qutb-ud-din Aibak','Muhammad Ghori','Iltutmish','Balban']}, answer:0},
+  {type:'mcq', era:'medieval', q:{hi:'Akbar ne kaunsa naya panth shuru kiya tha jo sab dharmon ki achi baaton ko jodta tha?', en:"What new faith did Akbar start, blending ideas from various religions?"},
+    options:{hi:['Din-i-Ilahi','Sufism','Bhakti Movement','Sikhism'], en:['Din-i-Ilahi','Sufism','The Bhakti Movement','Sikhism']}, answer:0},
+  {type:'mcq', era:'medieval', q:{hi:'Taj Mahal kis Mughal badshah ne banwaya tha?', en:'Which Mughal emperor built the Taj Mahal?'},
+    options:{hi:['Shah Jahan','Akbar','Aurangzeb','Jahangir'], en:['Shah Jahan','Akbar','Aurangzeb','Jahangir']}, answer:0},
+  {type:'mcq', era:'medieval', q:{hi:'1526 ke First Battle of Panipat mein Babur ne kise haraya tha?', en:'Whom did Babur defeat at the First Battle of Panipat in 1526?'},
+    options:{hi:['Ibrahim Lodi','Rana Sanga','Sher Shah Suri','Hemu'], en:['Ibrahim Lodi','Rana Sanga','Sher Shah Suri','Hemu']}, answer:0},
+  {type:'mcq', era:'medieval', q:{hi:'Vijayanagara Empire dakshin bharat mein art, trade aur temples ke liye kyun famous tha?', en:'Why was the Vijayanagara Empire famous in South India?'},
+    options:{hi:['Art, trade aur bade temples ke liye','Sabse bada navy ke liye','Sabse zyada colonies ke liye','Iron industry ke liye'], en:['For art, trade and grand temples','For the largest navy','For most colonies','For iron industry']}, answer:0},
+  {type:'fill', era:'medieval', q:{hi:'Bhakti Movement mein devotees seedha ________ se jud sakte the, bina kisi bicholiye (priest/ritual) ke.', en:'In the Bhakti Movement, devotees could connect directly with ________, without any intermediary (priest/ritual).'}, answers:['god','bhagwan','ishwar']},
+
+  {type:'mcq', era:'modern', q:{hi:'1857 ka Revolt kis ghatna se shuru hua tha?', en:'What triggered the 1857 Revolt?'},
+    options:{hi:['Mangal Pandey ka vidroh (cartridge issue)','Salt March','Partition of Bengal','Jallianwala Bagh'], en:["Mangal Pandey's revolt (cartridge issue)","The Salt March","The Partition of Bengal","Jallianwala Bagh"]}, answer:0},
+  {type:'mcq', era:'modern', q:{hi:'Indian National Congress (INC) ki sthapna kis saal hui?', en:'In which year was the Indian National Congress (INC) founded?'},
+    options:{hi:['1885','1905','1857','1920'], en:['1885','1905','1857','1920']}, answer:0},
+  {type:'mcq', era:'modern', q:{hi:'Quit India Movement kis saal shuru hua?', en:'In which year did the Quit India Movement begin?'},
+    options:{hi:['1942','1930','1920','1947'], en:['1942','1930','1920','1947']}, answer:0},
+  {type:'mcq', era:'modern', q:{hi:'Bharat ka batwara (Partition) kis saal hua tha?', en:'In which year did the Partition of India take place?'},
+    options:{hi:['1947','1950','1942','1857'], en:['1947','1950','1942','1857']}, answer:0},
+  {type:'mcq', era:'modern', q:{hi:'Bharat ka Samvidhan (Constitution) kab lagu hua?', en:"When did India's Constitution come into effect?"},
+    options:{hi:['26 January 1950','15 August 1947','26 November 1949','2 October 1950'], en:['26 January 1950','15 August 1947','26 November 1949','2 October 1950']}, answer:0},
+  {type:'fill', era:'modern', q:{hi:'Bharat ke Samvidhan ki Drafting Committee ke chairman ________ the.', en:"The chairman of the Drafting Committee of India's Constitution was ________."}, answers:['dr br ambedkar','br ambedkar','ambedkar']}
 ];
 const HISTORY_QUIZ_BANK = QUIZ_BANK;
 
@@ -3301,11 +3183,263 @@ updateStudyTimeLabel();
     showScreen(comingSoonScreen);
   }
 
+  /* ================= PREVIOUS YEAR PAPERS (History) ================= */
+  /* Real UPSC Prelims History PYQs with official answers + explanations. */
+  const HISTORY_PAPERS = {
+    2025: [
+      {area:'Modern India', q:'Consider the statements about Raja Ram Mohan Roy: I. He respected traditional Eastern philosophy. II. He wanted rational, scientific thinking and social equality for all. Which is/are correct?', options:['I only','II only','Both I and II','Neither I nor II'], answer:2, exp:'Ram Mohan Roy respected Eastern philosophy but also pushed for rational, scientific outlook and social equality — both statements are correct.'},
+      {area:'Modern India', q:'Which of these were part of the Non-Cooperation Programme: boycott of law-courts/foreign cloth, strict non-violence, retaining titles, panchayats for disputes?', options:['Only one','Only two','Only three','All four'], answer:2, exp:'Boycott of courts/foreign cloth, strict non-violence, and panchayats for disputes were part of it — but titles were surrendered, not retained. So three were correct.'},
+      {area:'Early Medieval India', q:'The irrigation device called \'Araghata\' was:', options:['A leather water bag pulled over a pulley','A large wheel with earthen pots on its spokes','A large earthen pot driven by bullocks','A bucket pulled up by hand'], answer:1, exp:'Araghatta refers to a wheel with pots tied to its spokes, similar to the Persian wheel.'},
+      {area:'Ancient India', q:'Which ancient Indian ruler assumed the titles \'Mattavilasa\', \'Vichitrachitta\' and \'Gunabhara\'?', options:['Mahendravarman I','Simhavishnu','Narasimhavarman I','Simhavarman'], answer:0, exp:'Pallava king Mahendravarman I loved titles — Mattavilasa, Vichitrachitta, and Gunabhadra among them.'},
+      {area:'Ancient India', q:'Fa-hien (Faxian), the Chinese pilgrim, travelled to India during the reign of:', options:['Samudragupta','Chandragupta II','Kumaragupta I','Skandagupta'], answer:1, exp:'Fa-Hien visited India during Chandragupta II\'s reign (375-414 CE), spending six years touring Buddhist sites.'},
+      {area:'Art & Culture', q:'The famous \'Dancing Girl\' figurine found at Mohenjo-daro is made of:', options:['Carnelian','Clay','Bronze','Gold'], answer:2, exp:'The Dancing Girl figurine was cast in bronze using the lost-wax method.'},
+      {area:'Modern India', q:'\'Sedition has become my religion\' was Gandhiji\'s famous statement made at the time of:', options:['The Champaran Satyagraha','Publicly violating the Salt Law at Dandi','The Second Round Table Conference','The Quit India Movement'], answer:1, exp:'Gandhiji made this statement after breaking the salt law at Dandi on 6 April 1930.'},
+      {area:'Modern India', q:'Who founded the \'Self-Respect Movement\'?', options:['Periyar E.V. Ramaswamy Naicker','Dr. B.R. Ambedkar','Bhaskarrao Jadhav','Dinkarrao Javalkar'], answer:0, exp:'Periyar founded the Self-Respect League in 1926, opposing Brahmin priesthood and caste.'},
+      {area:'Modern India', q:'Gandhiji decided to include \'Harijan\' upliftment in his programme right after which event?', options:['The Poona Pact','The Gandhi-Irwin Agreement','Arrest at the time of Quit India','The Government of India Act, 1935'], answer:0, exp:'After the 1932 Poona Pact, Harijan upliftment became a central concern for Gandhiji.'},
+      {area:'Ancient India', q:'Ashokan inscriptions suggest that \'Pradeshika\', \'Rajuka\' and \'Yukta\' were important officers at the:', options:['Village-level administration','District-level administration','Provincial administration','Central administration'], answer:1, exp:'Rock Edict 3 shows these officers toured every five years at the district level to instruct people in dhamma.'},
+      {area:'Modern India', q:'How many of these fruits — Papaya, Pineapple, Guava — were introduced in India by the Portuguese in the 16th-17th centuries?', options:['Only one','Only two','All three','None'], answer:2, exp:'The Portuguese introduced several New World crops and fruits to India, including papaya, pineapple, and guava — all three.'},
+      {area:'Medieval India', q:'Who led a successful naval campaign against the powerful maritime kingdom of Srivijaya?', options:['Amoghavarsha (Rashtrakuta)','Prataparudra (Kakatiya)','Rajendra I (Chola)','Vishnuvardhana (Hoysala)'], answer:2, exp:'Chola king Rajendra I sent a large naval expedition that sacked the capital of Srivijaya around 1025 CE.'}
+    ],
+    2024: [
+      {area:'Ancient India', q:'Gautama Buddha was generally known by which epithets — Nayaputta, Shakyamuni, Tathagata?', options:['1 only','2 and 3 only','1, 2 and 3','None of the above'], answer:1, exp:'Shakyamuni and Tathagata are epithets of the Buddha; Nayaputta refers to Mahavira instead.'},
+      {area:'Medieval India', q:'Which ruler of medieval India let the Portuguese build a fort at Bhatkal?', options:['Krishnadevaraya','Narasimha Saluva','Muhammad Shah III','Yusuf Adil Shah'], answer:0, exp:'Krishnadevaraya of Vijayanagara granted the Portuguese permission to build a fort at Bhatkal to protect their trade.'},
+      {area:'Modern India', q:'Under the Government of India Act, 1833, the Governor General of Bengal was redesignated as:', options:['Governor General of India','Viceroy of India','Chief Commissioner','Secretary of State'], answer:0, exp:'The Charter Act of 1833 renamed the Governor General of Bengal as the Governor General of India, centralising power.'},
+      {area:'Modern India', q:'Who was the Provisional President of the Constituent Assembly before Dr. Rajendra Prasad took over?', options:['C. Rajagopalachari','Dr. B.R. Ambedkar','T.T. Krishnamachari','Dr. Sachchidananda Sinha'], answer:3, exp:'Dr. Sachchidananda Sinha was the first (provisional) president of the Constituent Assembly.'},
+      {area:'Modern India', q:'Under the Government of India Act, 1935, an All-India Federation was proposed based on:', options:['Union of British Provinces and Princely States (Defence/Foreign Affairs stayed with Governor-General)','Provinces only','Princely States only','Direct Parliamentary control from London'], answer:0, exp:'The 1935 Act proposed a federation of provinces and princely states, but kept Defence and External Affairs as reserved subjects under the Governor-General, not the federal legislature.'},
+      {area:'Art & Culture', q:'Which work is attributed to the playwright Bhasa?', options:['Kavyalankara','Natyashastra','Madhyama-vyayoga','Mahabhashya'], answer:2, exp:'Madhyama-vyayoga is among Bhasa\'s plays, along with Svapna-Vasavadatta and others.'},
+      {area:'Art & Culture', q:'Sanghabhuti, an Indian Buddhist monk in China (4th century AD), wrote a commentary on:', options:['Prajnaparamita Sutra','Visuddhimagga','Sarvastivada Vinaya','Lalitavistara'], answer:2, exp:'Sanghabhuti authored a commentary on the Sarvastivada Vinaya while in China around 381-84 CE.'},
+      {area:'Modern India', q:'Match party with leader: Bharatiya Jana Sangh-Shyama Prasad Mukherjee, Socialist Party-C. Rajagopalachari, Congress for Democracy-Jagjivan Ram, Swatantra Party-Acharya Narendra Dev — how many pairs correct?', options:['Only one','Only two','Only three','All four'], answer:1, exp:'Jana Sangh-Mukherjee and Congress for Democracy-Jagjivan Ram are correct; the other two leaders are swapped (Rajagopalachari led Swatantra, Narendra Dev led the Socialist/CSP).'},
+      {area:'Ancient India', q:'Consider: 1. Inamgaon is a Chalcolithic site in Maharashtra. 2. Mangadu is a Megalithic site in Kerala. 3. Chandraketugarh (West Bengal) was a Shaivite cave shrine. 4. Salihundam was known for rock-cut cave shrines. How many are correctly matched?', options:['Only one','Only two','Only three','All four'], answer:1, exp:'Inamgaon and Mangadu are correctly described; Chandraketugarh was actually a major trading/terracotta centre (not a cave shrine), and Salihundam is known for a Buddhist stupa (not rock-cut caves).'},
+      {area:'Art & Culture', q:'Which is/are correct: 1. There are no parables in the Upanishads. 2. Upanishads were composed earlier than the Puranas.', options:['1 only','2 only','Both 1 and 2','Neither 1 nor 2'], answer:1, exp:'The Upanishads actually do contain parables (like Yama-Nachiketa), so statement 1 is wrong. They were composed well before the Puranas, so statement 2 is correct.'}
+    ],
+    2023: [
+      {area:'Ancient India', q:'Dhanyakataka, a prominent Buddhist centre under the Mahasanghikas, was located in:', options:['Andhra','Gandhara','Kalinga','Magadha'], answer:0, exp:'Dhanyakataka (near Amravati) in the Guntur district of Andhra Pradesh was a major Buddhist establishment.'},
+      {area:'Art & Culture', q:'On the concept of Stupa: is it Buddhist in origin, was it a repository of relics, was it a votive/commemorative structure?', options:['Only one correct','Only two correct','All three correct','None correct'], answer:1, exp:'The stupa custom pre-dates Buddhism (so "Buddhist in origin" is wrong), but it was indeed a repository of relics and a votive/commemorative structure.'},
+      {area:'Ancient India', q:'Korkai, Poompuhar, and Muchiri in ancient South India were well known as:', options:['Capital cities','Ports','Centres of iron-and-steel making','Jain shrines'], answer:1, exp:'All three were important ports of the Pandya, Chola, and Chera kingdoms respectively.'},
+      {area:'Medieval India', q:'Which Vijayanagara ruler built a large dam across the Tungabhadra and a long canal-aqueduct to the capital?', options:['Devaraya I','Mallikarjuna','Vira Vijaya','Virupaksha'], answer:0, exp:'Devaraya I built a dam on the Tungabhadra and a 15-mile aqueduct to Vijayanagara city, per the account of Fernao Nuniz.'},
+      {area:'Medieval India', q:'Which ruler of medieval Gujarat surrendered Diu to the Portuguese?', options:['Ahmad Shah','Mahmud Begarha','Bahadur Shah','Muhammad Shah'], answer:2, exp:'Bahadur Shah of Gujarat allowed the Portuguese to build a fortress at Diu in 1535 in exchange for defence support against Humayun.'},
+      {area:'Modern India', q:'Alexander Rea, A.H. Longhurst, Robert Sewell, James Burgess, and Walter Elliot were associated with:', options:['Archaeological excavations','Establishment of the English Press','Establishment of churches in Princely States','Railway construction'], answer:0, exp:'They conducted systematic excavations at sites like Bhattiprolu, Ghantasala, and Amravati.'},
+      {area:'Modern India', q:'National Handloom Day (7 August) commemorates the launch of the Swadeshi Movement on the same date in 1905 — are both statements correct and linked?', options:['Both correct, II explains I','Both correct, II doesn\'t explain I','I correct, II incorrect','II correct, I incorrect'], answer:0, exp:'National Handloom Day was fixed on 7 August specifically to mark the Swadeshi Movement launched on that date in 1905.'},
+      {area:'Art & Culture', q:'In Sangam poetry, the practice of \'Vattakirutal\' refers to:', options:['Kings employing women bodyguards','Scholars debating philosophical matters','Young girls guarding fields from birds/animals','A defeated king committing ritual suicide by starving himself'], answer:3, exp:'Vattakirutal was the practice of a defeated king starving himself to death in ritual suicide, sometimes joined by his close companions.'},
+      {area:'Ancient India', q:'\'Souls belong not only to animals and plants, but also to rocks, running water, and other natural objects\' — this reflects the core belief of which ancient Indian sect?', options:['Buddhism','Jainism','Shaivism','Vaishnavism'], answer:1, exp:'Jainism holds that souls (jivas) pervade even non-living-seeming natural objects, alongside non-living entities (ajivas) like ether and matter.'}
+    ],
+    2022: [
+      {area:'Modern India', q:'Under the Government of India Act, 1919, which were treated as "Reserved" provincial subjects: Administration of Justice, Local Self-Government, Land Revenue, Police?', options:['1, 2 and 3','2, 3 and 4','1, 3 and 4','1, 2 and 4'], answer:2, exp:'Administration of Justice, Land Revenue, and Police were Reserved subjects; Local Self-Government was a Transferred subject.'},
+      {area:'Medieval India', q:'In medieval India, the term \'Fanam\' refers to:', options:['Clothing','Coins','Ornaments','Weapons'], answer:1, exp:'Fanam was a gold coin of the Vijayanagara Empire, as described by the traveller Abdul Razzaq.'},
+      {area:'Modern India', q:'Among Barindra Kumar Ghosh, Jogesh Chandra Chatterjee, and Rash Behari Bose, who was actively associated with the Ghadar Party?', options:['1 and 2','2 only','1 and 3','3 only'], answer:3, exp:'Rash Behari Bose helped plan the Ghadar Party\'s attempted all-India revolt in 1915.'},
+      {area:'Modern India', q:'Under the Cripps Mission proposals, could a province refuse the new constitution and sign a separate agreement with Britain?', options:['Constituent Assembly members nominated only — I true','Provinces could opt out and sign separately — II true','Both true','Neither true'], answer:1, exp:'The Cripps proposals allowed a province to opt out and negotiate its own status; the Constituent Assembly was to have elected (not just nominated) provincial members.'},
+      {area:'Medieval India', q:'The first Mongol invasion of India happened during whose reign, and whose reign saw a Mongol army besiege Delhi?', options:['Jalal-ud-din Khalji; Ala-ud-din Khalji','Iltutmish; Ala-ud-din Khalji','Iltutmish; Muhammad bin Tughlaq','Balban; Firoz Tughlaq'], answer:1, exp:'The first Mongol invasion was under Iltutmish (1221); a Mongol force besieged Delhi during Ala-ud-din Khalji\'s reign in 1303.'},
+      {area:'Ancient India', q:'According to Kautilya\'s Arthashastra, could a son born to a female slave, fathered by her master, gain the master\'s legal status, and would the mother be freed?', options:['Both statements correct','Only mother freed, son not legitimised','Only son legitimised, mother not freed','Neither correct'], answer:0, exp:'If a female slave bore her master\'s son, she was freed and the child was given the legal status of the master\'s son.'},
+      {area:'Modern India', q:'Who performed the Pran Pratishtha of the reconstructed Somnath Temple in 1951?', options:['Jawaharlal Nehru','Rajendra Prasad','S. Radhakrishnan','Vallabhbhai Patel'], answer:1, exp:'President Rajendra Prasad performed the Pran Pratishtha ceremony on 11 May 1951; Patel had championed the reconstruction but died in 1950.'},
+      {area:'Art & Culture', q:'Match site with shrine type: 1. Besnagar - Shaivite cave shrine. 2. Bhaja - Buddhist cave shrine. 3. Sittanavasal - Jain cave shrine. How many pairs are correctly matched?', options:['Only one','Only two','All three','None'], answer:1, exp:'Besnagar is actually famous for the Heliodorus pillar (a Vaishnava inscription), not a Shaivite cave shrine. Bhaja and Sittanavasal are correctly matched.'},
+      {area:'Ancient India', q:'Match Ashoka\'s major rock edict site with its state: Dhauli-Odisha, Erragudi-Andhra Pradesh, Jaugada-Madhya Pradesh, Kalsi-Karnataka. How many pairs are correctly matched?', options:['Only one','Only two','Only three','All four'], answer:1, exp:'Dhauli (Odisha) and Erragudi (Andhra Pradesh) are correct; Jaugada is actually in Odisha, and Kalsi is in Uttarakhand — not Madhya Pradesh or Karnataka.'}
+    ],
+    2021: [
+      {area:'Ancient India', q:'Which ancient town is known for its elaborate water-harvesting system of dams and connected reservoirs?', options:['Dholavira','Kalibangan','Rakhigarhi','Ropar'], answer:0, exp:'Dholavira in Gujarat had a sophisticated system of dams and reservoirs to manage water.'},
+      {area:'Modern India', q:'In the early 17th century, where were English East India Company factories located — Broach, Chicacole, Trichinopoly?', options:['Broach only','Broach and Chicacole','Trichinopoly only','Chicacole and Trichinopoly'], answer:0, exp:'By 1623 the Company had factories at Surat, Broach, Ahmedabad, Agra, and Masulipatam — not yet at Chicacole or Trichinopoly.'},
+      {area:'Medieval India', q:'According to the Portuguese writer Nuniz, women in the Vijayanagara Empire were experts in wrestling, astrology, accounting, and soothsaying — how many correct?', options:['Only three of the four','All four','Only two','Only one'], answer:1, exp:'Nuniz recorded that the king\'s female attendants included wrestlers, astrologers, accountants, and soothsayers — all four are correct.'},
+      {area:'Medieval India', q:'It was during whose reign that Chengiz Khan reached the Indus chasing the fugitive Khwarezm prince?', options:['Iltutmish','Muhammad bin Tughlaq','Balban','Ala-ud-din Khalji'], answer:0, exp:'Genghis Khan reached the Indus in 1221, during Iltutmish\'s reign, pursuing Jalal-ud-Din Mangbarni.'},
+      {area:'Medieval India', q:'St. Francis Xavier: was he a founding Jesuit, did he die in Goa, is his feast celebrated in Goa?', options:['1 and 2 only','2 and 3 only','1 and 3 only','1, 2 and 3'], answer:2, exp:'He was a founding Jesuit and his feast is celebrated in Goa — but he actually died on Sancian Island, China, not Goa.'},
+      {area:'Modern India', q:'On 8 August 1942, the "Quit India" resolution was:', options:['Adopted by the AICC','Rejected by the Viceroy\'s Council','Withdrawn under Cripps\' proposal','Passed only in Bombay province'], answer:0, exp:'The Quit India resolution was moved by Nehru and passed by the AICC on 8 August 1942.'},
+      {area:'Medieval India', q:'In medieval Mughal administration, what is the correct ascending order of size?', options:['Pargana - Sarkar - Suba','Sarkar - Pargana - Suba','Suba - Sarkar - Pargana','Pargana - Suba - Sarkar'], answer:0, exp:'A Suba (province) was divided into Sarkars (districts), which were divided into Parganas — so ascending order is Pargana, Sarkar, Suba.'},
+      {area:'Modern India', q:'Who was the first Secretary of the Bethune (Hindu Female) School?', options:['Annie Besant','Debendranath Tagore','Ishwar Chandra Vidyasagar','Sarojini Naidu'], answer:2, exp:'Pandit Ishwar Chandra Vidyasagar served as the first Secretary of Bethune School, championing women\'s education.'},
+      {area:'Ancient India', q:'After the decline of the Guptas and before Harshavardhana\'s rise, which kingdoms held power in northern India — Guptas of Magadha, Paramaras of Malwa, Pushyabhutis of Thanesar, Maukharis of Kanauj, Yadavas of Devagiri, Maitrakas of Valabhi?', options:['1, 2 and 5','1, 3, 4 and 6','2, 3 and 4','5 and 6'], answer:1, exp:'The (later) Guptas of Magadha, Pushyabhutis of Thanesar, Maukharis of Kanauj, and Maitrakas of Valabhi held power in this interim period; the Paramaras and Yadavas rose much later.'},
+      {area:'Modern India', q:'Who is associated with \'Songs from Prison\', a translation of ancient Indian religious lyrics into English?', options:['Bal Gangadhar Tilak','Jawaharlal Nehru','Mohandas Karamchand Gandhi','Sarojini Naidu'], answer:2, exp:'\'Songs from Prison\' is among Gandhi\'s writings, alongside works like Hind Swaraj.'}
+    ],
+    2019: [
+      {area:'Medieval India', q:'With reference to Mughal India, what was the key difference between Jagirdar and Zamindar?', options:['Jagirdars held land assignments for duties like police/judicial work; Zamindars held hereditary revenue rights','Both held identical hereditary rights','Zamindars were always outsiders; Jagirdars were local','There was no real difference'], answer:0, exp:'Jagirdars held assignments in lieu of official duties and were frequently transferred; Zamindars had largely hereditary revenue-collecting rights rooted in local society.'},
+      {area:'Ancient India', q:'Which one of the following is NOT a Harappan site?', options:['Chanhudaro','Kot Diji','Sohgaura','Desalpur'], answer:2, exp:'Sohgaura is a Mauryan-era copper-plate inscription site, not a Harappan site; the other three are Harappan-era sites.'},
+      {area:'Ancient India', q:'At which site is \'Ranyo Ashoka\' (King Ashoka) mentioned along with a stone portrait of Ashoka?', options:['Kanganahalli','Sanchi','Shahbazgarhi','Sohgaura'], answer:0, exp:'Kanganahalli in Karnataka has a Brahmi inscription reading \'Ranyo Ashoka\' alongside a sculpted portrait of the emperor.'},
+      {area:'Ancient India', q:'Deification of the Buddha, treading the path of Bodhisattvas, and image worship/rituals are features of which Buddhist tradition?', options:['Theravada only','Hinayana only','Mahayana Buddhism','Vajrayana only'], answer:2, exp:'Mahayana Buddhism promoted devotional worship, deification of the Buddha, and the Bodhisattva ideal.'},
+      {area:'Medieval India', q:'Building \'Kalyana Mandapas\' (marriage pavilions) was a notable feature of temple construction under which kingdom?', options:['Chalukya','Chandela','Rashtrakuta','Vijayanagara'], answer:3, exp:'Kalyana Mandapas, built to celebrate the symbolic marriage of deities, are a hallmark of Vijayanagara temple architecture, as seen at Hampi.'},
+      {area:'Medieval India', q:'In the Delhi Sultanate\'s revenue administration, who was in charge of directly collecting revenue from the peasantry?', options:['Amil','Mir Bakshi','Wazir','Qazi'], answer:0, exp:'The Amil handled direct revenue collection and land measurement at the local level in the Delhi Sultanate.'},
+      {area:'Modern India', q:'Consequent upon the breaking of the Salt Law, what happened to the Indian National Congress?', options:['It was declared illegal by the colonial rulers','It was merged with the Muslim League','It was renamed','Nothing changed'], answer:0, exp:'After the Salt March and the wave of civil disobedience it triggered, the British government declared the Congress an illegal organisation and arrested its leaders.'},
+      {area:'Modern India', q:'With reference to the Indian National Movement, who held the position of President, All India Liberal Federation?', options:['Sir Tej Bahadur Sapru','K.C. Neogy','P.C. Joshi','Motilal Nehru'], answer:0, exp:'Sir Tej Bahadur Sapru was a prominent Liberal Party leader and President of the All India Liberal Federation.'},
+      {area:'Art & Culture', q:'With reference to Mian Tansen, which statement is NOT correct?', options:['Tansen was the title given to him by Emperor Akbar','Tansen composed Dhrupads on Hindu gods and goddesses','Tansen composed songs on his patrons','Tansen invented many Ragas'], answer:0, exp:'The title \'Tansen\' was actually given by Raja Vikramjit of Gwalior, not Akbar, though Tansen later became a celebrated court musician under Akbar.'},
+      {area:'Art & Culture', q:'Which Mughal emperor shifted artistic emphasis from illustrated manuscripts to individual album portraits?', options:['Humayun','Akbar','Jahangir','Shah Jahan'], answer:2, exp:'Under Jahangir, manuscript illustration declined in importance while individual portraiture flourished.'}
+    ],
+    2018: [
+      {area:'Art & Culture', q:'The painting \'Bani Thani\' belongs to which school of Indian painting?', options:['Bundi School','Kangra School','Pahari School','Kishangarh School'], answer:3, exp:'Bani Thani was created by artist Nihal Chand at the Kishangarh court under Raja Sawant Singh, and is often called the \'Indian Mona Lisa\'.'},
+      {area:'Art & Culture', q:'Among Chapchar Kut, Khongjom Parba and Thang-Ta, which pair(s) are correctly matched with their state? 1. Chapchar Kut — Mizoram, 2. Khongjom Parba — Manipur, 3. Thang-Ta — Sikkim', options:['1 only','1 and 2','3 only','2 and 3'], answer:1, exp:'Chapchar Kut is a Mizo spring festival and Khongjom Parba a Manipuri ballad; Thang-Ta is a Manipuri martial art, not Sikkimese, so only pairs 1 and 2 are correct.'},
+      {area:'Modern India', q:'Which combination of factors led to the introduction of English education in India? 1. Charter Act of 1813, 2. General Committee of Public Instruction 1823, 3. Orientalist-Anglicist controversy', options:['1 and 2 only','2 only','1 and 3 only','1, 2 and 3'], answer:3, exp:'The 1813 Charter Act funded Indian education, the 1823 Committee administered it, and Macaulay\'s Anglicist victory in the 1830s controversy made English the medium of instruction.'},
+      {area:'Modern India', q:'In 1920, which organisation changed its name to \'Swarajya Sabha\'?', options:['All India Home Rule League','Hindu Mahasabha','South Indian Liberal Federation','The Servants of India Society'], answer:0, exp:'Annie Besant\'s All India Home Rule League was renamed Swarajya Sabha in April 1920 under Gandhi\'s presidency as the movement shifted toward Swaraj.'},
+      {area:'Modern India', q:'Which pair of colonial-era institution and founder is correctly matched? 1. Sanskrit College, Banaras — William Jones, 2. Calcutta Madarsa — Warren Hastings, 3. Fort William College — Arthur Wellesley', options:['1 and 2 only','2 only','1 and 3 only','1, 2 and 3'], answer:1, exp:'Only the Calcutta Madarsa-Warren Hastings pairing is correct; the Sanskrit College at Banaras was founded by Jonathan Duncan, and Fort William College by Richard (not Arthur) Wellesley.'}
+    ],
+    2017: [
+      {area:'Medieval India', q:'Which was a very important seaport in the Kakatiya kingdom?', options:['Kakinada','Motupalli','Machilipatnam','Nellore'], answer:1, exp:'Motupalli was the Kakatiyas\' key seaport, protected by Ganapati Deva\'s 1244 CE Abhaya Shasanam charter guaranteeing safety to foreign traders; Marco Polo also described it.'},
+      {area:'Art & Culture', q:'The painting of Bodhisattva Padmapani, one of the most famous Indian murals, is found at:', options:['Ajanta','Badami','Bagh','Ellora'], answer:0, exp:'Padmapani, depicted holding a blue lotus, is a celebrated fresco in Cave 1 at Ajanta from the late Vakataka period.'},
+      {area:'Ancient India', q:'Regarding differences between Rigvedic Aryans and the Indus Valley people: 1. Aryans used coat of mail and helmet, unlike Harappans, 2. Aryans knew gold, silver and copper while Harappans knew only copper and iron, 3. Aryans had domesticated the horse, with no evidence of this at Harappan sites. Which are correct?', options:['1 only','2 and 3 only','1 and 3 only','1, 2 and 3'], answer:2, exp:'Statements 1 and 3 are correct; statement 2 is wrong because the Harappans knew gold, silver, copper, bronze, lead and tin, but not iron.'},
+      {area:'Modern India', q:'Who among the following were associated with introducing the Ryotwari Settlement in British India? 1. Lord Cornwallis, 2. Alexander Read, 3. Thomas Munro', options:['1 only','1 and 3 only','2 and 3 only','1, 2 and 3'], answer:2, exp:'Alexander Read pioneered direct settlement with cultivators in Baramahal, and Thomas Munro extended it across Madras Presidency; Cornwallis instead created the Permanent (Zamindari) Settlement of Bengal.'}
+    ],
+    2016: [
+      {area:'Ancient India', q:'The Bodhisattva concept of a being who delays nirvana out of compassion to help others is central to which tradition, and Avalokitesvara is one of its most revered figures?', options:['Theravada Buddhism','Mahayana Buddhism','Jainism','Vedic religion'], answer:1, exp:'The Bodhisattva ideal, exemplified by Avalokitesvara, is a defining feature of Mahayana (not Theravada/Hinayana) Buddhism.'},
+      {area:'Medieval India', q:'In medieval South Indian temple administration, what best describes \'Eripatti\' and \'Ghatikas\'?', options:['Land revenue reserved for tank maintenance, and temple-attached educational institutions','Villages gifted to Brahmins, and royal treasuries','Military land grants, and market towns','Temple dance halls, and irrigation officials'], answer:0, exp:'Eripatti was land revenue set aside for maintaining village irrigation tanks, while Ghatikas were centres of learning attached to South Indian temples.'},
+      {area:'Medieval India', q:'Under Krishnadevaraya of Vijayanagara, how was taxation structured?', options:['A uniform tax regardless of crop or trade','Land tax varying by crop/soil quality, plus a separate tax on craft workshops','Only a poll tax on all adult subjects','Taxes were abolished in favour of tribute from vassals'], answer:1, exp:'Contemporary accounts, including Krishnadevaraya\'s own Amuktamalyada and Portuguese traveller Duarte Barbosa, describe land tax varying with crop and soil, alongside a separate industries/workshop tax.'},
+      {area:'Modern India', q:'\'Swadeshi\' and \'Boycott\' were first adopted as organised methods of struggle during which movement?', options:['Agitation against the Partition of Bengal','Home Rule Movement','Non-Cooperation Movement','Visit of the Simon Commission'], answer:0, exp:'The Swadeshi Movement (1905-08) against Curzon\'s partition of Bengal was the first to formally adopt boycott of British goods and promotion of indigenous products as tools of resistance.'},
+      {area:'Modern India', q:'What was the main reason for the 1907 Surat split in the Indian National Congress?', options:['Introduction of communalism by Lord Minto','Extremists\' loss of faith in the Moderates\' ability to negotiate with the British','Formation of the Muslim League','Aurobindo Ghosh\'s failure to become Congress President'], answer:1, exp:'Energised by the Swadeshi Movement, the Extremists led by Tilak had lost faith in the Moderates\' petition-based politics, and the presidency dispute at Surat brought the rift to a head.'},
+      {area:'Medieval India', q:'Which medieval South Indian religious movement rejected caste hierarchy: the Tamil Siddhas and the Lingayats founded by Basavanna?', options:['Both rejected ritual and caste distinctions','Only the Siddhas did; the Lingayats upheld caste','Only the Lingayats did; the Siddhas upheld caste','Neither rejected caste'], answer:0, exp:'Both the mystic Tamil Siddhas and the Veerashaiva Lingayats of Karnataka were reformist movements that rejected caste hierarchy and ritualism.'}
+    ],
+    2015: [
+      {area:'Ancient India', q:'The Buddha\'s life was directly associated with which Mahajanapadas?', options:['Avanti and Gandhara','Kosala and Magadha','Avanti and Magadha','Gandhara and Kosala'], answer:1, exp:'The Buddha attained enlightenment and spent much of his teaching career in Magadha and Kosala; Avanti and Gandhara were not directly part of his travels.'},
+      {area:'Modern India', q:'What characterised the Rowlatt Satyagraha of 1919?', options:['It arose from the Rowlatt Committee\'s recommendations and used existing Home Rule League networks for mobilisation','It was organised entirely by the Muslim League','It followed the Simon Commission\'s visit','It was Gandhi\'s first political movement in India'], answer:0, exp:'The Rowlatt Act followed the Sidney Rowlatt-chaired Sedition Committee, and Gandhi mobilised opposition partly through existing Home Rule League networks.'},
+      {area:'Modern India', q:'Who organised a salt march to the Tanjore coast at Vedaranyam in April 1930?', options:['V.O. Chidambaram Pillai','C. Rajagopalachari','K. Kamaraj','Annie Besant'], answer:1, exp:'C. Rajagopalachari led a parallel salt march from Tiruchirappalli to Vedaranyam, breaking the salt law there alongside Gandhi\'s Dandi March.'},
+      {area:'Modern India', q:'Who was the first Muslim President of the Indian National Congress?', options:['Badruddin Tyabji','Rahimtulla M. Sayani','Syed Ahmed Khan','Hakim Ajmal Khan'], answer:0, exp:'Badruddin Tyabji presided over the third INC session at Madras in 1887, becoming its first Muslim president.'},
+      {area:'Art & Culture', q:'The term \'Kalamkari\' refers to:', options:['A hand-painted or block-printed cotton textile tradition of Andhra Pradesh','A South Indian percussion instrument','A style of manuscript illumination','A form of temple wall mural'], answer:0, exp:'Kalamkari (\'pen-work\') is a natural-dye hand-painting and block-printing textile art centred on Srikalahasti and Machilipatnam in Andhra Pradesh.'}
+    ],
+    2014: [
+      {area:'Modern India', q:'The Radcliffe Committee (1947) was appointed to:', options:['Solve the problem of minorities in India','Give effect to the Indian Independence Bill','Delimit the boundary between India and Pakistan','Enquire into riots in East Bengal'], answer:2, exp:'Sir Cyril Radcliffe headed the Boundary Commissions that demarcated the India-Pakistan border in Punjab and Bengal in just five weeks in 1947.'},
+      {area:'Ancient India', q:'Which kingdoms were directly associated with the life of the Buddha: 1. Avanti, 2. Gandhara, 3. Kosala, 4. Magadha?', options:['1, 2 and 3','2 and 4','3 and 4 only','1, 3 and 4'], answer:2, exp:'The Buddha\'s enlightenment at Bodh Gaya and much of his ministry unfolded in Magadha and Kosala; Avanti and Gandhara were outside his direct travels.'},
+      {area:'Art & Culture', q:'The term \'Panchayatan\' in Indian temple architecture refers to:', options:['An assembly of village elders','A religious sect','A style of temple construction with a main shrine and four subsidiary shrines','An administrative functionary'], answer:2, exp:'Panchayatan is a Nagara-style temple plan with a central shrine flanked by four smaller corner shrines, as seen at Deogarh and Khajuraho.'},
+      {area:'Modern India', q:'The 1905 Partition of Bengal lasted until it was annulled when:', options:['Indian troops were needed for World War I','King George V announced its annulment at the 1911 Delhi Durbar','Gandhi launched Civil Disobedience','India was partitioned in 1947'], answer:1, exp:'The partition, which provoked the Swadeshi Movement, was reversed at the December 1911 Delhi Durbar marking George V\'s coronation.'},
+      {area:'Modern India', q:'The 1929 Lahore session of the Congress is significant because it:', options:['Declared self-government as the Congress goal','Adopted Poorna Swaraj (complete independence) as the Congress goal','Launched the Non-Cooperation Movement','Decided to join the Round Table Conference'], answer:1, exp:'Presided over by Nehru, the Lahore session adopted complete independence (Poorna Swaraj) as the goal and set 26 January 1930 as Independence Day.'},
+      {area:'Modern India', q:'The Ghadar Party was:', options:['A revolutionary association of Indians headquartered in San Francisco','A nationalist body operating from Singapore','A militant group headquartered in Berlin','A communist movement headquartered in Tashkent'], answer:0, exp:'Founded in 1913 by Indian immigrants including Lala Hardayal and Sohan Singh Bhakna, the Ghadar Party was based at the Yugantar Ashram in San Francisco.'},
+      {area:'Modern India', q:'Queen Victoria\'s 1858 Proclamation, following the transfer of power from the East India Company, aimed to:', options:['Disclaim further annexation of Indian states and place administration under the Crown','Regulate the Company\'s trade with India','Establish separate electorates','Abolish the zamindari system'], answer:0, exp:'The Proclamation disclaimed any intention to further annex princely states and formally transferred Indian administration from the Company to the Crown.'},
+      {area:'Medieval India', q:'The \'Ibadat Khana\' built by Akbar at Fatehpur Sikri was:', options:['The royal mosque','Akbar\'s private prayer chamber','A hall where Akbar held discussions with scholars of various religions','A room where nobles of different faiths met independently'], answer:2, exp:'Built in 1575, the Ibadat Khana hosted Akbar\'s interfaith discussions with Muslim, Hindu, Jain, Parsi, Sikh and Jesuit scholars, eventually inspiring the Din-i-Ilahi.'}
+    ],
+    2013: [
+      {area:'Ancient India', q:'Regarding Indian rock-cut architecture: 1. Badami has India\'s oldest rock-cut caves, 2. the Barabar caves were made for Ajivikas by Chandragupta Maurya, 3. Ellora has caves of different faiths. Which is/are correct?', options:['1 only','2 and 3 only','3 only','1, 2 and 3'], answer:2, exp:'Only statement 3 is correct — Ellora has Buddhist, Hindu and Jain caves; the older Barabar caves were actually gifted by Ashoka, not Chandragupta, and predate Badami.'},
+      {area:'Ancient India', q:'Chinese traveller Hiuen Tsang, who visited India under Harsha, recorded that: 1. roads were free of robbery, 2. trial by ordeal (fire, water, poison) determined guilt, 3. traders paid duties at ferries and barriers. Which is/are correct?', options:['1 only','2 and 3 only','3 only','1, 2 and 3'], answer:1, exp:'Hiuen Tsang was himself robbed on his travels, so statement 1 is false; he did record trial by ordeal and toll collection at ferries and barrier stations.'},
+      {area:'Ancient India', q:'What is the key difference between a Chaitya and a Vihara in Buddhist rock-cut architecture?', options:['Vihara is a place of worship, Chaitya a monk\'s dwelling','Chaitya is a place of worship, Vihara a monk\'s dwelling','Chaitya is the stupa, Vihara the hall around it','There is no material difference'], answer:1, exp:'A Chaitya is a prayer hall centred on a stupa, while a Vihara is a monastery where monks lived and studied.'},
+      {area:'Ancient India', q:'Which best describes the Buddhist concept of Nirvana?', options:['The extinction of the flame of desire','The complete annihilation of self','A state of bliss and rest','A mental state beyond all comprehension'], answer:0, exp:'The Buddha described Nirvana as the extinguishing of craving (tanha), the root cause of suffering, rather than the annihilation of a permanent self.'},
+      {area:'Medieval India', q:'Among Bhakti saints Dadu Dayal, Guru Nanak and Tyagaraja, who was already preaching when the Lodi dynasty fell to Babur in 1526?', options:['Dadu Dayal and Tyagaraja','Guru Nanak only','Dadu Dayal only','All three'], answer:1, exp:'Guru Nanak (1469-1539) was actively preaching in 1526 and even composed verses on Babur\'s invasion; Dadu Dayal and Tyagaraja lived much later.'},
+      {area:'Art & Culture', q:'Which historical sites are known for mural paintings: 1. Ajanta Caves, 2. Lepakshi Temple, 3. Sanchi Stupa?', options:['1 only','1 and 2 only','1, 2 and 3','None'], answer:1, exp:'Ajanta and Lepakshi are renowned for their murals, while Sanchi is famous for stone sculpture and carved gateways rather than paintings.'},
+      {area:'Modern India', q:'Annie Besant: 1. started the Home Rule Movement, 2. founded the Theosophical Society, 3. was once INC President. Which is/are correct?', options:['1 only','2 and 3 only','1 and 3 only','1, 2 and 3'], answer:2, exp:'Besant launched the All India Home Rule League in 1916 and became the first woman INC President in 1917, but the Theosophical Society was founded earlier by Blavatsky and Olcott.'}
+    ],
+    2012: [
+      {area:'Ancient India', q:'What was common to both Buddhism and Jainism in ancient India: 1. avoidance of extremes of penance and enjoyment, 2. indifference to Vedic authority, 3. denial of the efficacy of rituals?', options:['1 only','2 and 3 only','1 and 3 only','1, 2 and 3'], answer:1, exp:'Rejecting Vedic authority and ritual efficacy was common to both; the Middle Path avoiding extremes of penance was distinctly Buddhist, since Jainism valued intense asceticism.'},
+      {area:'Art & Culture', q:'Nagara, Dravida and Vesara refer to the three main:', options:['Racial groups of the subcontinent','Linguistic divisions of India','Styles of Indian temple architecture','Musical gharanas of India'], answer:2, exp:'Nagara (north), Dravida (south) and Vesara (hybrid Deccan) are the three classical styles of Indian temple architecture.'},
+      {area:'Modern India', q:'Gandhi undertook a fast unto death in 1932 mainly because:', options:['The Round Table Conference failed','Congress and the Muslim League differed over polity','Ramsay MacDonald announced the Communal Award','None of these'], answer:2, exp:'Gandhi\'s September 1932 fast protested the Communal Award\'s separate electorates for the Depressed Classes, resulting in the Poona Pact with Ambedkar.'},
+      {area:'Art & Culture', q:'Regarding Dhrupad, one of India\'s oldest musical traditions: 1. it originated in Rajput kingdoms under the Mughals, 2. it is primarily devotional/spiritual music, 3. its Alap uses Sanskrit syllables from mantras. Which is/are correct?', options:['1 and 2 only','2 and 3 only','1, 2 and 3','None'], answer:1, exp:'Dhrupad predates the Mughal period (tracing to earlier temple traditions) but is genuinely devotional, and its alap uses mantra-derived Sanskrit syllables like Om and Hari.'},
+      {area:'Ancient India', q:'The Buddha\'s \'Bhumisparsha Mudra\' (earth-touching gesture) symbolises:', options:['Buddha calling the earth to witness his transcendence of worldly existence','Buddha calling the earth to witness his purity against the temptations of Mara','A reminder that life is transitory','Both the first two meanings'], answer:1, exp:'The gesture recalls the moment the Buddha touched the earth to call it as witness to his virtue when challenged by Mara before enlightenment.'}
+    ],
+    2011: [
+      {area:'Modern India', q:'The surge in litigation after Cornwallis\'s 1793 land settlement in Bengal is normally traced to:', options:['Zamindars gaining power over ryots','The Company becoming overlord of zamindars','A more efficient judicial system','None of these — it was the abolition of court fees and new rights to sue'], answer:3, exp:'None of the listed provisions directly explain it; the real causes were Cornwallis\'s abolition of court fees and new rights allowing subjects to sue even Company officials.'},
+      {area:'Ancient India', q:'What best explains India\'s early maritime trade links with Southeast Asia across the Bay of Bengal?', options:['Superior Indian shipbuilding alone','Royal patronage of traders and monks alone','Monsoon winds facilitating predictable sea voyages','Both shipbuilding and royal patronage'], answer:2, exp:'The reversing monsoon wind system across the Bay of Bengal enabled reliable seasonal round-trip voyages, making it the key enabling factor for early trade.'},
+      {area:'Modern India', q:'The Indian Parliamentary Committee, set up in 1893 by Sir William Wedderburn and W.S. Caine, aimed to:', options:['Agitate for Indian political reforms in the House of Commons','Get Indians elected to the British Parliament','Discuss Indian independence in Parliament','Push for Indians in the Imperial Judiciary'], answer:0, exp:'The committee, the parliamentary wing of the British Committee of the INC, worked to raise Indian grievances and reform demands on the floor of the Commons.'},
+      {area:'Modern India', q:'John Ruskin\'s book \'Unto This Last\', which transformed Gandhi\'s life, chiefly conveyed that:', options:['Uplifting the poor is an educated man\'s duty','The good of the individual is contained in the good of all','Celibacy is essential for a noble life','All of the above equally'], answer:1, exp:'Gandhi identified the book\'s central message as "the good of the individual is contained in the good of all," which he translated into Gujarati as Sarvodaya.'},
+      {area:'Modern India', q:'Usha Mehta is remembered in the freedom struggle for:', options:['Running the secret Congress Radio during Quit India','Attending the Second Round Table Conference','Leading an INA contingent','Helping form the Interim Government'], answer:0, exp:'Usha Mehta ran the clandestine Congress Radio broadcasting nationalist messages after the Quit India leadership was arrested in August 1942.'}
+    ],
+    2010: [
+      {area:'Modern India', q:'Which statement about the Simon Commission\'s recommendations is correct?', options:['It recommended replacing diarchy with responsible government in the provinces','It proposed an inter-provincial council under the Home Department','It suggested abolishing the bicameral central legislature','It recommended discriminatory ICS pay favouring British recruits'], answer:0, exp:'The all-white Simon Commission (1927-30) recommended ending provincial diarchy in favour of full responsible government, shaping the Government of India Act 1935.'},
+      {area:'Modern India', q:'Which Governor-General created the Covenanted Civil Service that later became the Indian Civil Service?', options:['Warren Hastings','Wellesley','Cornwallis','William Bentinck'], answer:2, exp:'Lord Cornwallis (1786-93) created the Covenanted Civil Service, raising salaries and barring private trade to curb corruption, though restricting it to Europeans.'},
+      {area:'Modern India', q:'Which was NOT one of the four resolutions passed at the 1906 Calcutta Congress session that later split Congress at Surat in 1907?', options:['Annulment of the partition of Bengal','Boycott','National Education','Swadeshi'], answer:0, exp:'The four Calcutta resolutions were Swaraj, Swadeshi, Boycott and National Education; annulment of Bengal\'s partition only came later, in 1911.'},
+      {area:'Ancient India', q:'Why did Buddhism decline in India by the early medieval period? 1. The Buddha was absorbed into Vaishnavism as an avatar of Vishnu, 2. Central Asian invaders till the last Gupta king adopted Hinduism and persecuted Buddhists, 3. Gupta kings were strongly opposed to Buddhism. Which is/are correct?', options:['1 only','1 and 3 only','2 and 3 only','1, 2 and 3'], answer:0, exp:'Only statement 1 is correct; the Guptas actually patronised Buddhism (e.g. founding Nalanda), and the persecution claim about all invading tribes is overstated.'},
+      {area:'Medieval India', q:'Among Nagarjuna, Tukaram, Tyagaraja and Vallabhacharya, who was NOT a proponent of the Bhakti cult?', options:['Nagarjuna','Tukaram','Tyagaraja','Vallabhacharya'], answer:0, exp:'Nagarjuna was a Buddhist Madhyamaka philosopher who lived centuries before the Bhakti movement; the other three were all Bhakti saints.'}
+    ]
+  };
+  const PAPER_YEARS = Object.keys(HISTORY_PAPERS).sort((a,b)=> b-a);
+  let currentPaperYear = PAPER_YEARS[0];
+
+  function renderPapersYearRow(){
+    const row = document.getElementById('papersYearRow');
+    if(!row) return;
+    row.innerHTML = '';
+    PAPER_YEARS.forEach(y=>{
+      const b = document.createElement('button');
+      b.className = 'pill era-btn' + (y===currentPaperYear ? ' active' : '');
+      b.textContent = y;
+      b.addEventListener('click', ()=>{ currentPaperYear = y; renderPapersYearRow(); renderPapersArea(); });
+      row.appendChild(b);
+    });
+  }
+
+  function renderPapersArea(){
+    const area = document.getElementById('papersArea');
+    const meta = document.getElementById('papersMeta');
+    if(!area) return;
+    const qs = HISTORY_PAPERS[currentPaperYear] || [];
+    if(meta) meta.textContent = 'UPSC Prelims History — ' + currentPaperYear + ' (' + qs.length + ' questions)';
+    area.innerHTML = '';
+    qs.forEach((item, idx)=>{
+      const card = document.createElement('div');
+      card.className = 'paper-card';
+      const tag = document.createElement('div');
+      tag.className = 'paper-tag';
+      tag.textContent = currentPaperYear + ' • ' + item.area;
+      card.appendChild(tag);
+      const qEl = document.createElement('div');
+      qEl.className = 'paper-q';
+      qEl.textContent = (idx+1) + '. ' + item.q;
+      card.appendChild(qEl);
+      const optWrap = document.createElement('div');
+      item.options.forEach((opt, oi)=>{
+        const ob = document.createElement('button');
+        ob.className = 'paper-opt';
+        ob.textContent = String.fromCharCode(97+oi) + ') ' + opt;
+        ob.addEventListener('click', ()=>{
+          const opts = optWrap.querySelectorAll('.paper-opt');
+          opts.forEach((o,i2)=>{
+            o.disabled = true;
+            if(i2===item.answer) o.classList.add('correct');
+            else if(i2===oi) o.classList.add('wrong');
+          });
+          const exp = card.querySelector('.paper-exp');
+          if(exp) exp.classList.add('open');
+        });
+        optWrap.appendChild(ob);
+      });
+      card.appendChild(optWrap);
+      const expEl = document.createElement('div');
+      expEl.className = 'paper-exp';
+      expEl.textContent = item.exp;
+      card.appendChild(expEl);
+      area.appendChild(card);
+    });
+  }
+
+  const papersBtn = document.getElementById('papersBtn');
+  const papersWrap = document.getElementById('papersWrap');
+  const papersBackBtn = document.getElementById('papersBackBtn');
+  function openPapersPage(){
+    renderPapersYearRow();
+    renderPapersArea();
+    const cb = document.getElementById('controlBar');
+    if(cb) cb.classList.remove('open');
+    papersWrap.classList.add('fullpage-section');
+    papersWrap.style.display = '';
+    window.scrollTo(0,0);
+  }
+  function closePapersPage(){
+    papersWrap.style.display = 'none';
+    papersWrap.classList.remove('fullpage-section');
+  }
+  if(papersBtn && papersWrap){
+    papersBtn.addEventListener('click', openPapersPage);
+  }
+  if(papersBackBtn){
+    papersBackBtn.addEventListener('click', closePapersPage);
+  }
+
+  const quizOpenBtn = document.getElementById('quizOpenBtn');
+  const quizWrap = document.getElementById('quizWrap');
+  const quizBackBtn = document.getElementById('quizBackBtn');
+  function openQuizPage(){
+    const cb = document.getElementById('controlBar');
+    if(cb) cb.classList.remove('open');
+    quizWrap.classList.add('fullpage-section');
+    quizWrap.style.display = '';
+    window.scrollTo(0,0);
+  }
+  function closeQuizPage(){
+    if('speechSynthesis' in window) window.speechSynthesis.cancel();
+    quizWrap.style.display = 'none';
+    quizWrap.classList.remove('fullpage-section');
+  }
+  if(quizOpenBtn && quizWrap){
+    quizOpenBtn.addEventListener('click', openQuizPage);
+  }
+  if(quizBackBtn){
+    quizBackBtn.addEventListener('click', closeQuizPage);
+  }
+
   function enterHistoryApp(){
+    if(typeof closePapersPage === 'function') closePapersPage();
+    if(typeof closeQuizPage === 'function') closeQuizPage();
     currentSubject = 'history';
     TOPICS = HISTORY_TOPICS; ERA_TITLES = HISTORY_ERA_TITLES; ERA_ORDER = HISTORY_ERA_ORDER; STORY_MODE = HISTORY_STORY_MODE; QUIZ_BANK = HISTORY_QUIZ_BANK;
     if(!TOPICS.some(t=>(t.era||'ancient')===settings.currentEra)) settings.currentEra = HISTORY_ERA_ORDER[0];
     document.getElementById('overviewBanner').style.display = '';
+    if(papersBtn) papersBtn.style.display = '';
     allScreens.forEach(s=>{ if(s) s.style.display = 'none'; });
     document.getElementById('appMain').style.display = '';
     renderAll();
@@ -4963,11 +5097,15 @@ updateStudyTimeLabel();
   ];
 
   function enterEnglishApp(){
+    if(typeof closePapersPage === 'function') closePapersPage();
+    if(typeof closeQuizPage === 'function') closeQuizPage();
     currentSubject = 'english';
     TOPICS = ENGLISH_TOPICS; ERA_TITLES = ENGLISH_ERA_TITLES; ERA_ORDER = ENGLISH_ERA_ORDER; STORY_MODE = ENGLISH_STORY_MODE; QUIZ_BANK = ENGLISH_QUIZ_BANK;
     settings.currentEra = ENGLISH_ERA_ORDER[0];
     saveSettings();
     document.getElementById('overviewBanner').style.display = 'none';
+    if(papersBtn) papersBtn.style.display = 'none';
+    if(papersWrap) papersWrap.style.display = 'none';
     allScreens.forEach(s=>{ if(s) s.style.display = 'none'; });
     document.getElementById('appMain').style.display = '';
     renderAll();
@@ -4975,6 +5113,8 @@ updateStudyTimeLabel();
 
   document.getElementById('backToMenuBtn').addEventListener('click', ()=>{
     if('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if(typeof closePapersPage === 'function') closePapersPage();
+    if(typeof closeQuizPage === 'function') closeQuizPage();
     document.getElementById('appMain').style.display = 'none';
     showScreen(subjectScreen);
   });
