@@ -26,6 +26,25 @@
     --parchment: #FFFDF8;
     --charcoal: #262420;
   }
+  body.philosophy-theme{
+    --ink: #120B1E;
+    --parchment: #EDE4F7;
+    --copper: #6B3FA0;
+    --copper-dark: #4B2A73;
+    --sindoor: #C08A3E;
+    --sindoor-dark: #8C6226;
+    --gold: #C08A3E;
+    --glow: #9B7EDE;
+    --glow-soft: rgba(155,126,222,0.35);
+    --charcoal: #221933;
+    --font-body: 'Merriweather', serif;
+  }
+  body.philosophy-theme.light{
+    --ink: #F3EEFB;
+    --parchment: #FFFCFA;
+    --charcoal: #2B2140;
+  }
+  body.philosophy-theme h1, body.philosophy-theme #headerTitle{ font-family:'Playfair Display', serif; }
   *{ box-sizing: border-box; }
   html{ scroll-behavior: smooth; font-size: var(--scale); }
   body{
@@ -761,6 +780,13 @@ const SUBJECT_HEADER_TEXT = {
     sub:     { hi:'Level chuniye, grammar aur concepts padhiye, aur prashnottari se apni taiyari parkhiye. Sab kuch, ekdum offline.',
                en:'Choose a level, learn grammar and concepts, and test yourself with the quiz — all of it, entirely offline.' },
     banner:  { hi:'English Ek Jhalak Mein', en:'English at a Glance' }
+  },
+  philosophy: {
+    eyebrow: { hi:'Prashn Poochna Hi Darshan Hai', en:'To Question Is Philosophy' },
+    title:   { hi:'Darshan Shastra', en:'Philosophy' },
+    sub:     { hi:'Bhartiya darshan, Western darshan, aur core concepts — gehri baaton ko saral tareeke se samjhiye. Sab kuch, ekdum offline.',
+               en:'Indian philosophy, Western philosophy, and core concepts — deep ideas explained simply. All of it, entirely offline.' },
+    banner:  { hi:'Darshan Ek Jhalak Mein', en:'Philosophy at a Glance' }
   }
 };
 
@@ -2228,7 +2254,7 @@ const OVERVIEW_IMAGE = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
 /* ================= STATE ================= */
 const STORAGE_KEY = 'itihaas_settings_v1';
 const HL_KEY = 'itihaas_highlights_v1';
-const DEFAULTS = { globalLevel:1, cardLevel:{}, lang:'hi', theme:'dark', fontSize:100, fontFamily:'serif', revised:{}, quizHistory:[], currentEra:'prehistory', totalStudySeconds:0, speechRate:0.92, speechPitch:0.95, naturalVoice:false, storyTextColor:'default', storyEyeMode:false, mainTextColor:'default', mainEyeMode:false };
+const DEFAULTS = { globalLevel:1, cardLevel:{}, lang:'en', theme:'dark', fontSize:100, fontFamily:'serif', revised:{}, quizHistory:[], currentEra:'prehistory', totalStudySeconds:0, speechRate:0.92, speechPitch:0.95, naturalVoice:false, storyTextColor:'default', storyEyeMode:false, mainTextColor:'default', mainEyeMode:false };
 let settings = loadSettings();
 let highlights = loadHighlights();
 let translateMode = false;
@@ -2273,13 +2299,18 @@ function applyGlobalUI(){
 
   const lvlRow = document.getElementById('levelRow');
   lvlRow.innerHTML = '';
-  const labels = ['Basic Facts','Fuller Detail','Context+Why','Deep Analysis'];
-  for(let i=1;i<=4;i++){
-    const b = document.createElement('button');
-    b.className = 'pill lvl-btn' + (settings.globalLevel===i ? ' active':'');
-    b.innerHTML = `<span class="n">${i}</span><span class="l">${labels[i-1]}</span>`;
-    b.onclick = ()=>{ settings.globalLevel = i; saveSettings(); renderAll(); };
-    lvlRow.appendChild(b);
+  if(currentSubject === 'philosophy'){
+    lvlRow.style.display = 'none';
+  } else {
+    lvlRow.style.display = '';
+    const labels = ['Basic Facts','Fuller Detail','Context+Why','Deep Analysis'];
+    for(let i=1;i<=4;i++){
+      const b = document.createElement('button');
+      b.className = 'pill lvl-btn' + (settings.globalLevel===i ? ' active':'');
+      b.innerHTML = `<span class="n">${i}</span><span class="l">${labels[i-1]}</span>`;
+      b.onclick = ()=>{ settings.globalLevel = i; saveSettings(); renderAll(); };
+      lvlRow.appendChild(b);
+    }
   }
 }
 
@@ -2304,7 +2335,8 @@ function wrapWordsInElement(el){
 }
 
 function renderCard(topic){
-  const level = getCardLevel(topic.id);
+  const noLevels = currentSubject === 'philosophy';
+  const level = noLevels ? 1 : getCardLevel(topic.id);
   const lang = settings.lang;
   const key = topic.id+'|'+level+'|'+lang;
   const cached = highlights[key];
@@ -2324,14 +2356,16 @@ function renderCard(topic){
   h3wrap.appendChild(h3); h3wrap.appendChild(rangeTag);
   const ctrl = document.createElement('div');
   ctrl.className = 'card-controls';
-  for(let i=1;i<=4;i++){
-    const mb = document.createElement('button');
-    mb.className = 'mini-lvl' + (level===i?' active':'');
-    mb.textContent = i;
-    mb.onclick = ()=>{ settings.cardLevel[topic.id]=i; saveSettings(); renderAll(); };
-    ctrl.appendChild(mb);
+  if(!noLevels){
+    for(let i=1;i<=4;i++){
+      const mb = document.createElement('button');
+      mb.className = 'mini-lvl' + (level===i?' active':'');
+      mb.textContent = i;
+      mb.onclick = ()=>{ settings.cardLevel[topic.id]=i; saveSettings(); renderAll(); };
+      ctrl.appendChild(mb);
+    }
   }
-  head.appendChild(h3wrap); head.appendChild(ctrl);
+  head.appendChild(h3wrap); if(!noLevels) head.appendChild(ctrl);
   card.appendChild(head);
 
   const utilRow = document.createElement('div');
@@ -3130,7 +3164,8 @@ updateStudyTimeLabel();
     {id:'gk', name:'GK', unlocked:false},
     {id:'geography', name:'Geography', unlocked:false},
     {id:'civics', name:'Civics', unlocked:false},
-    {id:'english', name:'English', unlocked:true}
+    {id:'english', name:'English', unlocked:true},
+    {id:'philosophy', name:'Philosophy', unlocked:true}
   ];
   const SCIENCE_SUB = [
     {id:'chemistry', name:'Chemistry'},
@@ -3155,6 +3190,7 @@ updateStudyTimeLabel();
       card.addEventListener('click', ()=>{
         if(s.id==='history'){ enterHistoryApp(); }
         else if(s.id==='english'){ enterEnglishApp(); }
+        else if(s.id==='philosophy'){ enterPhilosophyApp(); }
         else if(s.unlocked==='sub'){ showScreen(scienceScreen); }
         else { showComingSoon(s.name); }
       });
@@ -3436,6 +3472,7 @@ updateStudyTimeLabel();
     if(typeof closePapersPage === 'function') closePapersPage();
     if(typeof closeQuizPage === 'function') closeQuizPage();
     currentSubject = 'history';
+    document.body.classList.remove('philosophy-theme');
     TOPICS = HISTORY_TOPICS; ERA_TITLES = HISTORY_ERA_TITLES; ERA_ORDER = HISTORY_ERA_ORDER; STORY_MODE = HISTORY_STORY_MODE; QUIZ_BANK = HISTORY_QUIZ_BANK;
     if(!TOPICS.some(t=>(t.era||'ancient')===settings.currentEra)) settings.currentEra = HISTORY_ERA_ORDER[0];
     document.getElementById('overviewBanner').style.display = '';
@@ -5100,8 +5137,372 @@ updateStudyTimeLabel();
     if(typeof closePapersPage === 'function') closePapersPage();
     if(typeof closeQuizPage === 'function') closeQuizPage();
     currentSubject = 'english';
+    document.body.classList.remove('philosophy-theme');
     TOPICS = ENGLISH_TOPICS; ERA_TITLES = ENGLISH_ERA_TITLES; ERA_ORDER = ENGLISH_ERA_ORDER; STORY_MODE = ENGLISH_STORY_MODE; QUIZ_BANK = ENGLISH_QUIZ_BANK;
     settings.currentEra = ENGLISH_ERA_ORDER[0];
+    saveSettings();
+    document.getElementById('overviewBanner').style.display = 'none';
+    if(papersBtn) papersBtn.style.display = 'none';
+    if(papersWrap) papersWrap.style.display = 'none';
+    allScreens.forEach(s=>{ if(s) s.style.display = 'none'; });
+    document.getElementById('appMain').style.display = '';
+    renderAll();
+  }
+
+  /* ================= PHILOSOPHY SUBJECT DATA ================= */
+  const PHILOSOPHY_ERA_TITLES = {
+    indian:  { hi:'Bhartiya Darshan', en:'Indian Philosophy', short:{hi:'Bhartiya', en:'Indian'} },
+    western: { hi:'Western Darshan', en:'Western Philosophy', short:{hi:'Western', en:'Western'} },
+    core:    { hi:'Core Concepts', en:'Core Concepts', short:{hi:'Core Concepts', en:'Core Concepts'} }
+  };
+  const PHILOSOPHY_ERA_ORDER = ['indian','western','core'];
+  const PHILOSOPHY_STORY_MODE = {};
+
+  const PHILOSOPHY_TOPICS = [
+    {
+      id:'phil-vedanta', tag:'Indian 01', era:'indian',
+      title:{hi:'Vedanta Ka Parichay', en:'Introduction to Vedanta'},
+      levels:{
+        hi:[`<p><b>Vedanta</b> ka matlab hai "Vedon ka ant" — yaani Upanishads mein jo gyaan diya gaya hai, wahi Vedanta ka core hai. Iska sabse bada sawaal hai: <b>Brahman</b> (parम satya) aur <b>Atman</b> (individual soul) mein kya rishta hai?</p>
+        <p>Adi Shankaracharya ke <b>Advaita Vedanta</b> ke mutabik, Atman aur Brahman ek hi hain — farak sirf <b>Maya</b> (illusion) ki wajah se dikhta hai. Jab ye maya hat jaati hai, insaan ko pata chalta hai ki "main hi Brahman hoon" — isse <b>Moksha</b> (mukti) kehte hain.</p>
+        <p>Ramanujacharya ka <b>Vishishtadvaita</b> thoda alag kehta hai — Atman aur Brahman jude hue hain lekin bilkul ek nahi, jaise sharir aur aatma ka rishta hota hai.</p>`],
+        en:[`<p><b>Vedanta</b> literally means "the end of the Vedas" — it draws on the knowledge found in the Upanishads. Its central question is: what is the relationship between <b>Brahman</b> (ultimate reality) and <b>Atman</b> (the individual soul)?</p>
+        <p>According to Adi Shankaracharya's <b>Advaita Vedanta</b> (non-dualism), Atman and Brahman are one and the same — the apparent difference exists only because of <b>Maya</b> (illusion). Once this illusion is seen through, one realizes "I am Brahman" — this realization is called <b>Moksha</b> (liberation).</p>
+        <p>Ramanuja's <b>Vishishtadvaita</b> (qualified non-dualism) takes a slightly different view — the Atman and Brahman are connected but not entirely identical, much like the relationship between the body and the soul.</p>`]
+      },
+      sticky:{
+        hi:[`Vedanta ka core sawaal: Atman aur Brahman ka rishta. Advaita (Shankaracharya) = dono ek hain. Vishishtadvaita (Ramanuja) = jude hue par bilkul ek nahi.`],
+        en:[`Vedanta's core question: the relationship between Atman and Brahman. Advaita (Shankaracharya) = they are one. Vishishtadvaita (Ramanuja) = connected but not fully identical.`]
+      }
+    },
+    {
+      id:'phil-charvaka', tag:'Indian 02', era:'indian',
+      title:{hi:'Charvaka — Bhartiya Materialism', en:'Charvaka — Indian Materialism'},
+      levels:{
+        hi:[`<p><b>Charvaka</b> (jise Lokayata bhi kehte hain) Bharat ki sabse purani materialist philosophy hai — aur ye baaki sab darshan schools se ekdum alag hai, kyunki ye <b>afterlife, atma, aur moksha ko nahi maanta</b>.</p>
+        <p>Charvaka ke mutabik, sirf <b>pratyaksha</b> (direct perception) hi gyaan ka bharosemand zariya hai — anumaan (inference) aur shastra (scripture) par bharosa nahi karna chahiye. Sirf wahi cheez sach hai jo hum apni aankhon se dekh sakte hain ya senses se mehsoos kar sakte hain.</p>
+        <p>Iska ethics simple hai: chunki koi afterlife nahi hai, is jeevan mein <b>sukh (pleasure) ko maximize</b> karna hi sabse samajhdaari wali baat hai — isliye ise "eat, drink, and be merry" philosophy bhi kaha jaata hai.</p>`],
+        en:[`<p><b>Charvaka</b> (also called Lokayata) is India's oldest materialist school of philosophy — and it stands apart from every other Indian darshan because it <b>rejects an afterlife, the soul, and moksha</b>.</p>
+        <p>According to Charvaka, only <b>pratyaksha</b> (direct perception) is a reliable source of knowledge — inference and scripture are not to be trusted. Only what can be directly seen or sensed is considered real.</p>
+        <p>Its ethics follow naturally: since there's no afterlife, the sensible thing to do is to <b>maximize pleasure</b> in this one life — which is why it's sometimes called the "eat, drink, and be merry" philosophy.</p>`]
+      },
+      sticky:{
+        hi:[`Charvaka = Bharat ka materialist school. Sirf pratyaksha (direct perception) par bharosa. Afterlife/atma/moksha nahi maante. Ethics: is jeevan mein sukh maximize karo.`],
+        en:[`Charvaka = India's materialist school. Trusts only pratyaksha (direct perception). Rejects afterlife/soul/moksha. Ethics: maximize pleasure in this one life.`]
+      }
+    },
+    {
+      id:'phil-buddhism', tag:'Indian 03', era:'indian',
+      title:{hi:'Buddhism — Char Aarya Satya Aur Ashtangika Marg', en:'Buddhism — The Four Noble Truths and Eightfold Path'},
+      levels:{
+        hi:[`<p>Gautam Buddha (563–483 BCE) ne apne <b>Char Aarya Satya</b> (Four Noble Truths) mein dukh ki puri anatomy samjhayi: (1) <b>Dukkha</b> — jeevan mein dukh hai, (2) <b>Samudaya</b> — dukh ka karan hai <b>trishna</b> (craving/desire), (3) <b>Nirodha</b> — dukh ko khatam kiya ja sakta hai, (4) <b>Marga</b> — is khatam karne ka ek raasta hai.</p>
+        <p>Wo raasta hai <b>Ashtangika Marg</b> (Eightfold Path) — Right View, Right Intention, Right Speech, Right Action, Right Livelihood, Right Effort, Right Mindfulness, aur Right Concentration. Isse "Middle Way" bhi kehte hain, kyunki Buddha ne extreme luxury aur extreme self-denial dono ko reject kiya.</p>
+        <p>Buddhism ka ek aur core idea hai <b>Anatta</b> (no-self) — jo Vedanta ke permanent Atman se ekdum ulta hai. Buddha kehte hain ki koi fixed, permanent "self" hota hi nahi, sirf badalta hua process hai (Five Aggregates/Skandhas).</p>`],
+        en:[`<p>Gautam Buddha (563–483 BCE) laid out the full anatomy of suffering in his <b>Four Noble Truths</b>: (1) <b>Dukkha</b> — life involves suffering, (2) <b>Samudaya</b> — suffering is caused by <b>trishna</b> (craving/desire), (3) <b>Nirodha</b> — suffering can be ended, (4) <b>Marga</b> — there is a path to ending it.</p>
+        <p>That path is the <b>Eightfold Path</b> — Right View, Right Intention, Right Speech, Right Action, Right Livelihood, Right Effort, Right Mindfulness, and Right Concentration. It's also called the "Middle Way," since Buddha rejected both extreme luxury and extreme self-denial.</p>
+        <p>Another core Buddhist idea is <b>Anatta</b> (no-self) — the direct opposite of Vedanta's permanent Atman. Buddha taught that there is no fixed, permanent "self," only an ever-changing process (the Five Aggregates, or Skandhas).</p>`]
+      },
+      sticky:{
+        hi:[`Char Aarya Satya: Dukkha, Samudaya (trishna), Nirodha, Marga. Raasta = Ashtangika Marg (Middle Way). Anatta = no permanent self — Vedanta ke Atman se ulta.`],
+        en:[`Four Noble Truths: Dukkha, Samudaya (craving), Nirodha, Marga. The path = Eightfold Path (Middle Way). Anatta = no permanent self — opposite of Vedanta's Atman.`]
+      }
+    },
+    {
+      id:'phil-jainism', tag:'Indian 04', era:'indian',
+      title:{hi:'Jainism — Anekantavada Aur Ahimsa', en:'Jainism — Anekantavada and Ahimsa'},
+      levels:{
+        hi:[`<p>Jainism, jise 24 Tirthankaras ne aage badhaya (aakhri, Mahavira, Buddha ke samkalin the), ka sabse unique philosophical contribution hai <b>Anekantavada</b> — "many-sidedness" ka siddhant. Iska matlab hai ki reality complex hai aur ek hi truth-claim usse pura capture nahi kar sakta — har perspective sirf ek partial truth batata hai.</p>
+        <p>Iska classic example hai <b>"Blind Men and the Elephant"</b> ki kahani — har andha aadmi elephant ke ek alag hisse ko chhoo kar different conclusion nikalta hai (rassi, deewar, pankha), aur sab apni jagah sahi hain, lekin adhoore.</p>
+        <p>Jainism ka doosra core pillar hai <b>Ahimsa</b> (non-violence) — jo itna strict hai ki Jain monks chalte waqt zameen jhaadte hain taaki chhote keede na marein, aur root vegetables bhi nahi khate kyunki unhe ukhaadne se poore plant/organisms ki jaan jaati hai.</p>`],
+        en:[`<p>Jainism, carried forward by 24 Tirthankaras (the last, Mahavira, was a contemporary of the Buddha), made a unique philosophical contribution with <b>Anekantavada</b> — the doctrine of "many-sidedness." It holds that reality is complex and no single truth-claim can capture it fully — every perspective only reveals a partial truth.</p>
+        <p>Its classic illustration is the <b>"Blind Men and the Elephant"</b> parable — each blind man touches a different part of the elephant and reaches a different conclusion (a rope, a wall, a fan), and each is right from their own angle, yet incomplete.</p>
+        <p>Jainism's other core pillar is <b>Ahimsa</b> (non-violence) — practiced so strictly that Jain monks sweep the ground before walking to avoid stepping on tiny insects, and avoid root vegetables since uprooting them kills the whole plant/organism.</p>`]
+      },
+      sticky:{
+        hi:[`Anekantavada = many-sidedness, koi ek truth-claim poori reality capture nahi karta (Blind Men and Elephant). Ahimsa = strict non-violence, Jainism ka core pillar.`],
+        en:[`Anekantavada = many-sidedness, no single truth-claim captures full reality (Blind Men and Elephant). Ahimsa = strict non-violence, Jainism's core pillar.`]
+      }
+    },
+    {
+      id:'phil-nyaya', tag:'Indian 05', era:'indian',
+      title:{hi:'Nyaya Darshan — Logic Aur Pramanas', en:'Nyaya — The School of Logic'},
+      levels:{
+        hi:[`<p><b>Nyaya</b> Bharat ka logic-focused darshan hai, jise Gautama Rishi ne systemize kiya. Iska main concern hai: <b>hume kaise pata chalta hai ki koi cheez sach hai?</b> — is sawaal ke jawab mein Nyaya <b>char Pramanas</b> (valid means of knowledge) deta hai:</p>
+        <p>(1) <b>Pratyaksha</b> — direct perception, (2) <b>Anumana</b> — inference (jaise dhuan dekh kar aag ka anumaan lagana), (3) <b>Upamana</b> — comparison/analogy, (4) <b>Shabda</b> — reliable testimony (kisi trustworthy source se sunna).</p>
+        <p>Nyaya ka famous <b>five-step syllogism</b> (Panchavayava) formal logic ka ek structured tareeka hai — Pratijna (claim), Hetu (reason), Udaharana (example), Upanaya (application), Nigamana (conclusion) — jaise "Parvat mein aag hai (claim), kyunki dhuan hai (reason), jahan dhuan hai wahan aag hai jaise rasoi mein (example)..."</p>`],
+        en:[`<p><b>Nyaya</b> is India's logic-focused school, systematized by the sage Gautama. Its central concern is: <b>how do we know something is true?</b> To answer this, Nyaya lays out <b>four Pramanas</b> (valid means of knowledge):</p>
+        <p>(1) <b>Pratyaksha</b> — direct perception, (2) <b>Anumana</b> — inference (e.g., inferring fire from seeing smoke), (3) <b>Upamana</b> — comparison/analogy, (4) <b>Shabda</b> — reliable testimony (hearing it from a trustworthy source).</p>
+        <p>Nyaya's famous <b>five-step syllogism</b> (Panchavayava) is a structured method of formal logic — Pratijna (claim), Hetu (reason), Udaharana (example), Upanaya (application), Nigamana (conclusion) — e.g. "There is fire on the hill (claim), because there is smoke (reason), wherever there's smoke there's fire, as in a kitchen (example)..."</p>`]
+      },
+      sticky:{
+        hi:[`Nyaya = logic-focused darshan. 4 Pramanas: Pratyaksha, Anumana, Upamana, Shabda. Five-step syllogism (Panchavayava) formal reasoning ke liye.`],
+        en:[`Nyaya = logic-focused school. 4 Pramanas: Pratyaksha, Anumana, Upamana, Shabda. Five-step syllogism (Panchavayava) for formal reasoning.`]
+      }
+    },
+    {
+      id:'phil-samkhya-yoga', tag:'Indian 06', era:'indian',
+      title:{hi:'Samkhya-Yoga — Purusha, Prakriti Aur Patanjali', en:'Samkhya-Yoga — Purusha, Prakriti, and Patanjali'},
+      levels:{
+        hi:[`<p><b>Samkhya</b> darshan reality ko do fundamental tatvon mein baantta hai: <b>Purusha</b> (pure consciousness, jo passive observer hai) aur <b>Prakriti</b> (matter/nature, jo sab kuch banata hai — mind, body, aur physical world). Dukh tab hota hai jab Purusha galti se khud ko Prakriti ke saath identify kar leta hai.</p>
+        <p><b>Yoga darshan</b>, jise Patanjali ne apne <b>Yoga Sutras</b> mein systemize kiya, Samkhya ka practical companion hai — iska goal hai Purusha ko Prakriti se separate karna, dhyan aur discipline ke through.</p>
+        <p>Patanjali ka <b>Ashtanga Yoga</b> (Eight Limbs) is separation ka raasta batata hai: Yama (ethical restraints), Niyama (observances), Asana (posture), Pranayama (breath control), Pratyahara (sense-withdrawal), Dharana (concentration), Dhyana (meditation), aur Samadhi (union/liberation).</p>`],
+        en:[`<p><b>Samkhya</b> philosophy divides reality into two fundamental principles: <b>Purusha</b> (pure consciousness, a passive observer) and <b>Prakriti</b> (matter/nature, which gives rise to everything — mind, body, and the physical world). Suffering arises when Purusha mistakenly identifies itself with Prakriti.</p>
+        <p><b>Yoga philosophy</b>, systematized by Patanjali in his <b>Yoga Sutras</b>, is Samkhya's practical companion — its goal is to separate Purusha from Prakriti through meditation and discipline.</p>
+        <p>Patanjali's <b>Ashtanga Yoga</b> (Eight Limbs) maps out that path: Yama (ethical restraints), Niyama (observances), Asana (posture), Pranayama (breath control), Pratyahara (sense-withdrawal), Dharana (concentration), Dhyana (meditation), and Samadhi (union/liberation).</p>`]
+      },
+      sticky:{
+        hi:[`Samkhya: Purusha (consciousness) + Prakriti (matter). Yoga (Patanjali) = inhe separate karne ka practical raasta. Ashtanga Yoga = 8 limbs, Yama se Samadhi tak.`],
+        en:[`Samkhya: Purusha (consciousness) + Prakriti (matter). Yoga (Patanjali) = the practical path to separate them. Ashtanga Yoga = 8 limbs, from Yama to Samadhi.`]
+      }
+    },
+    {
+      id:'phil-socrates', tag:'Western 01', era:'western',
+      title:{hi:'Socrates Aur Socratic Method', en:'Socrates and the Socratic Method'},
+      levels:{
+        hi:[`<p><b>Socrates</b> (470–399 BCE) ne khud kuch nahi likha — humein unke baare mein pata chalta hai unke shishya <b>Plato</b> ke dialogues se. Unka mashhoor kathan tha: <i>"I know that I know nothing"</i> — yaani sacchi wisdom apni ignorance ko maanne se shuru hoti hai.</p>
+        <p>Unka tareeka, <b>Socratic Method</b>, sawaal-jawaab par based hai — wo logon se unke beliefs ke baare mein sawaal poochte the (jaise "justice kya hai?" ya "courage kya hai?") jab tak unki contradictions samne na aa jaayein. Isse logon ko apni assumptions ko dobara sochne par majboor hona padta tha.</p>
+        <p>Socrates ko Athens mein "corrupting the youth" ke ilzaam mein maut ki saza di gayi — unhone bhaagne ka mauka thukra kar hemlock poison pi liya, apne principles ke liye.</p>`],
+        en:[`<b>Socrates</b> (470–399 BCE) never wrote anything himself — we know him through the dialogues written by his student <b>Plato</b>. His famous saying was: <i>"I know that I know nothing"</i> — true wisdom begins with admitting your own ignorance.</p>
+        <p>His method, the <b>Socratic Method</b>, is built on questioning — he'd ask people about their beliefs (like "what is justice?" or "what is courage?") until contradictions in their answers surfaced. This forced people to re-examine assumptions they'd never questioned.</p>
+        <p>Socrates was sentenced to death in Athens on charges of "corrupting the youth" — he refused a chance to escape and drank hemlock poison instead, staying true to his principles.</p>`]
+      },
+      sticky:{
+        hi:[`Socrates: "I know that I know nothing." Socratic Method = sawaal poochh kar contradictions expose karna. Plato ke dialogues se hi pata chalta hai. Corrupting the youth ke ilzaam mein maut.`],
+        en:[`Socrates: "I know that I know nothing." Socratic Method = questioning to expose contradictions. Known only through Plato's dialogues. Executed for "corrupting the youth."`]
+      }
+    },
+    {
+      id:'phil-plato-forms', tag:'Western 02', era:'western',
+      title:{hi:'Plato Ka Theory Of Forms', en:"Plato's Theory of Forms"},
+      levels:{
+        hi:[`<p><b>Plato</b> (428–348 BCE) ka kehna tha ki jo cheezein hum apni aankhon se dekhte hain — table, tree, ya ek khoobsurat chehra — ye sab sirf <b>imperfect copies</b> hain ek perfect, abstract "Form" ki.</p>
+        <p>Jaise, duniya mein bahut saari tables hain — lakdi ki, plastic ki, chhoti, badi — lekin sab mein "table-ness" ka ek common idea hai. Plato kehte hain ki ye perfect "Form of Table" ek alag, non-physical realm mein exist karta hai, aur jo bhi physical table hum dekhte hain wo us Form ki bas ek copy hai.</p>
+        <p>Iska sabse mashhoor example hai <b>"Allegory of the Cave"</b> — jaha log ek cave mein baithe hain aur deewar par sirf shadows dekh rahe hain, unhe lagta hai yehi reality hai, jabki asli reality unke peeche hai. Ye batata hai ki hum apni senses se sirf shadows (Forms ke copies) dekhte hain, asli sach nahi.</p>`],
+        en:[`<p><b>Plato</b> (428–348 BCE) argued that everything we see with our eyes — a table, a tree, a beautiful face — is only an <b>imperfect copy</b> of a perfect, abstract "Form."</p>
+        <p>For example, there are countless tables in the world — wooden, plastic, small, large — but they all share a common idea of "table-ness." Plato claimed a perfect "Form of the Table" exists in a separate, non-physical realm, and every physical table we see is just a copy of that Form.</p>
+        <p>His most famous illustration is the <b>"Allegory of the Cave"</b> — people sitting in a cave, watching only shadows on a wall and believing that's all of reality, while the true reality lies behind them. It illustrates that our senses show us only shadows (copies of Forms), not ultimate truth.</p>`]
+      },
+      sticky:{
+        hi:[`Theory of Forms: physical cheezein = perfect abstract "Forms" ki imperfect copies. Allegory of the Cave = hum senses se sirf shadows dekhte hain, asli reality nahi.`],
+        en:[`Theory of Forms: physical things = imperfect copies of perfect abstract "Forms." Allegory of the Cave = our senses show only shadows, not ultimate reality.`]
+      }
+    },
+    {
+      id:'phil-aristotle', tag:'Western 03', era:'western',
+      title:{hi:'Aristotle — Logic, Virtue Aur Golden Mean', en:'Aristotle — Logic, Virtue, and the Golden Mean'},
+      levels:{
+        hi:[`<p><b>Aristotle</b> (384–322 BCE), Plato ka shishya, apne teacher se ekdum alag raasta leta hai — jahan Plato abstract Forms ko real maante the, Aristotle kehte hain ki reality <b>physical, observable world</b> mein hi hai. Isi soch se wo <b>empirical science</b> ke founder maane jaate hain — biology, physics, aur logic sabme unka kaam foundational hai.</p>
+        <p>Logic mein unka sabse bada contribution hai <b>syllogism</b> — do premises se ek conclusion nikalna (jaise: "Sab insaan mortal hain. Socrates insaan hai. Isliye Socrates mortal hai.")</p>
+        <p>Ethics mein unka famous idea hai <b>Golden Mean</b> — virtue hamesha do extremes ke beech mein hoti hai. Jaise, <b>courage</b> cowardice (kami) aur recklessness (zyaadti) ke beech ka mean hai. Har virtue is tarah do "vices" ke beech balance hoti hai.</p>`],
+        en:[`<p><b>Aristotle</b> (384–322 BCE), Plato's student, took a very different path from his teacher — where Plato held abstract Forms to be the true reality, Aristotle argued reality is found in the <b>physical, observable world</b> itself. This mindset made him a founding figure of <b>empirical science</b> — his work laid foundations in biology, physics, and logic alike.</p>
+        <p>His greatest contribution to logic is the <b>syllogism</b> — deriving a conclusion from two premises (e.g., "All men are mortal. Socrates is a man. Therefore, Socrates is mortal.")</p>
+        <p>In ethics, his famous idea is the <b>Golden Mean</b> — virtue always lies between two extremes. For instance, <b>courage</b> is the mean between cowardice (a deficiency) and recklessness (an excess). Every virtue balances between two such "vices."</p>`]
+      },
+      sticky:{
+        hi:[`Aristotle: reality physical world mein hai (Plato se ulta). Syllogism = 2 premises se conclusion. Golden Mean = virtue do extremes ke beech (jaise courage = cowardice aur recklessness ke beech).`],
+        en:[`Aristotle: reality lies in the physical world (opposite of Plato). Syllogism = deriving conclusions from two premises. Golden Mean = virtue between two extremes (e.g., courage between cowardice and recklessness).`]
+      }
+    },
+    {
+      id:'phil-descartes', tag:'Western 04', era:'western',
+      title:{hi:'Descartes — Cogito Ergo Sum Aur Mind-Body Dualism', en:'Descartes — Cogito Ergo Sum and Mind-Body Dualism'},
+      levels:{
+        hi:[`<p>René Descartes (1596–1650) ko "father of modern philosophy" kaha jaata hai. Unhone ek method apnaya jise <b>methodological doubt</b> kehte hain — har cheez par shak karo jab tak koi aisi cheez na mile jispar shak na kiya ja sake.</p>
+        <p>Unhe akhir mein ek cheez mili jispar shak nahi kiya ja sakta: agar main sochne (doubt karne) mein capable hoon, toh mera exist karna zaroori hai. Isse unka mashhoor kathan bana: <b><i>"Cogito ergo sum"</i></b> — "I think, therefore I am."</p>
+        <p>Descartes ne <b>Mind-Body Dualism</b> bhi propose kiya — unka kehna tha ki mind (soch, consciousness) aur body (physical matter) do bilkul alag substances hain. Mind non-physical hai, body physical hai — aur ye dono kaise interact karte hain, ye sawaal aaj tak philosophy mein "mind-body problem" ke naam se debate hota hai.</p>`],
+        en:[`<p>René Descartes (1596–1650) is called the "father of modern philosophy." He adopted a method known as <b>methodological doubt</b> — doubt everything until you find something that cannot be doubted.</p>
+        <p>He eventually found one thing that couldn't be doubted: if he was capable of thinking (doubting), then he must exist. This led to his famous statement: <b><i>"Cogito ergo sum"</i></b> — "I think, therefore I am."</p>
+        <p>Descartes also proposed <b>Mind-Body Dualism</b> — arguing that the mind (thought, consciousness) and the body (physical matter) are two entirely separate substances. The mind is non-physical, the body is physical — and exactly how the two interact remains debated in philosophy today as the "mind-body problem."</p>`]
+      },
+      sticky:{
+        hi:[`Descartes: methodological doubt → "Cogito ergo sum" (I think, therefore I am). Mind-Body Dualism = mind aur body do alag substances, unka interaction "mind-body problem" hai.`],
+        en:[`Descartes: methodological doubt → "Cogito ergo sum" (I think, therefore I am). Mind-Body Dualism = mind and body are separate substances; their interaction is the "mind-body problem."`]
+      }
+    },
+    {
+      id:'phil-kant', tag:'Western 05', era:'western',
+      title:{hi:'Kant — Categorical Imperative', en:'Kant — The Categorical Imperative'},
+      levels:{
+        hi:[`<p>Immanuel Kant (1724–1804) ne ethics ko duty par base kiya, result par nahi (Deontology). Unka central idea hai <b>Categorical Imperative</b> — ek moral rule jo bina kisi condition ke, hamesha follow hona chahiye.</p>
+        <p>Iska pehla formulation hai: <b>"Sirf usi maxim (principle) par act karo jise tum chahte ho ki universal law ban jaye."</b> Matlab, apne aap se poocho — "agar sab log meri jagah ye kaam karein, toh kya duniya theek se chalegi?" Agar jawab na ho (jaise jhoot bolna), toh wo action galat hai.</p>
+        <p>Doosra formulation hai: <b>"Insano ko sirf means (tool) ki tarah treat mat karo, hamesha ek end (goal in themselves) ki tarah treat karo."</b> — yaani kabhi kisi insaan ko sirf apne fayde ke liye use mat karo, unki apni dignity ko respect karo.</p>`],
+        en:[`<p>Immanuel Kant (1724–1804) grounded ethics in duty rather than outcomes (Deontology). His central idea is the <b>Categorical Imperative</b> — a moral rule that must be followed unconditionally, in every situation.</p>
+        <p>Its first formulation states: <b>"Act only according to the maxim (principle) by which you could at the same time will that it become a universal law."</b> In other words, ask yourself — "if everyone acted this way, would the world still function?" If the answer is no (like with lying), the action is wrong.</p>
+        <p>The second formulation states: <b>"Treat humanity never merely as a means, but always also as an end in itself."</b> — meaning you should never use another person purely for your own benefit; their dignity as a person must be respected.</p>`]
+      },
+      sticky:{
+        hi:[`Kant's Categorical Imperative: (1) sirf wo maxim follow karo jo universal law ban sake, (2) insano ko means nahi, hamesha ends ki tarah treat karo.`],
+        en:[`Kant's Categorical Imperative: (1) act only on maxims you'd will as universal law, (2) treat people always as ends, never merely as means.`]
+      }
+    },
+    {
+      id:'phil-existentialism', tag:'Western 06', era:'western',
+      title:{hi:'Existentialism — Sartre, Camus Aur Absurdism', en:'Existentialism — Sartre, Camus, and Absurdism'},
+      levels:{
+        hi:[`<p><b>Existentialism</b>, jo 20th century mein Jean-Paul Sartre aur Albert Camus jaise thinkers ne develop kiya, is idea se shuru hoti hai ki universe ka koi pre-set meaning ya purpose nahi hai — hum bina kisi "instruction manual" ke duniya mein paida hote hain.</p>
+        <p>Sartre ka mashhoor kathan hai: <b>"Existence precedes essence"</b> — matlab, humara koi fixed "nature" ya purpose nahi hota jab hum paida hote hain; hum apne choices se apni khud ki identity banate hain. Isi wajah se Sartre kehte hain, humein <b>"radical freedom"</b> hai — lekin uske saath poori <b>responsibility</b> bhi aati hai.</p>
+        <p>Albert Camus ne <b>Absurdism</b> develop kiya — ye idea ki hum meaning dhundhte hain ek meaningless universe mein, aur ye tension hi "the Absurd" hai. Uska solution tha ki hum is absurdity ko accept karke bhi jeevan jiyein, jaise "Myth of Sisyphus" mein — Sisyphus baar-baar patthar pahaad par chadhata hai, jaanta hue ki wo phir gir jaayega, phir bhi wo apna kaam poori tarah se karta hai.</p>`],
+        en:[`<p><b>Existentialism</b>, developed in the 20th century by thinkers like Jean-Paul Sartre and Albert Camus, starts from the idea that the universe has no pre-set meaning or purpose — we're born into the world without an "instruction manual."</p>
+        <p>Sartre's famous statement is: <b>"Existence precedes essence"</b> — meaning we don't have a fixed "nature" or purpose when we're born; we create our own identity through our choices. This is why Sartre says we have <b>"radical freedom"</b> — but with it comes total <b>responsibility</b>.</p>
+        <p>Albert Camus developed <b>Absurdism</b> — the idea that we search for meaning in a meaningless universe, and that tension itself is "the Absurd." His answer was to embrace this absurdity and still live fully, as in the "Myth of Sisyphus" — Sisyphus keeps pushing a boulder up a mountain, knowing it will roll back down, yet commits fully to the task anyway.</p>`]
+      },
+      sticky:{
+        hi:[`Existentialism: universe ka pre-set meaning nahi. Sartre: "Existence precedes essence" — radical freedom + responsibility. Camus: Absurdism — meaningless universe mein meaning dhundhna, phir bhi jeena (Myth of Sisyphus).`],
+        en:[`Existentialism: the universe has no pre-set meaning. Sartre: "Existence precedes essence" — radical freedom + responsibility. Camus: Absurdism — seeking meaning in a meaningless universe, yet living fully (Myth of Sisyphus).`]
+      }
+    },
+    {
+      id:'phil-metaphysics', tag:'Core 01', era:'core',
+      title:{hi:'Metaphysics — Reality Kya Hai', en:'Metaphysics — What Is Reality'},
+      levels:{
+        hi:[`<p><b>Metaphysics</b> philosophy ki wo branch hai jo poochti hai: <b>reality asal mein kya hai?</b> Ye physics se pehle ka sawaal hai — physics batata hai reality kaise kaam karti hai, metaphysics poochta hai reality hai kya.</p>
+        <p>Kuch bade sawaal jo metaphysics cover karta hai: Kya sirf physical cheezein exist karti hain, ya mind/soul jaisi non-physical cheezein bhi hain? <b>Cause aur effect</b> ka rishta kya hota hai? Aur sabse zyada debate wala sawaal — kya humare paas <b>free will</b> hai, ya sab kuch pehle se <b>determined</b> hai (jaise physics ke laws ke through)?</p>
+        <p>Ye branch isliye "meta" (beyond) physics kehlata hai kyunki ye un cheezon ko explore karta hai jo empirically test nahi ki ja sakti — jaise "kya time real hai?" ya "kya reality sirf ek hai, ya multiple ho sakti hai?"</p>`],
+        en:[`<p><b>Metaphysics</b> is the branch of philosophy that asks: <b>what is reality, fundamentally?</b> It's a question that comes before physics — physics explains how reality works, metaphysics asks what reality actually is.</p>
+        <p>Some of the big questions metaphysics covers: Do only physical things exist, or are there non-physical things too, like the mind or soul? What is the relationship between <b>cause and effect</b>? And the most debated question of all — do we have <b>free will</b>, or is everything already <b>determined</b> (say, by the laws of physics)?</p>
+        <p>It's called "meta" (beyond) physics because it explores questions that can't be tested empirically — like "is time real?" or "is there only one reality, or could there be many?"</p>`]
+      },
+      sticky:{
+        hi:[`Metaphysics = reality kya hai, ye sawaal. Covers: physical vs non-physical existence, cause-effect, free will vs determinism.`],
+        en:[`Metaphysics = the question of what reality is. Covers: physical vs non-physical existence, cause and effect, free will vs determinism.`]
+      }
+    },
+    {
+      id:'phil-ethics', tag:'Core 02', era:'core',
+      title:{hi:'Ethics — Sahi Aur Galat Kya Hai', en:'Ethics — Right and Wrong'},
+      levels:{
+        hi:[`<p><b>Ethics</b> (naitikta) philosophy ki branch hai jo sahi-galat, achha-bura, aur "achha jeevan kaisa hota hai" jaise sawaalon ko explore karti hai. Iske teen bade approaches hain:</p>
+        <p><b>1. Consequentialism</b> — ek action sahi hai agar uska result achha ho (jaise Utilitarianism: "greatest good for greatest number").</p>
+        <p><b>2. Deontology</b> — ek action sahi hai agar wo duty/rule follow karta hai, result chahe jo bhi ho (Immanuel Kant is approach ke sabse bade thinker hain — jhoot bolna hamesha galat hai, chahe consequence kuch bhi ho).</p>
+        <p><b>3. Virtue Ethics</b> — Aristotle ka approach: sahi action wo hai jo ek "virtuous person" (sad-charitra insaan) karega — focus action par nahi, character build karne par hai.</p>`],
+        en:[`<p><b>Ethics</b> is the branch of philosophy that explores right and wrong, good and bad, and what makes for "the good life." There are three major approaches:</p>
+        <p><b>1. Consequentialism</b> — an action is right if it produces good outcomes (e.g., Utilitarianism: "the greatest good for the greatest number").</p>
+        <p><b>2. Deontology</b> — an action is right if it follows a duty or rule, regardless of the outcome (Immanuel Kant is the major thinker here — lying is always wrong, no matter the consequences).</p>
+        <p><b>3. Virtue Ethics</b> — Aristotle's approach: the right action is whatever a "virtuous person" would do — the focus is on building good character, not judging individual actions.</p>`]
+      },
+      sticky:{
+        hi:[`Ethics ke 3 approaches: Consequentialism (result matter karta hai), Deontology (duty/rule matter karta hai — Kant), Virtue Ethics (character matter karta hai — Aristotle).`],
+        en:[`Three approaches to ethics: Consequentialism (outcomes matter), Deontology (duty/rules matter — Kant), Virtue Ethics (character matters — Aristotle).`]
+      }
+    },
+    {
+      id:'phil-epistemology', tag:'Core 03', era:'core',
+      title:{hi:'Epistemology — Knowledge Kya Hota Hai', en:'Epistemology — What Is Knowledge'},
+      levels:{
+        hi:[`<p><b>Epistemology</b> philosophy ki branch hai jo poochti hai: <b>knowledge kya hota hai, aur humein kaise pata chalta hai ki kuch sach hai?</b> Classic definition hai: knowledge = <b>"justified true belief"</b> — matlab aap kisi cheez ko sach maante ho (belief), wo actually sach ho (true), aur aapke paas usse maanne ka valid reason ho (justified).</p>
+        <p>Ek bada debate hai <b>Rationalism vs Empiricism</b> — Rationalists (jaise Descartes) kehte hain ki knowledge <b>reason/logic</b> se aata hai, jabki Empiricists (jaise John Locke, David Hume) kehte hain knowledge <b>senses aur experience</b> se aata hai.</p>
+        <p>Ek famous challenge hai <b>"Gettier Problem"</b> — jismein dikhaya gaya ki koi belief justified aur true dono ho sakti hai, phir bhi hum usse "genuine knowledge" nahi kahenge, kyunki wo sirf luck se sahi nikli. Isse epistemologists ko apni definition dobara sochni padi.</p>`],
+        en:[`<p><b>Epistemology</b> is the branch of philosophy that asks: <b>what is knowledge, and how do we know that something is true?</b> The classic definition is: knowledge = <b>"justified true belief"</b> — you believe something (belief), it's actually true (true), and you have a valid reason to believe it (justified).</p>
+        <p>A major debate is <b>Rationalism vs Empiricism</b> — Rationalists (like Descartes) argue knowledge comes from <b>reason/logic</b>, while Empiricists (like John Locke, David Hume) argue knowledge comes from <b>senses and experience</b>.</p>
+        <p>A famous challenge is the <b>"Gettier Problem"</b> — which shows cases where a belief is both justified and true, yet we wouldn't call it "genuine knowledge" because it turned out right only by luck. This forced epistemologists to rethink the classic definition.</p>`]
+      },
+      sticky:{
+        hi:[`Epistemology = knowledge ka study. Classic def: justified true belief. Rationalism (reason) vs Empiricism (senses/experience). Gettier Problem = justified+true bhi "knowledge" nahi ho sakta agar sirf luck se sahi hua.`],
+        en:[`Epistemology = the study of knowledge. Classic def: justified true belief. Rationalism (reason) vs Empiricism (senses/experience). Gettier Problem = justified+true belief still isn't "knowledge" if it's right only by luck.`]
+      }
+    },
+    {
+      id:'phil-logic', tag:'Core 04', era:'core',
+      title:{hi:'Logic — Sound Reasoning Ko Analyze Karna', en:'Logic — Analyzing Sound Reasoning'},
+      levels:{
+        hi:[`<p><b>Logic</b> philosophy ki wo branch hai jo arguments ki <b>structure</b> ko study karti hai — ye check karti hai ki ek conclusion premises se sahi tarah follow hota hai ya nahi, chahe premises sach ho ya jhoot.</p>
+        <p>Ek argument <b>"valid"</b> hai agar uska structure sahi hai — matlab agar premises sach hain, toh conclusion bhi zaroor sach hoga. Lekin ek argument <b>"sound"</b> tabhi hai jab wo valid ho AUR uske saare premises actually sach bhi hon.</p>
+        <p>Ek common logical error hai <b>fallacy</b> — jaise <b>"ad hominem"</b> (argument ko attack karne ke bajaye person ko attack karna) ya <b>"straw man"</b> (kisi ke argument ko galat tarike se weak version mein badal kar attack karna). In fallacies ko pehchanna critical thinking ka core skill hai.</p>`],
+        en:[`<p><b>Logic</b> is the branch of philosophy that studies the <b>structure</b> of arguments — checking whether a conclusion properly follows from its premises, regardless of whether the premises are actually true.</p>
+        <p>An argument is <b>"valid"</b> if its structure is correct — meaning if the premises were true, the conclusion would have to be true too. But an argument is <b>"sound"</b> only when it's valid AND all its premises are actually true.</p>
+        <p>A common logical error is called a <b>fallacy</b> — like <b>"ad hominem"</b> (attacking the person instead of the argument) or <b>"straw man"</b> (misrepresenting someone's argument as a weaker version to attack it more easily). Spotting these fallacies is a core critical thinking skill.</p>`]
+      },
+      sticky:{
+        hi:[`Logic = argument structure ka study. Valid = structure sahi (premises true ho toh conclusion true). Sound = valid + premises actually true. Fallacies: ad hominem, straw man, etc.`],
+        en:[`Logic = the study of argument structure. Valid = correct structure (true premises would force a true conclusion). Sound = valid + premises actually true. Fallacies: ad hominem, straw man, etc.`]
+      }
+    },
+    {
+      id:'phil-political', tag:'Core 05', era:'core',
+      title:{hi:'Political Philosophy — State, Justice Aur Liberty', en:'Political Philosophy — State, Justice, and Liberty'},
+      levels:{
+        hi:[`<p><b>Political Philosophy</b> poochti hai: <b>state (sarkar) kyun exist karni chahiye, aur ek "just" (nyaaypurn) society kaisi dikhti hai?</b></p>
+        <p>Thomas Hobbes, John Locke, aur Jean-Jacques Rousseau jaise thinkers ne <b>Social Contract Theory</b> develop ki — idea ye hai ki log apni kuch freedoms voluntarily sarkar ko saup dete hain, badle mein protection aur order paane ke liye. Hobbes ke mutabik, bina state ke jeevan "nasty, brutish, and short" hoga.</p>
+        <p>John Rawls ka modern idea, <b>"Veil of Ignorance"</b>, ek thought experiment hai — agar aapko nahi pata ki society mein aap kaun banoge (rich/poor, majority/minority), toh aap kaunse rules choose karoge? Rawls kehte hain, is uncertainty ke peeche se hi hum truly fair rules bana sakte hain.</p>`],
+        en:[`<p><b>Political Philosophy</b> asks: <b>why should the state (government) exist, and what does a "just" society look like?</b></p>
+        <p>Thinkers like Thomas Hobbes, John Locke, and Jean-Jacques Rousseau developed <b>Social Contract Theory</b> — the idea that people voluntarily give up some freedoms to a government in exchange for protection and order. According to Hobbes, life without a state would be "nasty, brutish, and short."</p>
+        <p>John Rawls' modern idea, the <b>"Veil of Ignorance,"</b> is a thought experiment — if you didn't know who you'd become in society (rich/poor, majority/minority), what rules would you choose? Rawls argues that reasoning from behind this uncertainty is how we arrive at truly fair rules.</p>`]
+      },
+      sticky:{
+        hi:[`Political Philosophy: state kyun exist kare, justice kya hai. Social Contract Theory (Hobbes, Locke, Rousseau) = freedoms sarkar ko doकर protection paana. Rawls' Veil of Ignorance = fair rules ke liye uncertainty se sochna.`],
+        en:[`Political Philosophy: why the state exists, what justice is. Social Contract Theory (Hobbes, Locke, Rousseau) = trading freedoms for protection. Rawls' Veil of Ignorance = reasoning from uncertainty to find fair rules.`]
+      }
+    },
+    {
+      id:'phil-aesthetics', tag:'Core 06', era:'core',
+      title:{hi:'Aesthetics — Beauty, Art Aur Taste', en:'Aesthetics — Beauty, Art, and Taste'},
+      levels:{
+        hi:[`<p><b>Aesthetics</b> philosophy ki branch hai jo <b>beauty, art, aur taste</b> ke nature ko explore karti hai. Ek central sawaal hai: <b>kya beauty objective hai (cheez mein hi hoti hai) ya subjective hai (dekhne wale ki aankh mein)?</b></p>
+        <p>Immanuel Kant ka kehna tha ki aesthetic judgment ek unique cheez hai — jab hum kuch "beautiful" kehte hain, hum ek universal claim kar rahe hote hain (jaise "ye sach hai"), lekin ye judgment kisi objective proof par based nahi hota, sirf ek "disinterested pleasure" par based hota hai.</p>
+        <p>Ek aur bada sawaal hai: <b>art kya hai?</b> Kya art ko sirf beautiful hona chahiye, ya wo emotions express kar sakti hai, ya ideas challenge kar sakti hai bina "beautiful" hue bhi? Modern art (jaise abstract ya conceptual art) is sawaal ko aur complex banata hai.</p>`],
+        en:[`<p><b>Aesthetics</b> is the branch of philosophy that explores the nature of <b>beauty, art, and taste</b>. A central question is: <b>is beauty objective (a property of the thing itself) or subjective (in the eye of the beholder)?</b></p>
+        <p>Immanuel Kant argued that aesthetic judgment is unique — when we call something "beautiful," we're making a universal claim (as if it were a fact), yet the judgment isn't based on objective proof, only on a kind of "disinterested pleasure."</p>
+        <p>Another big question is: <b>what is art?</b> Should art be required to be beautiful, or can it express emotion or challenge ideas without being "beautiful" at all? Modern art (like abstract or conceptual art) makes this question even more complicated.</p>`]
+      },
+      sticky:{
+        hi:[`Aesthetics = beauty/art/taste ka study. Debate: objective vs subjective beauty. Kant: aesthetic judgment = universal claim + disinterested pleasure. Bada sawaal: art kya hai, kya usse beautiful hona zaroori hai?`],
+        en:[`Aesthetics = the study of beauty/art/taste. Debate: objective vs subjective beauty. Kant: aesthetic judgment = universal claim + disinterested pleasure. Big question: what is art, and must it be beautiful?`]
+      }
+    }
+  ];
+
+  const PHILOSOPHY_QUIZ_BANK = [
+    {type:'mcq', era:'indian', q:{hi:'Advaita Vedanta ke mutabik Atman aur Brahman mein kya rishta hai?', en:'According to Advaita Vedanta, what is the relationship between Atman and Brahman?'},
+      options:{hi:['Dono ek hi hain','Dono bilkul alag hain','Koi rishta nahi','Atman Brahman se bada hai'], en:['They are one and the same','They are completely separate','There is no relationship','Atman is greater than Brahman']}, answer:0},
+    {type:'mcq', era:'indian', q:{hi:'Charvaka darshan gyaan ke liye kis par bharosa karta hai?', en:'What does Charvaka philosophy rely on as a source of knowledge?'},
+      options:{hi:['Pratyaksha (direct perception)','Shastra (scripture)','Anumaan (inference)','Dhyan (meditation)'], en:['Pratyaksha (direct perception)','Shastra (scripture)','Anumaan (inference)','Dhyan (meditation)']}, answer:0},
+    {type:'fill', era:'indian', q:{hi:'Charvaka ko ________ bhi kaha jaata hai.', en:'Charvaka is also known as ________.'}, answers:['Lokayata']},
+    {type:'mcq', era:'indian', q:{hi:'Buddha ke Char Aarya Satya mein dukh ka karan kya bataya gaya hai?', en:"In Buddha's Four Noble Truths, what is identified as the cause of suffering?"},
+      options:{hi:['Trishna (craving)','Ahimsa','Maya','Anumana'], en:['Trishna (craving)','Ahimsa','Maya','Anumana']}, answer:0},
+    {type:'mcq', era:'indian', q:{hi:'Buddhism ka "Anatta" concept kya kehta hai?', en:"What does Buddhism's concept of 'Anatta' claim?"},
+      options:{hi:['Koi permanent self nahi hota','Atman aur Brahman ek hain','Sirf pratyaksha sach hai','Ahimsa sabse zaroori hai'], en:['There is no permanent self','Atman and Brahman are one','Only perception is true','Non-violence is the highest duty']}, answer:0},
+    {type:'fill', era:'indian', q:{hi:'Jainism ka wo siddhant jo kehta hai koi ek truth-claim poori reality capture nahi karta, use ________ kehte hain.', en:"Jainism's doctrine that no single truth-claim captures the whole of reality is called ________."}, answers:['Anekantavada']},
+    {type:'mcq', era:'indian', q:{hi:'Nyaya darshan ke mutabik "dhuan dekh kar aag ka anumaan lagana" kaunsa Pramana hai?', en:"According to Nyaya, inferring fire from seeing smoke is an example of which Pramana?"},
+      options:{hi:['Anumana','Pratyaksha','Shabda','Upamana'], en:['Anumana','Pratyaksha','Shabda','Upamana']}, answer:0},
+    {type:'mcq', era:'indian', q:{hi:'Samkhya darshan ke mutabik "pure consciousness" ko kya kehte hain?', en:"In Samkhya philosophy, what is 'pure consciousness' called?"},
+      options:{hi:['Purusha','Prakriti','Atman','Brahman'], en:['Purusha','Prakriti','Atman','Brahman']}, answer:0},
+    {type:'mcq', era:'western', q:{hi:'Socrates ka mashhoor kathan kya tha?', en:"What was Socrates' famous saying?"},
+      options:{hi:['I know that I know nothing','Cogito ergo sum','Man is the measure of all things','The unexamined life is not worth living'], en:['I know that I know nothing','Cogito ergo sum','Man is the measure of all things','The unexamined life is not worth living']}, answer:0},
+    {type:'mcq', era:'western', q:{hi:'Plato ke "Allegory of the Cave" mein log kya dekh rahe the?', en:"In Plato's Allegory of the Cave, what were the people watching?"},
+      options:{hi:['Deewar par shadows','Asli sooraj','Ek darpan','Doosre logon ko'], en:['Shadows on a wall','The real sun','A mirror','Other people']}, answer:0},
+    {type:'fill', era:'western', q:{hi:'Plato ke mutabik, har physical cheez ek perfect abstract ________ ki copy hai.', en:'According to Plato, every physical thing is a copy of a perfect abstract ________.'}, answers:['Form','form']},
+    {type:'mcq', era:'western', q:{hi:'Aristotle ka "Golden Mean" kya kehta hai?', en:"What does Aristotle's 'Golden Mean' say?"},
+      options:{hi:['Virtue do extremes ke beech hoti hai','Sirf duty follow karo','Sab kuch pehle se determined hai','Reality ek illusion hai'], en:['Virtue lies between two extremes','Only follow your duty','Everything is predetermined','Reality is an illusion']}, answer:0},
+    {type:'fill', era:'western', q:{hi:'Descartes ka mashhoor kathan hai: "________ ergo sum" — I think, therefore I am.', en:'Descartes\' famous statement is: "________ ergo sum" — I think, therefore I am.'}, answers:['Cogito']},
+    {type:'mcq', era:'western', q:{hi:'Kant ke Categorical Imperative ke mutabik insano ko kaise treat karna chahiye?', en:"According to Kant's Categorical Imperative, how should humans be treated?"},
+      options:{hi:['Hamesha ends ki tarah, sirf means nahi','Sirf apne fayde ke liye','Result ke hisaab se','Unke usefulness ke hisaab se'], en:['Always as ends, never merely as means','Only for personal benefit','Based on outcomes','Based on their usefulness']}, answer:0},
+    {type:'mcq', era:'western', q:{hi:'Sartre ka existentialism ka mashhoor kathan kya hai?', en:"What is Sartre's famous existentialist statement?"},
+      options:{hi:['Existence precedes essence','Cogito ergo sum','I know that I know nothing','The unexamined life is not worth living'], en:['Existence precedes essence','Cogito ergo sum','I know that I know nothing','The unexamined life is not worth living']}, answer:0},
+    {type:'mcq', era:'core', q:{hi:'Metaphysics kis sawaal ko explore karta hai?', en:'What question does metaphysics explore?'},
+      options:{hi:['Reality kya hai','Sahi-galat kya hai','Sound reasoning kaise banaye','Beauty kya hai'], en:['What is reality','What is right and wrong','How to reason soundly','What is beauty']}, answer:0},
+    {type:'mcq', era:'core', q:{hi:'Immanuel Kant ka ethics approach kaunsa hai?', en:"Which ethics approach is associated with Immanuel Kant?"},
+      options:{hi:['Deontology','Virtue Ethics','Consequentialism','Nihilism'], en:['Deontology','Virtue Ethics','Consequentialism','Nihilism']}, answer:0},
+    {type:'fill', era:'core', q:{hi:'Aristotle ka ethics approach ________ kehlata hai, jo character par focus karta hai.', en:"Aristotle's ethics approach is called ________, which focuses on character."}, answers:['Virtue Ethics','virtue ethics']},
+    {type:'mcq', era:'core', q:{hi:'Epistemology ki classic definition ke mutabik knowledge kya hai?', en:"According to the classic definition in epistemology, what is knowledge?"},
+      options:{hi:['Justified true belief','Sirf ek belief','Sirf ek true statement','Sirf senses se aaya gyaan'], en:['Justified true belief','Just a belief','Just a true statement','Only knowledge from the senses']}, answer:0},
+    {type:'mcq', era:'core', q:{hi:'Rationalism ke mutabik knowledge kahan se aata hai?', en:"According to Rationalism, where does knowledge come from?"},
+      options:{hi:['Reason/logic','Senses aur experience','Sapno se','Bhagya se'], en:['Reason/logic','Senses and experience','From dreams','From fate']}, answer:0},
+    {type:'mcq', era:'core', q:{hi:'Ek argument "sound" kab kehlata hai?', en:'When is an argument called "sound"?'},
+      options:{hi:['Valid hai aur saare premises true hain','Sirf valid hai','Sirf premises true hain','Conclusion popular hai'], en:['It is valid and all premises are true','It is only valid','Only its premises are true','Its conclusion is popular']}, answer:0},
+    {type:'fill', era:'core', q:{hi:'Kisi ke argument ko galat tarike se weak version mein badal kar attack karna ________ fallacy kehlata hai.', en:'Misrepresenting someone\'s argument as a weaker version to attack it is called the ________ fallacy.'}, answers:['straw man','Straw Man']},
+    {type:'mcq', era:'core', q:{hi:'Social Contract Theory ke mutabik log apni freedoms sarkar ko kyun dete hain?', en:'According to Social Contract Theory, why do people give up freedoms to the state?'},
+      options:{hi:['Protection aur order paane ke liye','Sirf tax bachane ke liye','Kyunki unke paas koi option nahi','Kyunki wo bore ho jaate hain'], en:['To gain protection and order','Just to save on taxes','Because they have no other option','Because they get bored']}, answer:0},
+    {type:'mcq', era:'core', q:{hi:'Aesthetics kis cheez ko explore karta hai?', en:'What does aesthetics explore?'},
+      options:{hi:['Beauty, art aur taste','Sirf logic','State aur justice','Knowledge kya hai'], en:['Beauty, art, and taste','Only logic','State and justice','What knowledge is']}, answer:0}
+  ];
+
+  function enterPhilosophyApp(){
+    if(typeof closePapersPage === 'function') closePapersPage();
+    if(typeof closeQuizPage === 'function') closeQuizPage();
+    currentSubject = 'philosophy';
+    document.body.classList.add('philosophy-theme');
+    TOPICS = PHILOSOPHY_TOPICS; ERA_TITLES = PHILOSOPHY_ERA_TITLES; ERA_ORDER = PHILOSOPHY_ERA_ORDER; STORY_MODE = PHILOSOPHY_STORY_MODE; QUIZ_BANK = PHILOSOPHY_QUIZ_BANK;
+    settings.currentEra = PHILOSOPHY_ERA_ORDER[0];
     saveSettings();
     document.getElementById('overviewBanner').style.display = 'none';
     if(papersBtn) papersBtn.style.display = 'none';
@@ -5115,6 +5516,7 @@ updateStudyTimeLabel();
     if('speechSynthesis' in window) window.speechSynthesis.cancel();
     if(typeof closePapersPage === 'function') closePapersPage();
     if(typeof closeQuizPage === 'function') closeQuizPage();
+    document.body.classList.remove('philosophy-theme');
     document.getElementById('appMain').style.display = 'none';
     showScreen(subjectScreen);
   });
