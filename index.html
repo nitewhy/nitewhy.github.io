@@ -2676,6 +2676,18 @@ const GRAPH_CONFIGS = {
       {label:{hi:'Isothermal: PV = constant', en:'Isothermal: PV = constant'}, color:'#7fe3d8', fn:V=> V>0.5? v.k/V : v.k/0.5},
       {label:{hi:'Adiabatic: PVᵞ = constant (zyada steep)', en:'Adiabatic: PVᵞ = constant (steeper fall)'}, color:'#c9a227', fn:V=> V>0.5? v.k/Math.pow(V,v.gamma) : v.k/Math.pow(0.5,v.gamma)}
     ]
+  },
+  'c11-rolling-graph': {
+    title:{hi:'Incline par Rolling — Acceleration vs Body Shape (k²/R²)', en:'Rolling on an Incline — Acceleration vs Body Shape (k²/R²)'},
+    xLabel:{hi:'k²/R²  (0=point mass slide, 1=ring/hoop)', en:'k²/R²  (0=sliding point mass, 1=ring/hoop)'}, yLabel:{hi:'Acceleration (m/s²)', en:'Acceleration (m/s²)'},
+    xMax: 1.2,
+    sliders:[
+      {key:'theta', label:{hi:'Incline angle (θ)', en:'Incline angle (θ)'}, min:10, max:60, step:5, default:30, unit:'°'}
+    ],
+    curves:(v)=>{
+      const g = 9.8, rad = v.theta*Math.PI/180;
+      return [{label:{hi:'a = g sinθ / (1 + k²/R²)  — kam k²/R² = zyada acceleration', en:'a = g sinθ / (1 + k²/R²) — smaller k²/R² = higher acceleration'}, color:'#7fe3d8', fn:k2r2=> (g*Math.sin(rad))/(1+k2r2)}];
+    }
   }
 };
 
@@ -9326,8 +9338,122 @@ updateStudyTimeLabel();
             </div>
             <p>Isi wajah se — agar kisi formula mein koi quantity <b>squared ya cubed</b> hai (jaise volume ∝ r³), uska error sabse zyada final result ko affect karta hai. Isliye experiments mein us measurement ko sabse zyada precisely lena chahiye jiska power sabse jyada ho.</p>
           </div>
-        </div>`
-      ],
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📐 Measurement of Length — Parallax Method, Vernier & Screw Gauge</div>
+          <div class="concept-body">
+            <p>Bahut badi (astronomical) distances measure karne ke liye <b>parallax method</b> use hota hai — jab object ko do alag positions se dekhne par uska background ke against apparent shift dikhta hai.</p>
+            <div class="derive-box">
+              <span class="step">Basis b = dono observation points ke beech distance</span>
+              <span class="step">θ = parallax angle (object dono points se dekhne par jitna angle badalta hai)</span>
+              <span class="step">Chhote angle ke liye: arc ≈ chord, isliye d = b/θ &nbsp; <span class="step-note">(θ radians mein)</span></span>
+            </div>
+            <p>Chhoti lengths ke liye <b>Vernier Callipers</b> (least count = 1 MSD − 1 VSD, typically 0.01 cm) aur <b>Screw Gauge</b> (least count = pitch ÷ circular scale divisions, typically 0.001 cm) use hote hain — screw gauge, vernier se bhi zyada precise hota hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">⚖️ Measurement of Mass & Time</div>
+          <div class="concept-body">
+            <p>Bahut badi masses (jaise planets) <b>gravitational method</b> se measure hoti hain (unke gravitational pull se), aur bahut chhoti masses (atoms/molecules) <b>mass spectrograph</b> se measure hoti hain, jo charge/mass ratio use karta hai.</p>
+            <p><b>Time</b> ki national standard <b>caesium atomic clock</b> se aati hai — ye caesium-133 atom ki ek particular transition ki 9,192,631,770 oscillations ko 1 second define karta hai, jo ghadiyon se lakhon guna zyada accurate hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🎯 Accuracy vs Precision</div>
+          <div class="concept-body">
+            <p><b>Accuracy</b> batati hai ki measurement true value ke kitni paas hai. <b>Precision</b> batata hai ki repeated measurements kitni consistently ek jaisi aati hain (chahe wo true value se door ho).</p>
+            <p>Isliye ek instrument <b>precise but inaccurate</b> ho sakta hai — jaise agar ek scale mis-calibrated ho, to sab readings ek jaise aayengi (high precision) lekin sab galat honge (low accuracy). Ideal instrument dono chahiye — accurate bhi, precise bhi.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📊 Absolute, Relative & Percentage Error</div>
+          <div class="concept-body">
+            <div class="ex-box">Absolute error: Δaᵢ = |a(mean) − aᵢ|<br>Mean absolute error: Δa(mean) = (Σ|Δaᵢ|)/n<br>Relative error: Δa(mean)/a(mean)<br>Percentage error: Relative error × 100%</div>
+            <p>Multiple readings lekar unka <b>mean</b> nikalte hain (jo true value ke sabse paas maana jaata hai), fir har reading ka mean se deviation nikal kar unka average lete hain — yehi mean absolute error hai, jo final result ke saath ± likha jaata hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🔄 Rules for Rounding Off</div>
+          <div class="concept-body">
+            <div class="ex-box">Rule 1: Dropped digit > 5 → preceding digit +1<br>Rule 2: Dropped digit < 5 → preceding digit unchanged<br>Rule 3: Dropped digit = 5 → nearest EVEN digit (banker's rounding)</div>
+            <p>Example: 4.847 → 3 sig figs → 4.85 (kyunki dropped digit 7>5). 2.745 → 3 sig figs → 2.74 (kyunki dropped digit=5, aur preceding digit 4 already even hai, isliye same rehta hai); lekin 2.735 → 2.74 (3 already odd, round up to even 4).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🧮 Dimensional Analysis Se Formula Derive Karna — Simple Pendulum</div>
+          <div class="concept-body">
+            <p>Dimensional analysis ka ek powerful use hai — bina poora derivation kiye, kisi formula ka <b>structure guess karna</b>. Dekhte hain simple pendulum ka Time Period T kaise depend karta hai length l, mass m, aur g par.</p>
+            <div class="derive-box">
+              <span class="step">Maan lo T ∝ lᵃ mᵇ gᶜ, ya T = k·lᵃ mᵇ gᶜ (k = dimensionless constant)</span>
+              <span class="step">Dimensions substitute karo: [M⁰L⁰T¹] = [L]ᵃ[M]ᵇ[LT⁻²]ᶜ = [M]ᵇ[L]ᵃ⁺ᶜ[T]⁻²ᶜ</span>
+              <span class="step">Dono taraf powers equate karo: M: 0=b, L: 0=a+c, T: 1=−2c</span>
+              <span class="step">Solve karo: c = −1/2, a = −c = 1/2, b = 0</span>
+              <span class="step">T = k·l^(1/2)·g^(−1/2) = k√(l/g) &nbsp; <span class="step-note">✓ (actual formula: k=2π, experiment/derivation se pata chalta hai)</span></span>
+            </div>
+            <p>Interesting baat — humein pata chal gaya ki <b>mass T ko affect nahi karta</b> (b=0 aaya), sirf dimensional analysis se, bina pendulum ka poora physics derive kiye! Lekin humein numerical constant (2π) pata nahi chala — wo hi dimensional analysis ki limitation hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🔀 Unit Conversion Using Dimensional Method — 1 Calorie to Joules</div>
+          <div class="concept-body">
+            <p>Dimensional analysis ka doosra bada use hai — ek system of units se doosre mein convert karna. Formula: n₁u₁ = n₂u₂, jahan n = numerical value, u = unit ka size.</p>
+            <div class="derive-box">
+              <span class="step">1 calorie CGS system mein defined hai: 1 cal = 4.2 × 10⁷ erg (energy ka CGS unit)</span>
+              <span class="step">n₂ = n₁ × [M₁/M₂]ᵃ × [L₁/L₂]ᵇ × [T₁/T₂]ᶜ &nbsp; <span class="step-note">(Energy ke liye a=1,b=2,c=−2)</span></span>
+              <span class="step">CGS→SI: M₁/M₂ = 1g/1kg = 10⁻³, L₁/L₂ = 1cm/1m = 10⁻², T₁/T₂ = 1</span>
+              <span class="step">n₂ = 4.2×10⁷ × (10⁻³)¹ × (10⁻²)² × (1)⁻² = 4.2×10⁷ × 10⁻³ × 10⁻⁴</span>
+              <span class="step">n₂ = 4.2×10⁷⁻⁷ = 4.2 &nbsp; <span class="step-note">✓ isliye 1 cal = 4.2 Joules (SI)</span></span>
+            </div>
+            <p>Yehi general method kisi bhi physical quantity ko ek system of units se doosre system mein convert karne ke liye use hota hai — sirf uska dimensional formula (powers a, b, c) pata hona chahiye.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Screw Gauge Reading</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: Ek screw gauge ka pitch 1 mm hai aur circular scale par 100 divisions hain. Main scale reading (MSR) = 3 mm hai, aur circular scale reading (CSR) = 35 divisions. Wire ka diameter kya hai?</div>
+            <div class="derive-box">
+              <span class="step">Least Count (LC) = Pitch / Total circular divisions = 1mm/100 = 0.01 mm</span>
+              <span class="step">Diameter = MSR + (CSR × LC)</span>
+              <span class="step">Diameter = 3 + (35 × 0.01) = 3 + 0.35</span>
+              <span class="step">Diameter = 3.35 mm &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>Screw gauge, vernier calliper se bhi zyada precise hota hai (0.001cm vs 0.01cm) — isliye chhoti cheezon (wire, sheet ki thickness) ke liye ise prefer kiya jaata hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Dimensional Consistency Check</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: Check karo ki ye equation dimensionally sahi hai ya nahi: v = u + at (jahan v,u = velocity, a = acceleration, t = time)</div>
+            <div class="derive-box">
+              <span class="step">LHS: [v] = [M⁰L¹T⁻¹]</span>
+              <span class="step">RHS term 1: [u] = [M⁰L¹T⁻¹]</span>
+              <span class="step">RHS term 2: [at] = [M⁰L¹T⁻²] × [M⁰L⁰T¹] = [M⁰L¹T⁻¹]</span>
+              <span class="step">Sab terms ka dimension same hai: [M⁰L¹T⁻¹] = [M⁰L¹T⁻¹] + [M⁰L¹T⁻¹] &nbsp; <span class="step-note">✓ Dimensionally consistent</span></span>
+            </div>
+            <p>Note — ye sirf confirm karta hai ki equation dimensionally possible hai, iska matlab ye nahi ki equation <b>numerically bhi</b> sahi hai (numerical constants dimensional analysis se nahi pakde ja sakte, jaisa pehle discuss kiya).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">⚠️ Zero Error — Vernier Calliper & Screw Gauge</div>
+          <div class="concept-body">
+            <p>Agar jaws bilkul touch ho (kuch bhi measure na kiya ja raha ho) tab bhi vernier/screw gauge ki reading zero na aaye, to us instrument mein <b>zero error</b> hai — ye ek systematic error hai jo har measurement mein consistently add/subtract hota hai jab tak correct na kiya jaaye.</p>
+            <div class="ex-box">Positive zero error: Zero se aage shift (vernier ka 0 mark, main scale ke 0 ke aage hai) → actual reading se subtract karo<br>Negative zero error: Zero se peeche shift (vernier ka 0 mark, main scale ke 0 ke peeche hai) → actual reading mein add karo</div>
+            <div class="derive-box">
+              <span class="step">Correct reading = Observed reading − Zero error &nbsp; <span class="step-note">(zero error apne sign ke saath substitute hota hai)</span></span>
+              <span class="step">Positive zero error ho to: Correct = Observed − (+ve value) → answer chhota hoga</span>
+              <span class="step">Negative zero error ho to: Correct = Observed − (−ve value) = Observed + value → answer bada hoga</span>
+            </div>
+            <p>Isliye kisi bhi precision instrument se measurement lene se pehle uska zero error check karna zaroori hai, warna poori series of measurements mein wahi consistent galti chalti rahegi.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🔢 Significant Figures — Counting Rules</div>
+          <div class="concept-body">
+            <div class="ex-box">Rule 1: Non-zero digits hamesha significant — 123 mein 3 SF<br>Rule 2: Do non-zero digits ke beech ke zeros significant — 1005 mein 4 SF<br>Rule 3: Leading zeros (number se pehle) significant NAHI — 0.0025 mein 2 SF (sirf 2,5)<br>Rule 4: Decimal ke baad, non-zero ke baad wale trailing zeros significant — 2.500 mein 4 SF<br>Rule 5: Bina decimal wale trailing zeros ambiguous hote hain (jaise 100) — scientific notation use karo clarity ke liye: 1×10² (1 SF) vs 1.00×10² (3 SF)</div>
+            <p>Ye rules isliye important hain kyunki <b>galat SF counting → galat error estimate</b> ho jaata hai. Jaise 0.0025 ko agar 5 SF maan liya (galti se saare zeros count kar liye), to measurement ki precision kaafi overstate ho jaayegi jo actually measure hi nahi hui thi.</p>
+          </div>
+        </div>
+      `],
         en:[
         `<ul>
           <li><b>7 SI Base Units:</b> metre, kilogram, second, ampere, kelvin, mole, candela</li>
@@ -9410,8 +9536,122 @@ updateStudyTimeLabel();
             </div>
             <p>This is why — if a formula has a quantity <b>squared or cubed</b> (like volume ∝ r³), its error affects the final result the most. That's why in experiments, the measurement with the highest power should be taken as precisely as possible.</p>
           </div>
-        </div>`
-      ]
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📐 Measurement of Length — Parallax Method, Vernier & Screw Gauge</div>
+          <div class="concept-body">
+            <p>To measure very large (astronomical) distances, the <b>parallax method</b> is used — an object viewed from two different positions shows an apparent shift against a distant background.</p>
+            <div class="derive-box">
+              <span class="step">Basis b = distance between the two observation points</span>
+              <span class="step">θ = parallax angle (how much the object's apparent position shifts between the two points)</span>
+              <span class="step">For a small angle: arc ≈ chord, so d = b/θ &nbsp; <span class="step-note">(θ in radians)</span></span>
+            </div>
+            <p>For small lengths, <b>Vernier Callipers</b> (least count = 1 MSD − 1 VSD, typically 0.01 cm) and the <b>Screw Gauge</b> (least count = pitch ÷ circular scale divisions, typically 0.001 cm) are used — the screw gauge is even more precise than the vernier.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">⚖️ Measurement of Mass & Time</div>
+          <div class="concept-body">
+            <p>Very large masses (like planets) are measured using the <b>gravitational method</b> (from their gravitational pull), and very small masses (atoms/molecules) using a <b>mass spectrograph</b>, which uses the charge-to-mass ratio.</p>
+            <p>The national standard for <b>time</b> comes from the <b>caesium atomic clock</b> — it defines 1 second as 9,192,631,770 oscillations of a specific transition in a caesium-133 atom, far more accurate than mechanical clocks.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🎯 Accuracy vs Precision</div>
+          <div class="concept-body">
+            <p><b>Accuracy</b> tells us how close a measurement is to the true value. <b>Precision</b> tells us how consistently repeated measurements agree with each other (whether or not they're close to the true value).</p>
+            <p>So an instrument can be <b>precise but inaccurate</b> — if a scale is miscalibrated, every reading will come out the same (high precision) but all will be wrong (low accuracy). An ideal instrument needs both — accuracy and precision.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📊 Absolute, Relative & Percentage Error</div>
+          <div class="concept-body">
+            <div class="ex-box">Absolute error: Δaᵢ = |a(mean) − aᵢ|<br>Mean absolute error: Δa(mean) = (Σ|Δaᵢ|)/n<br>Relative error: Δa(mean)/a(mean)<br>Percentage error: Relative error × 100%</div>
+            <p>We take multiple readings and find their <b>mean</b> (assumed closest to the true value), then find each reading's deviation from the mean and average those — this is the mean absolute error, reported alongside the final result as ±.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🔄 Rules for Rounding Off</div>
+          <div class="concept-body">
+            <div class="ex-box">Rule 1: Dropped digit > 5 → preceding digit +1<br>Rule 2: Dropped digit < 5 → preceding digit unchanged<br>Rule 3: Dropped digit = 5 → round to nearest EVEN digit (banker's rounding)</div>
+            <p>Example: 4.847 → 3 sig figs → 4.85 (dropped digit 7>5). 2.745 → 3 sig figs → 2.74 (dropped digit=5, and the preceding digit 4 is already even, so it stays); but 2.735 → 2.74 (3 is odd, rounds up to the even 4).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🧮 Deriving a Formula via Dimensional Analysis — the Simple Pendulum</div>
+          <div class="concept-body">
+            <p>One powerful use of dimensional analysis is <b>guessing a formula's structure</b> without doing the full derivation. Let's see how a simple pendulum's Time Period T depends on length l, mass m, and g.</p>
+            <div class="derive-box">
+              <span class="step">Assume T ∝ lᵃ mᵇ gᶜ, or T = k·lᵃ mᵇ gᶜ (k = dimensionless constant)</span>
+              <span class="step">Substitute dimensions: [M⁰L⁰T¹] = [L]ᵃ[M]ᵇ[LT⁻²]ᶜ = [M]ᵇ[L]ᵃ⁺ᶜ[T]⁻²ᶜ</span>
+              <span class="step">Equate powers on both sides: M: 0=b, L: 0=a+c, T: 1=−2c</span>
+              <span class="step">Solving: c = −1/2, a = −c = 1/2, b = 0</span>
+              <span class="step">T = k·l^(1/2)·g^(−1/2) = k√(l/g) &nbsp; <span class="step-note">✓ (the actual formula has k=2π, found from experiment/full derivation)</span></span>
+            </div>
+            <p>Interestingly — we found that <b>mass doesn't affect T</b> (b came out 0), purely from dimensional analysis, without deriving the pendulum's full physics! But we couldn't find the numerical constant (2π) — that's the limitation of dimensional analysis.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🔀 Unit Conversion Using the Dimensional Method — 1 Calorie to Joules</div>
+          <div class="concept-body">
+            <p>Another major use of dimensional analysis is converting a quantity from one system of units to another. Formula: n₁u₁ = n₂u₂, where n = numerical value, u = size of the unit.</p>
+            <div class="derive-box">
+              <span class="step">1 calorie is defined in the CGS system: 1 cal = 4.2 × 10⁷ erg (CGS unit of energy)</span>
+              <span class="step">n₂ = n₁ × [M₁/M₂]ᵃ × [L₁/L₂]ᵇ × [T₁/T₂]ᶜ &nbsp; <span class="step-note">(for Energy, a=1, b=2, c=−2)</span></span>
+              <span class="step">CGS→SI: M₁/M₂ = 1g/1kg = 10⁻³, L₁/L₂ = 1cm/1m = 10⁻², T₁/T₂ = 1</span>
+              <span class="step">n₂ = 4.2×10⁷ × (10⁻³)¹ × (10⁻²)² × (1)⁻² = 4.2×10⁷ × 10⁻³ × 10⁻⁴</span>
+              <span class="step">n₂ = 4.2×10⁷⁻⁷ = 4.2 &nbsp; <span class="step-note">✓ so 1 cal = 4.2 Joules (SI)</span></span>
+            </div>
+            <p>This same general method is used to convert any physical quantity from one system of units to another — you only need its dimensional formula (the powers a, b, c).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Screw Gauge Reading</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: A screw gauge has a pitch of 1 mm and 100 divisions on its circular scale. The main scale reading (MSR) = 3 mm, and the circular scale reading (CSR) = 35 divisions. What is the wire's diameter?</div>
+            <div class="derive-box">
+              <span class="step">Least Count (LC) = Pitch / Total circular divisions = 1mm/100 = 0.01 mm</span>
+              <span class="step">Diameter = MSR + (CSR × LC)</span>
+              <span class="step">Diameter = 3 + (35 × 0.01) = 3 + 0.35</span>
+              <span class="step">Diameter = 3.35 mm &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>A screw gauge is even more precise than a vernier calliper (0.001cm vs 0.01cm) — which is why it's preferred for small objects (wires, sheet thickness).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Checking Dimensional Consistency</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: Check whether this equation is dimensionally correct: v = u + at (where v,u = velocity, a = acceleration, t = time)</div>
+            <div class="derive-box">
+              <span class="step">LHS: [v] = [M⁰L¹T⁻¹]</span>
+              <span class="step">RHS term 1: [u] = [M⁰L¹T⁻¹]</span>
+              <span class="step">RHS term 2: [at] = [M⁰L¹T⁻²] × [M⁰L⁰T¹] = [M⁰L¹T⁻¹]</span>
+              <span class="step">All terms have the same dimension: [M⁰L¹T⁻¹] = [M⁰L¹T⁻¹] + [M⁰L¹T⁻¹] &nbsp; <span class="step-note">✓ Dimensionally consistent</span></span>
+            </div>
+            <p>Note — this only confirms the equation is dimensionally possible; it doesn't mean the equation is <b>numerically</b> correct too (numerical constants can't be caught by dimensional analysis, as discussed earlier).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">⚠️ Zero Error — Vernier Calliper & Screw Gauge</div>
+          <div class="concept-body">
+            <p>If the jaws are fully closed (nothing being measured) and the reading isn't exactly zero, the instrument has a <b>zero error</b> — a systematic error that consistently adds or subtracts from every measurement until corrected.</p>
+            <div class="ex-box">Positive zero error: Zero shifted forward (vernier's 0 mark lies ahead of the main scale's 0) → subtract from the observed reading<br>Negative zero error: Zero shifted backward (vernier's 0 mark lies behind the main scale's 0) → add to the observed reading</div>
+            <div class="derive-box">
+              <span class="step">Correct reading = Observed reading − Zero error &nbsp; <span class="step-note">(zero error is substituted with its own sign)</span></span>
+              <span class="step">If zero error is positive: Correct = Observed − (+ve value) → the answer becomes smaller</span>
+              <span class="step">If zero error is negative: Correct = Observed − (−ve value) = Observed + value → the answer becomes larger</span>
+            </div>
+            <p>So it's essential to check a precision instrument's zero error before taking measurements — otherwise the same consistent error carries through an entire series of readings.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🔢 Significant Figures — Counting Rules</div>
+          <div class="concept-body">
+            <div class="ex-box">Rule 1: Non-zero digits are always significant — 123 has 3 SF<br>Rule 2: Zeros between two non-zero digits are significant — 1005 has 4 SF<br>Rule 3: Leading zeros (before the number) are NOT significant — 0.0025 has 2 SF (just 2 and 5)<br>Rule 4: After a decimal point, trailing zeros following a non-zero digit ARE significant — 2.500 has 4 SF<br>Rule 5: Trailing zeros without a decimal point are ambiguous (like 100) — use scientific notation for clarity: 1×10² (1 SF) vs 1.00×10² (3 SF)</div>
+            <p>These rules matter because <b>miscounting SF leads to a wrong error estimate</b>. For instance, if 0.0025 were mistakenly treated as having 5 SF (counting all the zeros), it would greatly overstate the measurement's precision beyond what was actually measured.</p>
+          </div>
+        </div>
+      `]
     },
     sticky:{
       hi:[
@@ -9419,14 +9659,26 @@ updateStudyTimeLabel();
         `Dimensional analysis = equation ki correctness check, numerical constants nahi pakadta`,
         `Significant figures = kitne digits reliable hain`,
         `Errors: Systematic (calibration) vs Random (fluctuation, averaging se kam hota hai)`,
-        `Error combination: Add/Sub → ΔZ=ΔA+ΔB; Mult/Div → ΔZ/Z=ΔA/A+ΔB/B; Power → ΔZ/Z=n(ΔA/A)`
+        `Error combination: Add/Sub → ΔZ=ΔA+ΔB; Mult/Div → ΔZ/Z=ΔA/A+ΔB/B; Power → ΔZ/Z=n(ΔA/A)`,
+        `Accuracy = true value ke paas; Precision = repeated readings consistent`,
+        `Screw gauge LC = pitch/circular divisions (~0.001cm); Vernier LC = 1MSD−1VSD (~0.01cm)`,
+        `Rounding: dropped digit >5→+1; <5→same; =5→nearest even`,
+        `Dimensional analysis se formula ka structure guess ho sakta hai (jaise T=k√(l/g)), lekin constant (k) nahi milta`,
+        `Zero error: Correct reading = Observed − Zero error (sign ke saath)`,
+        `Sig figs: leading zeros count nahi, trailing zeros after decimal count hote hain`
       ],
       en:[
         `7 SI Base Units: m, kg, s, A, K, mol, cd`,
         `Dimensional analysis = checks equation correctness, can't catch numerical constants`,
         `Significant figures = how many digits are reliable`,
         `Errors: Systematic (calibration) vs Random (fluctuation, reduced by averaging)`,
-        `Error combination: Add/Sub → ΔZ=ΔA+ΔB; Mult/Div → ΔZ/Z=ΔA/A+ΔB/B; Power → ΔZ/Z=n(ΔA/A)`
+        `Error combination: Add/Sub → ΔZ=ΔA+ΔB; Mult/Div → ΔZ/Z=ΔA/A+ΔB/B; Power → ΔZ/Z=n(ΔA/A)`,
+        `Accuracy = close to true value; Precision = repeated readings agree with each other`,
+        `Screw gauge LC = pitch/circular divisions (~0.001cm); Vernier LC = 1MSD−1VSD (~0.01cm)`,
+        `Rounding: dropped digit >5→+1; <5→same; =5→nearest even`,
+        `Dimensional analysis can guess a formula's structure (e.g. T=k√(l/g)), but not the constant (k)`,
+        `Zero error: Correct reading = Observed − Zero error (with sign)`,
+        `Sig figs: leading zeros don't count, trailing zeros after a decimal do count`
       ]
     }
   },
@@ -10369,6 +10621,7 @@ updateStudyTimeLabel();
           <li><b>Centre of mass:</b> woh point jahan poore system ka mass concentrated maan sakte hain</li>
           <li><b>Torque:</b> rotational effect of force, τ = r × F</li>
           <li><b>Moment of inertia:</b> rotational motion mein mass jaisa role nibhata hai</li>
+          <li><b>Angular momentum:</b> L = Iω, jab net external torque zero ho tab conserve hota hai</li>
         </ul>`,
         `<table class="compare-table">
           <tr><th>Linear Motion</th><th>Rotational Motion</th></tr>
@@ -10376,30 +10629,121 @@ updateStudyTimeLabel();
           <tr><td>Mass m</td><td>Moment of inertia I</td></tr>
           <tr><td>Momentum p = mv</td><td>Angular momentum L = Iω</td></tr>
           <tr><td>F = ma</td><td>τ = Iα</td></tr>
+          <tr><td>Work W = Fs</td><td>Work W = τθ</td></tr>
+          <tr><td>Power P = Fv</td><td>Power P = τω</td></tr>
         </table>`,
         `<p><span class="tag-label">Theorems</span></p>
-        <div class="ex-box">Parallel axis: I = I(cm) + Md²<br>Perpendicular axis (planar body): Iz = Ix + Iy</div>
-        <div class="deriv-box">
-          <span class="deriv-title">Derivation — Kinetic Energy of a Rolling Body</span>
-          <ol class="deriv-steps">
-            <li>Rolling body (bina fisle) mein do motions hote hain: center of mass ki translation + apni axis ke around rotation</li>
-            <li>Total KE = Translational KE + Rotational KE = ½mv² + ½Iω²</li>
-            <li>Rolling without slipping ki condition: v = Rω, isliye ω = v/R</li>
-            <li>Moment of inertia ko I = mk² likho, jahan k = radius of gyration</li>
-            <li>Substitute karke: KE = ½mv² + ½(mk²)(v/R)² = ½mv²[1 + k²/R²]</li>
-          </ol>
-          <div class="deriv-result">KE(rolling) = ½mv²(1 + k²/R²)</div>
-        </div>
+        <div class="ex-box">Parallel axis: I = I(cm) + Md²<br>Perpendicular axis (planar body): Iz = Ix + Iy<br>Rotational Newton's 2nd Law: τ(net) = Iα</div>
         <p><span class="tag-label">Trap</span> Ek incline se same height se chhodne par, sabse chhota k²/R² wali body (jaise solid sphere) pehle neeche pahunchti hai — kyunki uski rotational KE mein energy kam "chali" jaati hai</p>`,
-        `<p><b>Centre of mass</b> ek imaginary point hai jahan poore system ka total mass concentrated maan kar external forces ka effect analyse kiya ja sakta hai. Discrete particles ke liye: X(cm) = Σmᵢxᵢ / Σmᵢ. Agar koi external force nahi lag raha, toh centre of mass ki velocity constant rehti hai — chahe individual particles kaise bhi move karein.</p>
+        `<div class="concept-block">
+          <div class="concept-head">🔄 Newton's Second Law for Rotation — τ = Iα (Derivation)</div>
+          <div class="concept-body">
+            <p>Ye rotational motion ka F = ma hai — bas linear quantities ki jagah rotational quantities use hoti hain. Isko ek rigid body ke andar ek single particle se shuru karke poori body tak extend karte hain.</p>
+            <div class="derive-box">
+              <span class="step">Rigid body mein ek particle (mass mᵢ) axis se rᵢ distance par hai, aur usme tangential force Fᵢ lag rahi hai</span>
+              <span class="step">Newton's 2nd Law se tangential direction mein: Fᵢ = mᵢaᵢ, jahan aᵢ = tangential acceleration</span>
+              <span class="step">Rigid body ke saare particles same angular acceleration α share karte hain: aᵢ = rᵢα</span>
+              <span class="step">Is particle ka torque: τᵢ = rᵢFᵢ = rᵢ(mᵢrᵢα) = mᵢrᵢ²α</span>
+              <span class="step">Poori body ke saare particles ka torque add karo: τ(net) = Σ mᵢrᵢ²α = (Σ mᵢrᵢ²)α</span>
+              <span class="step">τ(net) = Iα &nbsp; <span class="step-note">✓ jahan I = Σmᵢrᵢ² (moment of inertia)</span></span>
+            </div>
+            <p>Yehi wajah hai ki moment of inertia sirf mass par nahi, balki mass axis se <b>kitni door</b> hai us par bhi depend karta hai (r² term ki wajah se) — dur wala mass rotation ko rokne mein zyada "resist" karta hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📐 Parallel Axis Theorem (Derivation)</div>
+          <div class="concept-body">
+            <p>Agar hume centre of mass wali axis ke bajaye kisi parallel axis (distance d door) ke around moment of inertia chahiye, to ye theorem seedha shortcut deta hai — poora integral dobara solve karne ki zaroorat nahi.</p>
+            <div class="derive-box">
+              <span class="step">Har particle ki position, centre of mass se rᵢ (cm-axis se) aur naye axis se rᵢ + d hai (d = dono axes ke beech ka distance vector)</span>
+              <span class="step">Naye axis ke around: I = Σ mᵢ|rᵢ + d|² = Σ mᵢ(rᵢ² + 2rᵢ·d + d²)</span>
+              <span class="step">Expand karo: I = Σmᵢrᵢ² + 2d·(Σmᵢrᵢ) + d²Σmᵢ</span>
+              <span class="step">Centre of mass ki definition se Σmᵢrᵢ = 0 (rᵢ cm se measure kiya gaya hai), isliye beech wala term zero ho jaata hai</span>
+              <span class="step">I = I(cm) + Md² &nbsp; <span class="step-note">✓ jahan M = total mass, d = axes ke beech distance</span></span>
+            </div>
+            <p>Isi liye <b>I(cm) hamesha minimum hota hai</b> — kisi bhi doosri parallel axis ke around I usse zyada hi hoga (Md² positive add hota hai).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🎳 Kinetic Energy of a Rolling Body (Derivation)</div>
+          <div class="concept-body">
+            <p>Rolling body (bina fisle) mein do motions hote hain: center of mass ki translation + apni axis ke around rotation — dono ki KE add hoti hai.</p>
+            <div class="derive-box">
+              <span class="step">Total KE = Translational KE + Rotational KE = ½mv² + ½Iω²</span>
+              <span class="step">Rolling without slipping ki condition: v = Rω, isliye ω = v/R</span>
+              <span class="step">Moment of inertia ko I = mk² likho, jahan k = radius of gyration</span>
+              <span class="step">Substitute karke: KE = ½mv² + ½(mk²)(v/R)² = ½mv²[1 + k²/R²]</span>
+              <span class="step">KE(rolling) = ½mv²(1 + k²/R²) &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>Isi (1 + k²/R²) factor se hi decide hota hai ki incline par kaun sabse pehle neeche pahunchega — chhota k²/R² matlab kam energy rotation mein "chali" gayi, isliye zyada energy translation (speed) mein bachi. Neeche graph mein different bodies ke liye incline-down acceleration compare karo:</p>
+            <div class="graph-widget" data-graph="c11-rolling-graph"></div>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Centre of Mass of HCl Molecule</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: HCl molecule mein H aur Cl nuclei ke beech distance 1.27 Å hai. Molecule ka centre of mass Cl nucleus se kitni door hai? (Mass of H ≈ 1u, Mass of Cl ≈ 35.5u)</div>
+            <div class="derive-box">
+              <span class="step">Cl ko origin par rakho (x=0), H x=1.27 Å par hai</span>
+              <span class="step">X(cm) = (m(H)×x(H) + m(Cl)×x(Cl)) / (m(H) + m(Cl))</span>
+              <span class="step">X(cm) = (1×1.27 + 35.5×0) / (1 + 35.5) = 1.27/36.5</span>
+              <span class="step">X(cm) ≈ 0.0348 Å from Cl &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>Notice — centre of mass Cl ke bahut paas hai (Cl se sirf 0.035 Å), kyunki Cl, H se 35.5 guna bhaari hai. Yehi general pattern hai: <b>COM hamesha bhaari mass ke zyada paas hota hai</b>.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Torque Balance (Metre Stick Problem)</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: Ek metre stick ko knife edge par balance kiya gaya hai. Jab 5g ke 2 coins (total 10g) 12.0 cm mark par rakhe jaate hain, to stick 45.0 cm mark par balance hoti hai. Stick ka mass kya hai?</div>
+            <div class="derive-box">
+              <span class="step">Uniform stick ka apna COM 50.0 cm mark par hota hai (stick ka geometric center)</span>
+              <span class="step">Pivot 45.0 cm par hai — coins ka torque (clockwise) aur stick ke weight ka torque (anticlockwise) balance karega</span>
+              <span class="step">Coins ki distance from pivot = 45.0 − 12.0 = 33.0 cm; Stick weight ki distance from pivot = 50.0 − 45.0 = 5.0 cm</span>
+              <span class="step">Equilibrium: (coins ka torque) = (stick ka torque)</span>
+              <span class="step">10g × 33.0 cm = M × 5.0 cm</span>
+              <span class="step">M = 330/5 = 66 g &nbsp; <span class="step-note">✓ Stick ka mass</span></span>
+            </div>
+            <p>Is tarah ke problems mein trick ye hai: <b>uniform object ka weight hamesha uske geometric centre par act karta hua treat karo</b>, phir dono taraf ke torques equal rakho.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Parallel Axis Theorem (Rod ka I)</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: Ek uniform rod ki mass M = 3 kg aur length L = 2 m hai. Rod ke centre se guzarne wali perpendicular axis ke around I(cm) = ML²/12 hai. Parallel axis theorem use karke rod ke ek sire (end) se guzarne wali axis ke around I nikaalo.</div>
+            <div class="derive-box">
+              <span class="step">I(cm) = ML²/12 = (3 × 2²)/12 = 12/12 = 1 kg·m²</span>
+              <span class="step">Centre se end tak ki distance d = L/2 = 1 m</span>
+              <span class="step">Parallel axis theorem: I(end) = I(cm) + Md²</span>
+              <span class="step">I(end) = 1 + (3 × 1²) = 1 + 3 = 4 kg·m²</span>
+              <span class="step">Check formula se: I(end) = ML²/3 = (3×4)/3 = 4 kg·m² &nbsp; <span class="step-note">✓ match ho gaya</span></span>
+            </div>
+            <p>End wali axis ke around I, centre wali axis se <b>4 guna zyada</b> hai — kyunki mass ka distribution ab axis se zyada door hai (r² dependence ki wajah se ye difference itna bada hai).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Angular Momentum Conservation (Ballet Dancer)</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: Ek ballet dancer apni arms failaakar spin karti hai (I₁ = 7.6 kg·m², ω₁ = 40 rpm). Fir apni arms andar khinch leti hai jisse I₂ = 2.5 kg·m² ho jaata hai. Naya angular speed ω₂ kya hoga?</div>
+            <div class="derive-box">
+              <span class="step">Koi external torque nahi lag raha, isliye angular momentum conserve hoga: L₁ = L₂</span>
+              <span class="step">I₁ω₁ = I₂ω₂</span>
+              <span class="step">7.6 × 40 = 2.5 × ω₂</span>
+              <span class="step">ω₂ = 304/2.5 = 121.6 rpm &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>Speed lagbhag <b>3 guna</b> badh gayi — sirf isliye kyunki I kam ho gaya, force ya torque ki koi zaroorat nahi padi. Yehi principle figure skaters bhi use karte hain.</p>
+            <p><b>Bonus — Rolling Race (numeric):</b> θ = 30° incline se ek solid sphere (k²/R² = 2/5) aur ek hollow cylinder (k²/R² = 1) chhode jaate hain. a = g sinθ/(1+k²/R²) se: sphere ka a = 9.8×0.5/1.4 = <b>3.5 m/s²</b>, cylinder ka a = 9.8×0.5/2 = <b>2.45 m/s²</b> — sphere hollow cylinder se lagbhag <b>43% zyada tez</b> accelerate karta hai.</p>
+          </div>
+        </div>
+        <p><b>Centre of mass</b> ek imaginary point hai jahan poore system ka total mass concentrated maan kar external forces ka effect analyse kiya ja sakta hai. Discrete particles ke liye: X(cm) = Σmᵢxᵢ / Σmᵢ. Agar koi external force nahi lag raha, toh centre of mass ki velocity constant rehti hai — chahe individual particles kaise bhi move karein.</p>
         <p><b>Torque</b> (τ = r × F) force ka rotational analogue hai — ye batata hai ki force kitni effectively kisi object ko ek axis ke around ghumaegi. Torque force ki magnitude, uske application point ki distance (r), aur angle par depend karta hai: τ = rF sinθ.</p>
-        <p><b>Moment of inertia (I)</b> rotational motion mein mass jaisa role play karta hai — ye batata hai ki koi body apni rotational state change karne (angular acceleration) ka kitna resist karti hai. Ye sirf mass par nahi, balki mass axis se kitni door distributed hai us par bhi depend karta hai (I = Σmᵢrᵢ²) — isi liye ek hollow cylinder ka I ek solid cylinder (same mass) se zyada hota hai.</p>
         <p><b>Angular momentum (L = Iω)</b> conserve rehta hai jab net external torque zero ho — isi principle se figure skater apni arms andar khinch kar spin ki speed badha leta hai (I kam hota hai toh ω badhta hai, taaki L constant rahe).</p>`],
-        en:[
+      en:[
         `<ul>
           <li><b>Centre of mass:</b> the point where the entire system's mass can be assumed concentrated</li>
           <li><b>Torque:</b> the rotational effect of a force, τ = r × F</li>
           <li><b>Moment of inertia:</b> plays the same role in rotation that mass plays in linear motion</li>
+          <li><b>Angular momentum:</b> L = Iω, conserved when net external torque is zero</li>
         </ul>`,
         `<table class="compare-table">
           <tr><th>Linear Motion</th><th>Rotational Motion</th></tr>
@@ -10407,37 +10751,131 @@ updateStudyTimeLabel();
           <tr><td>Mass m</td><td>Moment of inertia I</td></tr>
           <tr><td>Momentum p = mv</td><td>Angular momentum L = Iω</td></tr>
           <tr><td>F = ma</td><td>τ = Iα</td></tr>
+          <tr><td>Work W = Fs</td><td>Work W = τθ</td></tr>
+          <tr><td>Power P = Fv</td><td>Power P = τω</td></tr>
         </table>`,
         `<p><span class="tag-label">Theorems</span></p>
-        <div class="ex-box">Parallel axis: I = I(cm) + Md²<br>Perpendicular axis (planar body): Iz = Ix + Iy</div>
-        <div class="deriv-box">
-          <span class="deriv-title">Derivation — Kinetic Energy of a Rolling Body</span>
-          <ol class="deriv-steps">
-            <li>A body rolling without slipping has two motions: translation of the centre of mass + rotation about its own axis</li>
-            <li>Total KE = Translational KE + Rotational KE = ½mv² + ½Iω²</li>
-            <li>Rolling-without-slipping condition: v = Rω, so ω = v/R</li>
-            <li>Write moment of inertia as I = mk², where k = radius of gyration</li>
-            <li>Substituting: KE = ½mv² + ½(mk²)(v/R)² = ½mv²[1 + k²/R²]</li>
-          </ol>
-          <div class="deriv-result">KE(rolling) = ½mv²(1 + k²/R²)</div>
-        </div>
+        <div class="ex-box">Parallel axis: I = I(cm) + Md²<br>Perpendicular axis (planar body): Iz = Ix + Iy<br>Rotational Newton's 2nd Law: τ(net) = Iα</div>
         <p><span class="tag-label">Trap</span> Released from the same height on an incline, the body with the smallest k²/R² (like a solid sphere) reaches the bottom first — because less of its energy "goes into" rotational KE</p>`,
-        `<p>The <b>centre of mass</b> is an imaginary point where the entire system's mass can be assumed concentrated to analyse the effect of external forces. For discrete particles: X(cm) = Σmᵢxᵢ / Σmᵢ. If no external force acts, the centre of mass moves at constant velocity — no matter how the individual particles move.</p>
+        `<div class="concept-block">
+          <div class="concept-head">🔄 Newton's Second Law for Rotation — τ = Iα (Derivation)</div>
+          <div class="concept-body">
+            <p>This is rotational motion's version of F = ma — the same idea, expressed with rotational quantities. We build it by starting with a single particle inside a rigid body and extending it to the whole body.</p>
+            <div class="derive-box">
+              <span class="step">A particle (mass mᵢ) inside a rigid body sits at distance rᵢ from the axis, with a tangential force Fᵢ acting on it</span>
+              <span class="step">By Newton's 2nd Law along the tangential direction: Fᵢ = mᵢaᵢ, where aᵢ is the tangential acceleration</span>
+              <span class="step">Every particle in a rigid body shares the same angular acceleration α: aᵢ = rᵢα</span>
+              <span class="step">This particle's torque: τᵢ = rᵢFᵢ = rᵢ(mᵢrᵢα) = mᵢrᵢ²α</span>
+              <span class="step">Sum the torques over all particles in the body: τ(net) = Σ mᵢrᵢ²α = (Σ mᵢrᵢ²)α</span>
+              <span class="step">τ(net) = Iα &nbsp; <span class="step-note">✓ where I = Σmᵢrᵢ² (moment of inertia)</span></span>
+            </div>
+            <p>This is exactly why moment of inertia depends not just on mass but on <b>how far</b> that mass sits from the axis (the r² term) — mass farther out resists a change in rotation more.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📐 Parallel Axis Theorem (Derivation)</div>
+          <div class="concept-body">
+            <p>If you need the moment of inertia about some axis parallel to (but offset from) the centre-of-mass axis, this theorem gives a direct shortcut — no need to redo the whole integral.</p>
+            <div class="derive-box">
+              <span class="step">Each particle's position is rᵢ from the centre-of-mass axis and rᵢ + d from the new axis (d = vector between the two axes)</span>
+              <span class="step">About the new axis: I = Σ mᵢ|rᵢ + d|² = Σ mᵢ(rᵢ² + 2rᵢ·d + d²)</span>
+              <span class="step">Expanding: I = Σmᵢrᵢ² + 2d·(Σmᵢrᵢ) + d²Σmᵢ</span>
+              <span class="step">By the definition of centre of mass, Σmᵢrᵢ = 0 (rᵢ is measured from the cm), so the middle term vanishes</span>
+              <span class="step">I = I(cm) + Md² &nbsp; <span class="step-note">✓ where M = total mass, d = distance between the axes</span></span>
+            </div>
+            <p>This is also why <b>I(cm) is always the minimum</b> — I about any other parallel axis will always be larger (Md² is always added, never subtracted).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🎳 Kinetic Energy of a Rolling Body (Derivation)</div>
+          <div class="concept-body">
+            <p>A body rolling without slipping has two motions: translation of the centre of mass + rotation about its own axis — their kinetic energies simply add.</p>
+            <div class="derive-box">
+              <span class="step">Total KE = Translational KE + Rotational KE = ½mv² + ½Iω²</span>
+              <span class="step">Rolling-without-slipping condition: v = Rω, so ω = v/R</span>
+              <span class="step">Write moment of inertia as I = mk², where k = radius of gyration</span>
+              <span class="step">Substituting: KE = ½mv² + ½(mk²)(v/R)² = ½mv²[1 + k²/R²]</span>
+              <span class="step">KE(rolling) = ½mv²(1 + k²/R²) &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>This same (1 + k²/R²) factor decides which body wins a race down an incline — a smaller k²/R² means less energy went into rotation, leaving more for translation (speed). Compare the down-incline acceleration of different bodies below:</p>
+            <div class="graph-widget" data-graph="c11-rolling-graph"></div>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Centre of Mass of an HCl Molecule</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: In an HCl molecule, the distance between the H and Cl nuclei is 1.27 Å. How far from the Cl nucleus is the molecule's centre of mass? (Mass of H ≈ 1u, Mass of Cl ≈ 35.5u)</div>
+            <div class="derive-box">
+              <span class="step">Place Cl at the origin (x=0); H is at x=1.27 Å</span>
+              <span class="step">X(cm) = (m(H)×x(H) + m(Cl)×x(Cl)) / (m(H) + m(Cl))</span>
+              <span class="step">X(cm) = (1×1.27 + 35.5×0) / (1 + 35.5) = 1.27/36.5</span>
+              <span class="step">X(cm) ≈ 0.0348 Å from Cl &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>Notice — the centre of mass sits very close to Cl (just 0.035 Å away), because Cl is 35.5 times heavier than H. This is a general pattern: <b>the COM always sits closer to the heavier mass</b>.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Torque Balance (Metre Stick Problem)</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: A metre stick is balanced on a knife edge. When two 5g coins (10g total) are placed at the 12.0 cm mark, the stick balances at the 45.0 cm mark. What is the mass of the stick?</div>
+            <div class="derive-box">
+              <span class="step">A uniform stick's own centre of mass is at the 50.0 cm mark (its geometric centre)</span>
+              <span class="step">The pivot is at 45.0 cm — the torque from the coins (clockwise) must balance the torque from the stick's weight (anticlockwise)</span>
+              <span class="step">Distance of coins from pivot = 45.0 − 12.0 = 33.0 cm; distance of stick's weight from pivot = 50.0 − 45.0 = 5.0 cm</span>
+              <span class="step">Equilibrium: (torque from coins) = (torque from stick)</span>
+              <span class="step">10g × 33.0 cm = M × 5.0 cm</span>
+              <span class="step">M = 330/5 = 66 g &nbsp; <span class="step-note">✓ Mass of the stick</span></span>
+            </div>
+            <p>The trick in problems like this: <b>treat a uniform object's weight as acting at its geometric centre</b>, then equate torques on both sides of the pivot.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Parallel Axis Theorem (Moment of Inertia of a Rod)</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: A uniform rod has mass M = 3 kg and length L = 2 m. About a perpendicular axis through its centre, I(cm) = ML²/12. Use the parallel axis theorem to find I about an axis through one end.</div>
+            <div class="derive-box">
+              <span class="step">I(cm) = ML²/12 = (3 × 2²)/12 = 12/12 = 1 kg·m²</span>
+              <span class="step">Distance from centre to end d = L/2 = 1 m</span>
+              <span class="step">Parallel axis theorem: I(end) = I(cm) + Md²</span>
+              <span class="step">I(end) = 1 + (3 × 1²) = 1 + 3 = 4 kg·m²</span>
+              <span class="step">Check using the standard formula: I(end) = ML²/3 = (3×4)/3 = 4 kg·m² &nbsp; <span class="step-note">✓ matches</span></span>
+            </div>
+            <p>I about the end is <b>4 times larger</b> than about the centre — because the mass is now distributed farther from the axis (the r² dependence is why the difference is this large).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📝 NCERT Example — Angular Momentum Conservation (Ballet Dancer)</div>
+          <div class="concept-body">
+            <div class="ex-box">📝 NCERT Example: A ballet dancer spins with arms outstretched (I₁ = 7.6 kg·m², ω₁ = 40 rpm). She then pulls her arms in, reducing I to I₂ = 2.5 kg·m². What is the new angular speed ω₂?</div>
+            <div class="derive-box">
+              <span class="step">No external torque acts, so angular momentum is conserved: L₁ = L₂</span>
+              <span class="step">I₁ω₁ = I₂ω₂</span>
+              <span class="step">7.6 × 40 = 2.5 × ω₂</span>
+              <span class="step">ω₂ = 304/2.5 = 121.6 rpm &nbsp; <span class="step-note">✓</span></span>
+            </div>
+            <p>The speed increased roughly <b>3-fold</b> — purely because I decreased, with no force or torque needed. This is the same principle figure skaters use.</p>
+            <p><b>Bonus — Rolling Race (numeric):</b> Released from a 30° incline, a solid sphere (k²/R² = 2/5) and a hollow cylinder (k²/R² = 1) using a = g sinθ/(1+k²/R²): the sphere's a = 9.8×0.5/1.4 = <b>3.5 m/s²</b>, the cylinder's a = 9.8×0.5/2 = <b>2.45 m/s²</b> — the sphere accelerates roughly <b>43% faster</b> than the hollow cylinder.</p>
+          </div>
+        </div>
+        <p>The <b>centre of mass</b> is an imaginary point where the entire system's mass can be assumed concentrated to analyse the effect of external forces. For discrete particles: X(cm) = Σmᵢxᵢ / Σmᵢ. If no external force acts, the centre of mass moves at constant velocity — no matter how the individual particles move.</p>
         <p><b>Torque</b> (τ = r × F) is the rotational analogue of force — it tells us how effectively a force will rotate an object about an axis. Torque depends on the force's magnitude, the distance to its point of application (r), and the angle: τ = rF sinθ.</p>
-        <p><b>Moment of inertia (I)</b> plays the role mass plays in linear motion — it tells us how much a body resists a change in its rotational state (angular acceleration). It depends not just on mass but on how far that mass is distributed from the axis (I = Σmᵢrᵢ²) — which is why a hollow cylinder has a larger I than a solid cylinder of the same mass.</p>
         <p><b>Angular momentum (L = Iω)</b> is conserved when net external torque is zero — this is why a figure skater spins faster by pulling their arms in (I decreases, so ω increases to keep L constant).</p>`
       ]
     },
     sticky:{
       hi:[
         `Centre of mass: <span class="formula">X(cm) = Σmᵢxᵢ/Σmᵢ</span>`,
-        `Torque: <span class="formula">τ = rF sinθ</span>; τ = Iα (rotational Newton's 2nd law)`,
+        `Torque: <span class="formula">τ = rF sinθ = r × F</span>`,
+        `Newton's 2nd Law (rotation): <span class="formula">τ(net) = Iα</span>`,
+        `Parallel axis theorem: <span class="formula">I = I(cm) + Md²</span>`,
         `Rolling KE: <span class="formula">½mv²(1 + k²/R²)</span>`,
         `Angular momentum conserved when τ(net) = 0: <span class="formula">L = Iω</span>`
       ],
       en:[
         `Centre of mass: <span class="formula">X(cm) = Σmᵢxᵢ/Σmᵢ</span>`,
-        `Torque: <span class="formula">τ = rF sinθ</span>; τ = Iα (rotational Newton's 2nd law)`,
+        `Torque: <span class="formula">τ = rF sinθ = r × F</span>`,
+        `Newton's 2nd Law (rotation): <span class="formula">τ(net) = Iα</span>`,
+        `Parallel axis theorem: <span class="formula">I = I(cm) + Md²</span>`,
         `Rolling KE: <span class="formula">½mv²(1 + k²/R²)</span>`,
         `Angular momentum conserved when τ(net) = 0: <span class="formula">L = Iω</span>`
       ]
@@ -11695,6 +12133,13 @@ updateStudyTimeLabel();
       options:{hi:['Photovoltaic effect','Magnetic effect','Doppler effect','Greenhouse effect'], en:['Photovoltaic effect','Magnetic effect','Doppler effect','Greenhouse effect']}, answer:0},
     {type:'mcq', era:'class10', q:{hi:'Coal aur petroleum kis category mein aate hain?', en:'Coal and petroleum fall into which category?'},
       options:{hi:['Non-renewable','Renewable','Nuclear','Geothermal'], en:['Non-renewable','Renewable','Nuclear','Geothermal']}, answer:0},
+    {type:'mcq', era:'class11', q:{hi:'Screw gauge ka least count kis formula se nikalta hai?', en:'How is the least count of a screw gauge calculated?'},
+      options:{hi:['Pitch ÷ Circular scale divisions','Pitch × Circular scale divisions','1 MSD − 1 VSD','Pitch ÷ 2'], en:['Pitch ÷ Circular scale divisions','Pitch × Circular scale divisions','1 MSD − 1 VSD','Pitch ÷ 2']}, answer:0},
+    {type:'mcq', era:'class11', q:{hi:'Accuracy aur Precision mein kya farak hai?', en:'What is the difference between Accuracy and Precision?'},
+      options:{hi:['Accuracy = true value ke paas; Precision = readings consistent','Dono same hain','Accuracy = readings consistent; Precision = true value ke paas','Koi farak nahi'], en:['Accuracy = close to true value; Precision = readings consistent','Both are the same','Accuracy = readings consistent; Precision = close to true value','No difference']}, answer:0},
+    {type:'fill', era:'class11', q:{hi:'Rounding rule: agar dropped digit exactly 5 ho, to preceding digit ko nearest ________ digit tak round karte hain.', en:'Rounding rule: if the dropped digit is exactly 5, round the preceding digit to the nearest ________ digit.'}, answers:['even','Even']},
+    {type:'mcq', era:'class11', q:{hi:'Dimensional analysis se simple pendulum ke T = k√(l/g) formula mein, kya pata nahi chalta?', en:"Using dimensional analysis to find T = k√(l/g) for a simple pendulum, what can't be determined?"},
+      options:{hi:['Numerical constant k (jaise 2π)','Length l ka power','Mass ka role','g ka power'], en:['The numerical constant k (like 2π)',"Length l's power","Mass's role","g's power"]}, answer:0},
     {type:'mcq', era:'class11', q:{hi:'SI mein kitne base units hote hain?', en:'How many base units are there in SI?'},
       options:{hi:['7','5','6','8'], en:['7','5','6','8']}, answer:0},
     {type:'mcq', era:'class11', q:{hi:'Dimensional analysis se kya pata nahi chalta?', en:"What can't dimensional analysis reveal?"},
@@ -11708,6 +12153,17 @@ updateStudyTimeLabel();
     {type:'fill', era:'class11', q:{hi:'Centripetal acceleration ka formula hai: a = v²/________', en:'The formula for centripetal acceleration is: a = v²/________'}, answers:['r']},
     {type:'mcq', era:'class11', q:{hi:'Centrifugal force kya hai?', en:'What is centrifugal force?'},
       options:{hi:['Pseudo-force (rotating frame mein)','Ek real fundamental force','Gravity ka doosra naam','Friction ka type'], en:['A pseudo-force (in a rotating frame)','A real fundamental force','Another name for gravity','A type of friction']}, answer:0},
+    {type:'mcq', era:'class11', q:{hi:'Centre of mass ki formula (discrete particles) kya hai?', en:'What is the formula for centre of mass (discrete particles)?'},
+      options:{hi:['X(cm) = Σmᵢxᵢ/Σmᵢ','X(cm) = Σxᵢ/n','X(cm) = Σmᵢ/Σxᵢ','X(cm) = Σmᵢxᵢ'], en:['X(cm) = Σmᵢxᵢ/Σmᵢ','X(cm) = Σxᵢ/n','X(cm) = Σmᵢ/Σxᵢ','X(cm) = Σmᵢxᵢ']}, answer:0},
+    {type:'mcq', era:'class11', q:{hi:'Rotational motion mein torque, linear motion ke kis quantity ka analogue hai?', en:'Torque in rotational motion is the analogue of which quantity in linear motion?'},
+      options:{hi:['Force','Mass','Velocity','Momentum'], en:['Force','Mass','Velocity','Momentum']}, answer:0},
+    {type:'fill', era:'class11', q:{hi:'Rotational Newton\'s Second Law hai: τ = ________', en:"Rotational Newton's Second Law is: τ = ________"}, answers:['Iα','I alpha']},
+    {type:'mcq', era:'class11', q:{hi:'Parallel Axis Theorem ke mutabik I kis ke barabar hai?', en:'According to the Parallel Axis Theorem, I equals what?'},
+      options:{hi:['I(cm) + Md²','I(cm) − Md²','I(cm) × Md²','I(cm) / Md²'], en:['I(cm) + Md²','I(cm) − Md²','I(cm) × Md²','I(cm) / Md²']}, answer:0},
+    {type:'mcq', era:'class11', q:{hi:'Ek solid sphere aur ek ring, same incline se same height par chhode jaate hain — pehle kaun pahunchega?', en:'A solid sphere and a ring are released from the same height on an incline — which reaches the bottom first?'},
+      options:{hi:['Solid sphere (chhota k²/R²)','Ring (bada k²/R²)','Dono same time par','Depends on mass'], en:['Solid sphere (smaller k²/R²)','Ring (larger k²/R²)','Both at the same time','Depends on mass']}, answer:0},
+    {type:'mcq', era:'class11', q:{hi:'Figure skater apni arms andar khinchta hai to spin speed badh jaati hai — ye kis conservation law se explain hota hai?', en:'A figure skater spins faster by pulling their arms in — which conservation law explains this?'},
+      options:{hi:['Conservation of Angular Momentum','Conservation of Linear Momentum','Conservation of Energy','Conservation of Mass'], en:['Conservation of Angular Momentum','Conservation of Linear Momentum','Conservation of Energy','Conservation of Mass']}, answer:0},
     {type:'mcq', era:'class11', q:{hi:'Work-Energy Theorem ke mutabik net work kya batata hai?', en:'According to the Work-Energy Theorem, net work equals what?'},
       options:{hi:['Change in KE','Change in PE','Total energy','Momentum'], en:['Change in KE','Change in PE','Total energy','Momentum']}, answer:0},
     {type:'mcq', era:'class11', q:{hi:'Elastic collision mein kya-kya conserve hote hain?', en:'What is conserved in an elastic collision?'},
