@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+<script>
+  // TEMP DEBUG: surface any silent JS error on-screen since mobile has no devtools.
+  window.onerror = function(msg, url, line, col, err){
+    alert('PAGE ERROR: ' + msg + ' (line ' + line + ')');
+    return false;
+  };
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bharat Ka Itihaas — Study App</title>
@@ -46,9 +53,9 @@
   }
   body.philosophy-theme h1, body.philosophy-theme #headerTitle{ font-family:'Playfair Display', serif; }
   *{ box-sizing: border-box; }
-  html{ scroll-behavior: smooth; font-size: var(--scale); }
+  html{ scroll-behavior: smooth; font-size: var(--scale); overflow-x: hidden; max-width:100%; }
   body{
-    margin:0; color: var(--parchment);
+    margin:0; color: var(--parchment); overflow-x: hidden; max-width:100%;
     font-family: var(--font-body); line-height:1.6; padding-bottom: 100px;
     transition: background .25s, color .25s;
     background:
@@ -157,6 +164,10 @@
   }
   body.protected .card-content, body.protected .card-content *{
     -webkit-user-select:text; -moz-user-select:text; -ms-user-select:text; user-select:text;
+  }
+  body.protected .textLayer, body.protected .textLayer *{
+    -webkit-user-select:text; -moz-user-select:text; -ms-user-select:text; user-select:text;
+    -webkit-touch-callout:default;
   }
   body.protected img{ -webkit-user-drag:none; user-drag:none; }
   .protect-watermark{
@@ -308,6 +319,59 @@
     position:absolute; z-index:150; background:#222; padding:6px 8px; border-radius:20px; display:none; gap:6px;
   }
   .hl-toolbar.open{ display:flex; }
+
+  /* ---- My PDFs feature ---- */
+  .pdf-toolbar{ display:flex; justify-content:center; gap:8px; margin:10px auto 18px; padding:0 16px; }
+  .pdf-list{ max-width:640px; margin:0 auto; padding:0 16px 30px; display:flex; flex-direction:column; gap:10px; }
+  .pdf-list-item{
+    display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:12px;
+    border:1px solid rgba(127,227,216,0.25); background: rgba(127,227,216,0.05); cursor:pointer;
+  }
+  .pdf-list-item:hover{ box-shadow:0 0 14px rgba(127,227,216,0.2); }
+  .pdf-list-item .nm{ flex:1; font-size:0.88rem; word-break:break-word; }
+  .pdf-list-item .meta{ font-family:'JetBrains Mono',monospace; font-size:0.62rem; opacity:0.65; }
+  .pdf-list-item .del{ font-size:1rem; opacity:0.6; padding:4px 8px; cursor:pointer; }
+  .pdf-list-item .del:hover{ opacity:1; color: var(--sindoor); }
+  .pdf-empty{ text-align:center; opacity:0.6; font-size:0.85rem; padding:30px 16px; }
+
+  .pdf-reader{ max-width:820px; margin:0 auto; padding:0 10px 40px; }
+  .pdf-reader-toolbar{
+    position:sticky; top:0; z-index:40; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px;
+    padding:10px 8px; margin-bottom:14px; background: rgba(11,14,23,0.85); backdrop-filter: blur(10px);
+    border-radius:12px; border:1px solid rgba(127,227,216,0.2);
+  }
+  body.light .pdf-reader-toolbar{ background: rgba(239,232,216,0.9); }
+  #pdfReaderTitle{ font-size:0.8rem; opacity:0.85; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #pdfPageLabel{ font-family:'JetBrains Mono',monospace; font-size:0.75rem; min-width:70px; text-align:center; }
+  .pdf-hint{ text-align:center; font-size:0.68rem; opacity:0.55; margin:-6px auto 14px; font-family:'JetBrains Mono',monospace; }
+  .pdf-canvas-wrap{ display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .pdf-page-wrap{ position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.4); background:#fff; }
+  .pdf-page-wrap canvas{ display:block; }
+  .textLayer{
+    position:absolute; text-align:initial; inset:0; overflow:hidden; opacity:1; line-height:1;
+    -webkit-text-size-adjust:none; text-size-adjust:none; forced-color-adjust:none; transform-origin:0 0;
+  }
+  .textLayer span, .textLayer br{ color:transparent; position:absolute; white-space:pre; cursor:text; transform-origin:0 0; }
+  .textLayer ::selection{ background: rgba(127,227,216,0.45); }
+
+  #pdfMeaningBtn{
+    position:absolute; z-index:210; display:none; background: var(--glow); color:#0B0E17;
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:600; padding:7px 12px;
+    border-radius:16px; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,0.4);
+  }
+  #pdfMeaningPopup{
+    position:absolute; z-index:220; max-width:300px; max-height:340px; overflow-y:auto;
+    background: rgba(20,24,36,0.95); color: var(--parchment); border:1px solid rgba(127,227,216,0.3);
+    border-radius:12px; padding:14px; font-size:0.82rem; box-shadow:0 10px 32px rgba(0,0,0,0.5); display:none;
+  }
+  body.light #pdfMeaningPopup{ background: rgba(255,253,248,0.97); color: var(--charcoal); }
+  #pdfMeaningPopup.open{ display:block; }
+  #pdfMeaningPopup h5{ margin:0 0 8px; font-family:'Marcellus',serif; font-size:0.92rem; color: var(--gold); }
+  #pdfMeaningPopup ul{ margin:6px 0 0; padding-left:18px; }
+  #pdfMeaningPopup li{ margin-bottom:6px; }
+  #pdfMeaningPopup .src{ margin-top:10px; font-size:0.68rem; opacity:0.6; }
+  #pdfMeaningPopup .src a{ color: var(--glow); }
+  #pdfMeaningPopup .close-x{ float:right; cursor:pointer; opacity:0.7; }
 
   .tonight{ max-width:760px; margin:30px auto 0; padding:20px; border:1px dashed rgba(201,162,39,0.5); border-radius:10px; text-align:center; }
   .tonight p{ margin:0; color:#C7BCA0; font-size:0.9rem; }
@@ -651,10 +715,10 @@
   .card-content .derive-box{
     background: rgba(0,0,0,0.03); border:1px dashed rgba(0,0,0,0.2);
     border-radius:8px; padding:12px 14px; margin:8px 0; font-family:'JetBrains Mono',monospace;
-    font-size:0.88rem; line-height:1.9;
+    font-size:0.88rem; line-height:1.9; overflow-wrap:break-word; word-wrap:break-word; max-width:100%;
   }
   body.light .card-content .derive-box{ background: rgba(0,0,0,0.02); }
-  .card-content .derive-box .step{ display:block; }
+  .card-content .derive-box .step{ display:block; overflow-wrap:break-word; word-wrap:break-word; }
   .card-content .derive-box .step-note{ color: var(--sindoor); font-family:'Lora',serif; font-style:italic; font-size:0.82rem; }
   .card-content .graph-desc{
     background: rgba(127,227,216,0.06); border:1px solid rgba(127,227,216,0.25);
@@ -678,8 +742,32 @@
   .card-content .ex-box{
     background: rgba(127,227,216,0.06); border-left:3px solid var(--glow); border-radius:6px;
     padding:11px 15px; margin:8px 0 14px; font-family:'JetBrains Mono',monospace; font-size:0.9rem; line-height:1.6;
+    overflow-wrap:break-word; word-wrap:break-word; max-width:100%;
   }
   body.light .card-content .ex-box{ background: rgba(91,123,109,0.06); }
+  /* ---- click-to-reveal solved examples ---- */
+  .card-content .solved-block{ margin:0 0 12px; border:1px solid rgba(201,162,39,0.35); border-radius:10px; overflow:hidden; }
+  .card-content .solved-q{
+    cursor:pointer; padding:11px 15px; background: rgba(201,162,39,0.08);
+    font-family:'Marcellus',serif; font-weight:600; font-size:0.95rem; color: var(--gold);
+    -webkit-user-select:none; user-select:none; line-height:1.5;
+    overflow-wrap:break-word; word-wrap:break-word;
+  }
+  .card-content .solved-q:hover{ background: rgba(201,162,39,0.16); }
+  body.light .card-content .solved-q{ background: rgba(201,162,39,0.12); }
+  body.light .card-content .solved-q:hover{ background: rgba(201,162,39,0.2); }
+  .card-content .solved-icon{ display:inline-block; font-size:0.72rem; transition: transform .2s ease; margin-right:7px; }
+  .card-content .solved-q.open .solved-icon{ transform: rotate(90deg); }
+  .card-content .solved-answer{
+    max-height:0; overflow:hidden; padding:0 15px; font-size:0.92rem; line-height:1.65;
+    transition: max-height .32s ease, padding .32s ease; background: rgba(127,227,216,0.03);
+  }
+  .card-content .solved-answer.open{ max-height:1200px; padding:13px 15px 15px; }
+  .card-content .solved-answer p{ margin:0 0 8px; }
+  .card-content .solved-answer .derive-box{ margin:6px 0; }
+  .card-content .solved-answer .final-ans{ color: var(--copper); font-weight:600; }
+  body.light .card-content .solved-answer .final-ans{ color: var(--copper-dark); }
+
   .card-content table.compare-table{ width:100%; border-collapse:collapse; margin:10px 0 16px; font-size:0.85rem; }
   .card-content table.compare-table th, .card-content table.compare-table td{
     border:1px solid rgba(127,227,216,0.2); padding:7px 11px; text-align:left;
@@ -733,6 +821,7 @@
   .card-content .graph-legend span{ display:inline-flex; align-items:center; gap:5px; }
   .card-content .graph-legend i{ width:12px; height:3px; border-radius:2px; display:inline-block; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body class="protected">
 
@@ -791,6 +880,40 @@
     <p>Ye subject jald hi add hoga.</p>
   </div>
 </div>
+
+<div class="screen subject-screen" id="pdfScreen" style="display:none;">
+  <button class="back-btn" id="pdfBackBtn">&larr; Back</button>
+  <div class="subject-header">
+    <h1 class="platform-title">My PDFs</h1>
+    <p class="subject-sub">Apni PDF upload karo, padho, aur kisi bhi shabd ka matlab jaano</p>
+  </div>
+
+  <div id="pdfListView">
+    <div class="pdf-toolbar">
+      <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;">
+      <button class="pill" id="pdfUploadBtn" style="border-color:var(--gold);color:var(--gold);">+ PDF Upload Karo</button>
+    </div>
+    <div class="pdf-list" id="pdfList"></div>
+  </div>
+
+  <div class="pdf-reader" id="pdfReader" style="display:none;">
+    <div class="pdf-reader-toolbar">
+      <button class="pill small" id="pdfReaderBackBtn">&larr; List</button>
+      <span id="pdfReaderTitle"></span>
+      <button class="pill small" id="pdfPrevPage">&#9664;</button>
+      <span id="pdfPageLabel">-</span>
+      <button class="pill small" id="pdfNextPage">&#9654;</button>
+      <button class="pill small" id="pdfZoomOut">A-</button>
+      <button class="pill small" id="pdfZoomIn">A+</button>
+      <button class="pill small" id="pdfTranslateBtn" style="border-color:var(--glow);color:var(--glow);">&#127760; Meaning</button>
+    </div>
+    <div class="pdf-hint" id="pdfHint">Text select karo, fir "Meaning" dabao</div>
+    <div class="pdf-canvas-wrap" id="pdfCanvasWrap"></div>
+  </div>
+</div>
+
+<div id="pdfMeaningBtn">Matlab dekhein</div>
+<div id="pdfMeaningPopup"></div>
 
 
 <div id="appMain" style="display:none;">
@@ -2863,7 +2986,7 @@ function renderCard(topic){
     const imgBtn = document.createElement('button');
     imgBtn.className = 'pill small img-btn';
     imgBtn.innerHTML = lang==='hi' ? '&#128247; Tasveer Dekho' : '&#128247; View Image';
-    imgBtn.onclick = ()=> openImageModal(TOPIC_IMAGES[topic.id], `<b>${topic.title[lang]}</b>`);
+    imgBtn.onclick = ()=> { openImageModal(TOPIC_IMAGES[topic.id], `<b>${topic.title[lang]}</b>`); pushNav(closeImageModal); };
     utilRow.appendChild(imgBtn);
   }
   {
@@ -2948,7 +3071,7 @@ function renderAll(){
       const storyBtn = document.createElement('button');
       storyBtn.className = 'story-btn';
       storyBtn.innerHTML = `<span class="story-icon">&#128214;</span><span>${lang==='hi' ? 'Story Mode' : 'Story Mode'}</span>`;
-      storyBtn.onclick = ()=> openStory(eraKey);
+      storyBtn.onclick = ()=> { openStory(eraKey); pushNav(closeStory); };
       era.appendChild(storyBtn);
     }
     const useChapterMode = CHAPTER_MODE_SUBJECTS.includes(currentSubject) && !searching;
@@ -3347,9 +3470,9 @@ function closeImageModal(){
   document.getElementById('imageModalOverlay').classList.remove('open');
   document.getElementById('imageModalOverlay').classList.remove('zoomed');
 }
-document.getElementById('imgModalClose').addEventListener('click', closeImageModal);
+document.getElementById('imgModalClose').addEventListener('click', ()=> history.back());
 document.getElementById('imageModalOverlay').addEventListener('click', (e)=>{
-  if(e.target.id === 'imageModalOverlay') closeImageModal();
+  if(e.target.id === 'imageModalOverlay') history.back();
 });
 document.getElementById('imgModalImg').addEventListener('click', (e)=>{
   e.stopPropagation();
@@ -3417,9 +3540,9 @@ function storyPrev(){
   if(storyState.page > 0){ storyState.page--; renderStory(); }
 }
 
-document.getElementById('storyCloseBtn').addEventListener('click', closeStory);
+document.getElementById('storyCloseBtn').addEventListener('click', ()=> history.back());
 document.getElementById('storyOverlay').addEventListener('click', (e)=>{
-  if(e.target.id === 'storyOverlay') closeStory();
+  if(e.target.id === 'storyOverlay') history.back();
 });
 document.getElementById('storyNextBtn').addEventListener('click', storyNext);
 document.getElementById('storyPrevBtn').addEventListener('click', storyPrev);
@@ -3427,7 +3550,7 @@ document.addEventListener('keydown', (e)=>{
   if(!document.getElementById('storyOverlay').classList.contains('open')) return;
   if(e.key === 'ArrowRight') storyNext();
   if(e.key === 'ArrowLeft') storyPrev();
-  if(e.key === 'Escape') closeStory();
+  if(e.key === 'Escape') history.back();
 });
 
 /* ---- Main app (pen icon) reading prefs: text colour + eye comfort — independent of Story Mode ---- */
@@ -3499,6 +3622,7 @@ document.getElementById('storyEyeBtn').addEventListener('click', ()=>{
 document.getElementById('overviewBanner').addEventListener('click', ()=>{
   const lang = settings.lang;
   openImageModal(OVERVIEW_IMAGE, OVERVIEW_TEXT[lang]);
+  pushNav(closeImageModal);
 });
 
 /* ================= NATURAL VOICE (Piper Neural TTS, Beta) ================= */
@@ -3674,9 +3798,7 @@ document.getElementById('pitchPlus').addEventListener('click', ()=>{
 /* ================= INIT ================= */
 renderAll();
 updateStudyTimeLabel();
-</script>
 
-<script>
 /* ================= SUBJECT SELECTION FLOW ================= */
 (function(){
   const SUBJECTS = [
@@ -3687,7 +3809,8 @@ updateStudyTimeLabel();
     {id:'geography', name:'Geography', unlocked:false},
     {id:'civics', name:'Civics', unlocked:false},
     {id:'english', name:'English', unlocked:true},
-    {id:'philosophy', name:'Philosophy', unlocked:true}
+    {id:'philosophy', name:'Philosophy', unlocked:true},
+    {id:'mypdfs', name:'My PDFs', unlocked:true}
   ];
   const SCIENCE_SUB = [
     {id:'chemistry', name:'Chemistry'},
@@ -3702,7 +3825,25 @@ updateStudyTimeLabel();
   const darkVerseScreen = document.getElementById('darkVerseScreen');
   const subjectGrid = document.getElementById('subjectGrid');
   const scienceGrid = document.getElementById('scienceGrid');
-  const allScreens = [introScreen, subjectScreen, scienceScreen, comingSoonScreen, darkVerseScreen];
+  const pdfScreen = document.getElementById('pdfScreen');
+  const allScreens = [introScreen, subjectScreen, scienceScreen, comingSoonScreen, darkVerseScreen, pdfScreen];
+
+  /* ================= PHONE BACK BUTTON SUPPORT ================= */
+  /* Every in-app "forward" navigation pushes a history entry with a
+     matching close-callback on navStack. Every back trigger (on-screen
+     back button OR the phone's hardware/gesture back) goes through
+     history.back(), which fires popstate, which pops navStack and runs
+     the matching close-callback. This keeps on-screen buttons and the
+     phone back button perfectly in sync. */
+  window.navStack = [];
+  window.pushNav = function(closeFn){
+    window.navStack.push(closeFn);
+    history.pushState({navDepth: window.navStack.length}, '');
+  };
+  window.addEventListener('popstate', function(){
+    const closeFn = window.navStack.pop();
+    if(closeFn) closeFn();
+  });
 
   function renderSubjectGrid(){
     subjectGrid.innerHTML = '';
@@ -3711,11 +3852,12 @@ updateStudyTimeLabel();
       card.className = 'subject-card' + (s.unlocked===true ? '' : ' locked');
       card.innerHTML = s.name + (s.unlocked===true ? '' : '<span class="badge">' + (s.unlocked==='sub' ? 'Explore' : 'Coming Soon') + '</span>');
       card.addEventListener('click', ()=>{
-        if(s.id==='history'){ enterHistoryApp(); }
-        else if(s.id==='english'){ enterEnglishApp(); }
-        else if(s.id==='philosophy'){ enterPhilosophyApp(); }
-        else if(s.unlocked==='sub'){ showScreen(scienceScreen); }
-        else { showComingSoon(s.name); }
+        if(s.id==='history'){ enterHistoryApp(); pushNav(closeAppToSubjects); }
+        else if(s.id==='english'){ enterEnglishApp(); pushNav(closeAppToSubjects); }
+        else if(s.id==='philosophy'){ enterPhilosophyApp(); pushNav(closeAppToSubjects); }
+        else if(s.id==='mypdfs'){ showScreen(pdfScreen); renderPdfList(); pushNav(()=> showScreen(subjectScreen)); }
+        else if(s.unlocked==='sub'){ showScreen(scienceScreen); pushNav(()=> showScreen(subjectScreen)); }
+        else { showComingSoon(s.name); pushNav(()=> showScreen(subjectScreen)); }
       });
       subjectGrid.appendChild(card);
     });
@@ -3727,7 +3869,7 @@ updateStudyTimeLabel();
       const card = document.createElement('div');
       card.className = 'subject-card locked';
       card.innerHTML = s.name + '<span class="badge">Coming Soon</span>';
-      card.addEventListener('click', ()=> { if(s.id==='physics'){ enterPhysicsApp(); } else { showComingSoon(s.name); } });
+      card.addEventListener('click', ()=> { if(s.id==='physics'){ enterPhysicsApp(); pushNav(closeAppToSubjects); } else { showComingSoon(s.name); pushNav(()=> showScreen(subjectScreen)); } });
       scienceGrid.appendChild(card);
     });
   }
@@ -3973,10 +4115,10 @@ updateStudyTimeLabel();
     papersWrap.classList.remove('fullpage-section');
   }
   if(papersBtn && papersWrap){
-    papersBtn.addEventListener('click', openPapersPage);
+    papersBtn.addEventListener('click', ()=>{ openPapersPage(); pushNav(closePapersPage); });
   }
   if(papersBackBtn){
-    papersBackBtn.addEventListener('click', closePapersPage);
+    papersBackBtn.addEventListener('click', ()=> history.back());
   }
 
   const quizOpenBtn = document.getElementById('quizOpenBtn');
@@ -3995,10 +4137,10 @@ updateStudyTimeLabel();
     quizWrap.classList.remove('fullpage-section');
   }
   if(quizOpenBtn && quizWrap){
-    quizOpenBtn.addEventListener('click', openQuizPage);
+    quizOpenBtn.addEventListener('click', ()=>{ openQuizPage(); pushNav(closeQuizPage); });
   }
   if(quizBackBtn){
-    quizBackBtn.addEventListener('click', closeQuizPage);
+    quizBackBtn.addEventListener('click', ()=> history.back());
   }
 
   function enterHistoryApp(){
@@ -9453,6 +9595,167 @@ updateStudyTimeLabel();
             <p>Ye rules isliye important hain kyunki <b>galat SF counting → galat error estimate</b> ho jaata hai. Jaise 0.0025 ko agar 5 SF maan liya (galti se saare zeros count kar liye), to measurement ki precision kaafi overstate ho jaayegi jo actually measure hi nahi hui thi.</p>
           </div>
         </div>
+        <div class="concept-block">
+          <div class="concept-head">✍️ NCERT Solved Examples — Click to Reveal</div>
+          <div class="concept-body">
+            <p>Neeche diye gaye questions try karo pehle khud se, fir answer dekhne ke liye tap karo.</p>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q1. Ek rectangular sheet ki length l = 16.2 cm, breadth b = 10.1 cm hai. Sahi significant figures ke saath area nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Area = l × b = 16.2 × 10.1 = 163.62 cm²</span>
+                  <span class="step">Dono measurements mein 3 SF hain → answer bhi 3 SF tak round hoga</span>
+                </div>
+                <p class="final-ans">Answer: Area = 164 cm²</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q2. Ek cube ka side a = (7.203 ± 0.001) cm hai. Volume aur uska percentage error nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Volume V = a³ = (7.203)³ ≈ 373.7 cm³</span>
+                  <span class="step">Power rule: ΔV/V = 3 × (Δa/a) = 3 × (0.001/7.203) = 0.000417</span>
+                  <span class="step">Percentage error = 0.000417 × 100 = 0.0417%</span>
+                </div>
+                <p class="final-ans">Answer: V ≈ 373.7 cm³ with ~0.04% error</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q3. Pendulum ki length 5 baar measure ki gayi: 20.2, 20.5, 20.4, 20.3, 20.6 cm. Mean absolute error aur percentage error nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Mean = (20.2+20.5+20.4+20.3+20.6)/5 = 102.0/5 = 20.4 cm</span>
+                  <span class="step">Deviations: 0.2, 0.1, 0.0, 0.1, 0.2 → Mean absolute error = 0.6/5 = 0.12 cm</span>
+                  <span class="step">Percentage error = (0.12/20.4) × 100 ≈ 0.59%</span>
+                </div>
+                <p class="final-ans">Answer: Length = 20.4 ± 0.12 cm; Percentage error ≈ 0.59%</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q4. Screw gauge mein jaws band karne par reading −0.004 cm dikhati hai (negative zero error). Observed reading = 0.482 cm hai. Correct reading nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Correct reading = Observed − Zero error</span>
+                  <span class="step">Correct = 0.482 − (−0.004) = 0.482 + 0.004</span>
+                </div>
+                <p class="final-ans">Answer: Correct reading = 0.486 cm</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q5. 1 calorie = 4.2 × 10⁷ erg (CGS system). Ise Joules (SI) mein convert karo. (Energy ke liye: a=1, b=2, c=−2)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">n₂ = n₁ × [M₁/M₂]ᵃ × [L₁/L₂]ᵇ × [T₁/T₂]ᶜ</span>
+                  <span class="step">M₁/M₂ = 10⁻³, L₁/L₂ = 10⁻², T₁/T₂ = 1</span>
+                  <span class="step">n₂ = 4.2×10⁷ × (10⁻³)¹ × (10⁻²)² × 1⁻² = 4.2×10⁷ × 10⁻⁷</span>
+                </div>
+                <p class="final-ans">Answer: 1 cal = 4.2 Joules</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q6. Ek car ki speed 36 km/h hai. Ise m/s mein convert karo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">1 km/h = 1000m/3600s = 5/18 m/s</span>
+                  <span class="step">36 km/h = 36 × (5/18) m/s</span>
+                </div>
+                <p class="final-ans">Answer: 36 km/h = 10 m/s</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q7. Gravitational constant G ka dimensional formula nikaalo, jab F = Gm₁m₂/r².</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">G = F r² / (m₁m₂)</span>
+                  <span class="step">[F] = [M¹L¹T⁻²], [r²] = [L²], [m₁m₂] = [M²]</span>
+                  <span class="step">[G] = [M¹L¹T⁻²][L²] / [M²] = [M⁻¹L³T⁻²]</span>
+                </div>
+                <p class="final-ans">Answer: [G] = M⁻¹L³T⁻²</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q8. Do resistors R₁=(4±0.2)Ω aur R₂=(6±0.3)Ω series mein connect hain. Equivalent resistance uske error ke saath nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Series mein: R = R₁ + R₂ = 4 + 6 = 10 Ω</span>
+                  <span class="step">Addition rule: ΔR = ΔR₁ + ΔR₂ = 0.2 + 0.3 = 0.5 Ω</span>
+                </div>
+                <p class="final-ans">Answer: R = (10 ± 0.5) Ω</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q9. Ek physical quantity P = a²b³/(c√d). Agar a, b, c, d mein percentage errors respectively 1%, 2%, 3%, 4% hain, to P mein percentage error kya hoga?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Power rule (sab terms ke liye): %error in P = 2(%error in a) + 3(%error in b) + 1(%error in c) + ½(%error in d)</span>
+                  <span class="step">= 2(1%) + 3(2%) + 1(3%) + 0.5(4%) = 2 + 6 + 3 + 2</span>
+                </div>
+                <p class="final-ans">Answer: Percentage error in P = 13%</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q10. Vernier calliper mein Main Scale Reading (MSR) = 4 mm hai, aur Vernier Scale par 6th division line up karti hai. Agar Least Count = 0.01 cm hai, to final reading nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Reading = MSR + (VSR × LC)</span>
+                  <span class="step">= 0.4 cm + (6 × 0.01 cm) = 0.4 + 0.06</span>
+                </div>
+                <p class="final-ans">Answer: Reading = 0.46 cm</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q11. Density ρ = m/V hai, jahan mass m = (5.00 ± 0.05) g aur volume V = (2.00 ± 0.02) cm³ hai. Density mein percentage error nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Division rule: Δρ/ρ = Δm/m + ΔV/V</span>
+                  <span class="step">= (0.05/5.00) + (0.02/2.00) = 0.01 + 0.01 = 0.02</span>
+                </div>
+                <p class="final-ans">Answer: Percentage error in density = 2%</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q12. Do lengths measure ki gayi: l₁ = 16.235 cm aur l₂ = 4.11 cm. Inka difference (l₁ − l₂) sahi significant figures ke saath nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">l₁ − l₂ = 16.235 − 4.11 = 12.125 cm</span>
+                  <span class="step">Addition/subtraction mein, answer utne hi decimal places tak round hota hai jitna sabse kam-precise number mein hain (l₂ mein 2 decimal places)</span>
+                </div>
+                <p class="final-ans">Answer: l₁ − l₂ = 12.13 cm (2 decimal places)</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q13. Universe ki age ka order of magnitude approximately 4×10¹⁷ seconds hai. Iska order of magnitude kya hoga?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Order of magnitude power of 10 dekhta hai, coefficient nahi</span>
+                  <span class="step">4×10¹⁷ mein coefficient 4 hai, jo 3.16 se bada hai (√10), isliye round up hota hai agle power tak</span>
+                </div>
+                <p class="final-ans">Answer: Order of magnitude = 10¹⁸ seconds</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q14. Check karo dimensionally: kinetic energy formula KE = ½mv² sahi hai ya nahi.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">[KE] chahiye = [M¹L²T⁻²] (Energy ka dimension)</span>
+                  <span class="step">RHS: [m][v²] = [M¹] × [L¹T⁻¹]² = [M¹L²T⁻²]</span>
+                  <span class="step">LHS = RHS ✓</span>
+                </div>
+                <p class="final-ans">Answer: Dimensionally consistent — KE = ½mv² sahi hai</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q15. Ek measurement 0.007068 mein kitne significant figures hain?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Leading zeros (0.00) significant nahi hote</span>
+                  <span class="step">Baaki digits: 7, 0, 6, 8 — yahan zero (7 aur 6 ke beech) significant hai kyunki wo do non-zero digits ke beech hai</span>
+                </div>
+                <p class="final-ans">Answer: 4 significant figures (7, 0, 6, 8)</p>
+              </div>
+            </div>
+          </div>
+        </div>
       `],
         en:[
         `<ul>
@@ -9651,6 +9954,167 @@ updateStudyTimeLabel();
             <p>These rules matter because <b>miscounting SF leads to a wrong error estimate</b>. For instance, if 0.0025 were mistakenly treated as having 5 SF (counting all the zeros), it would greatly overstate the measurement's precision beyond what was actually measured.</p>
           </div>
         </div>
+        <div class="concept-block">
+          <div class="concept-head">✍️ NCERT Solved Examples — Click to Reveal</div>
+          <div class="concept-body">
+            <p>Try each question yourself first, then tap to reveal the answer.</p>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q1. A rectangular sheet has length l = 16.2 cm, breadth b = 10.1 cm. Find the area with correct significant figures.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Area = l × b = 16.2 × 10.1 = 163.62 cm²</span>
+                  <span class="step">Both measurements have 3 SF → the answer must also be rounded to 3 SF</span>
+                </div>
+                <p class="final-ans">Answer: Area = 164 cm²</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q2. A cube has side a = (7.203 ± 0.001) cm. Find the volume and its percentage error.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Volume V = a³ = (7.203)³ ≈ 373.7 cm³</span>
+                  <span class="step">Power rule: ΔV/V = 3 × (Δa/a) = 3 × (0.001/7.203) = 0.000417</span>
+                  <span class="step">Percentage error = 0.000417 × 100 = 0.0417%</span>
+                </div>
+                <p class="final-ans">Answer: V ≈ 373.7 cm³ with ~0.04% error</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q3. A pendulum's length was measured 5 times: 20.2, 20.5, 20.4, 20.3, 20.6 cm. Find the mean absolute error and percentage error.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Mean = (20.2+20.5+20.4+20.3+20.6)/5 = 102.0/5 = 20.4 cm</span>
+                  <span class="step">Deviations: 0.2, 0.1, 0.0, 0.1, 0.2 → Mean absolute error = 0.6/5 = 0.12 cm</span>
+                  <span class="step">Percentage error = (0.12/20.4) × 100 ≈ 0.59%</span>
+                </div>
+                <p class="final-ans">Answer: Length = 20.4 ± 0.12 cm; Percentage error ≈ 0.59%</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q4. A screw gauge shows a reading of −0.004 cm when the jaws are fully closed (negative zero error). The observed reading is 0.482 cm. Find the correct reading.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Correct reading = Observed − Zero error</span>
+                  <span class="step">Correct = 0.482 − (−0.004) = 0.482 + 0.004</span>
+                </div>
+                <p class="final-ans">Answer: Correct reading = 0.486 cm</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q5. 1 calorie = 4.2 × 10⁷ erg (CGS system). Convert this to Joules (SI). (For Energy: a=1, b=2, c=−2)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">n₂ = n₁ × [M₁/M₂]ᵃ × [L₁/L₂]ᵇ × [T₁/T₂]ᶜ</span>
+                  <span class="step">M₁/M₂ = 10⁻³, L₁/L₂ = 10⁻², T₁/T₂ = 1</span>
+                  <span class="step">n₂ = 4.2×10⁷ × (10⁻³)¹ × (10⁻²)² × 1⁻² = 4.2×10⁷ × 10⁻⁷</span>
+                </div>
+                <p class="final-ans">Answer: 1 cal = 4.2 Joules</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q6. A car's speed is 36 km/h. Convert this to m/s.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">1 km/h = 1000m/3600s = 5/18 m/s</span>
+                  <span class="step">36 km/h = 36 × (5/18) m/s</span>
+                </div>
+                <p class="final-ans">Answer: 36 km/h = 10 m/s</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q7. Find the dimensional formula of the gravitational constant G, given F = Gm₁m₂/r².</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">G = F r² / (m₁m₂)</span>
+                  <span class="step">[F] = [M¹L¹T⁻²], [r²] = [L²], [m₁m₂] = [M²]</span>
+                  <span class="step">[G] = [M¹L¹T⁻²][L²] / [M²] = [M⁻¹L³T⁻²]</span>
+                </div>
+                <p class="final-ans">Answer: [G] = M⁻¹L³T⁻²</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q8. Two resistors R₁=(4±0.2)Ω and R₂=(6±0.3)Ω are connected in series. Find the equivalent resistance with its error.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">In series: R = R₁ + R₂ = 4 + 6 = 10 Ω</span>
+                  <span class="step">Addition rule: ΔR = ΔR₁ + ΔR₂ = 0.2 + 0.3 = 0.5 Ω</span>
+                </div>
+                <p class="final-ans">Answer: R = (10 ± 0.5) Ω</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q9. A physical quantity P = a²b³/(c√d). If the percentage errors in a, b, c, d are 1%, 2%, 3%, 4% respectively, find the percentage error in P.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Power rule (for every term): %error in P = 2(%error in a) + 3(%error in b) + 1(%error in c) + ½(%error in d)</span>
+                  <span class="step">= 2(1%) + 3(2%) + 1(3%) + 0.5(4%) = 2 + 6 + 3 + 2</span>
+                </div>
+                <p class="final-ans">Answer: Percentage error in P = 13%</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q10. A vernier calliper shows a Main Scale Reading (MSR) = 4 mm, and the 6th vernier division coincides. If the Least Count = 0.01 cm, find the final reading.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Reading = MSR + (VSR × LC)</span>
+                  <span class="step">= 0.4 cm + (6 × 0.01 cm) = 0.4 + 0.06</span>
+                </div>
+                <p class="final-ans">Answer: Reading = 0.46 cm</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q11. Density ρ = m/V, where mass m = (5.00 ± 0.05) g and volume V = (2.00 ± 0.02) cm³. Find the percentage error in density.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Division rule: Δρ/ρ = Δm/m + ΔV/V</span>
+                  <span class="step">= (0.05/5.00) + (0.02/2.00) = 0.01 + 0.01 = 0.02</span>
+                </div>
+                <p class="final-ans">Answer: Percentage error in density = 2%</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q12. Two lengths were measured: l₁ = 16.235 cm and l₂ = 4.11 cm. Find their difference (l₁ − l₂) with correct significant figures.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">l₁ − l₂ = 16.235 − 4.11 = 12.125 cm</span>
+                  <span class="step">In addition/subtraction, the answer is rounded to as many decimal places as the least precise number has (l₂ has 2 decimal places)</span>
+                </div>
+                <p class="final-ans">Answer: l₁ − l₂ = 12.13 cm (2 decimal places)</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q13. The age of the universe is approximately 4×10¹⁷ seconds. What is its order of magnitude?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Order of magnitude looks at the power of 10, not the coefficient</span>
+                  <span class="step">In 4×10¹⁷, the coefficient 4 is greater than √10 ≈ 3.16, so it rounds up to the next power</span>
+                </div>
+                <p class="final-ans">Answer: Order of magnitude = 10¹⁸ seconds</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q14. Check dimensionally whether the kinetic energy formula KE = ½mv² is correct.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Required [KE] = [M¹L²T⁻²] (dimension of Energy)</span>
+                  <span class="step">RHS: [m][v²] = [M¹] × [L¹T⁻¹]² = [M¹L²T⁻²]</span>
+                  <span class="step">LHS = RHS ✓</span>
+                </div>
+                <p class="final-ans">Answer: Dimensionally consistent — KE = ½mv² is correct</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q15. How many significant figures are in the measurement 0.007068?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Leading zeros (0.00) are not significant</span>
+                  <span class="step">Remaining digits: 7, 0, 6, 8 — the zero here (between 7 and 6) IS significant since it's between two non-zero digits</span>
+                </div>
+                <p class="final-ans">Answer: 4 significant figures (7, 0, 6, 8)</p>
+              </div>
+            </div>
+          </div>
+        </div>
       `]
     },
     sticky:{
@@ -9777,6 +10241,167 @@ updateStudyTimeLabel();
             <p><b>Relative velocity</b> ek object ki velocity hoti hai doosre moving object ke reference frame mein — v(A relative to B) = v(A) − v(B). Ye concept trains ke cross karte waqt ya do gaadiyon ke beech relative speed samajhne mein use hota hai.</p>
             <p>Ek important distinction hai <b>average speed vs average velocity</b> — speed scalar hai (total distance ÷ time), velocity vector hai (total displacement ÷ time). Agar ek object apni starting position par wapas aa jaaye, uski average velocity zero hogi (displacement zero), lekin average speed zero nahi hogi (kyunki distance travel hui thi).</p>
           </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">✍️ NCERT Solved Examples — Click to Reveal</div>
+          <div class="concept-body">
+            <p>Neeche diye gaye questions try karo pehle khud se, fir answer dekhne ke liye tap karo.</p>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q1. Ek car 20 m/s ki speed se chal rahi hai aur brake lagane par 5 m/s² se decelerate hoti hai. Car rukne mein kitna time aur kitni distance lagegi?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">v = u + at → 0 = 20 + (−5)t → t = 4 s</span>
+                  <span class="step">v² = u² + 2as → 0 = (20)² + 2(−5)s → s = 400/10 = 40 m</span>
+                </div>
+                <p class="final-ans">Answer: Time = 4 s, Distance = 40 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q2. Ek ball 30 m/s ki initial velocity se seedha upar throw kiya jaata hai. Max height aur usko pahunchne mein lagne wala time nikaalo. (g = 10 m/s²)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Highest point par v = 0. v = u + at → 0 = 30 + (−10)t → t = 3 s</span>
+                  <span class="step">v² = u² + 2as → 0 = (30)² − 2(10)s → s = 900/20 = 45 m</span>
+                </div>
+                <p class="final-ans">Answer: Max height = 45 m, Time = 3 s</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q3. Train A 72 km/h se aur Train B 90 km/h se, ek doosre ki taraf (opposite directions) chal rahi hain. Ek doosre ke reference frame mein unki relative velocity nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">72 km/h = 20 m/s, 90 km/h = 25 m/s</span>
+                  <span class="step">Opposite directions mein: v(rel) = v(A) − (−v(B)) = v(A) + v(B)</span>
+                  <span class="step">v(rel) = 20 + 25 = 45 m/s</span>
+                </div>
+                <p class="final-ans">Answer: Relative velocity = 45 m/s (= 162 km/h)</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q4. Ek body rest se shuru hoti hai aur 2 m/s² se uniformly accelerate hoti hai. 10th second mein cover ki gayi distance nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Formula: S(nth) = u + a/2 × (2n − 1)</span>
+                  <span class="step">S(10th) = 0 + (2/2) × (2×10 − 1) = 1 × 19</span>
+                </div>
+                <p class="final-ans">Answer: 10th second mein distance = 19 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q5. Ek particle ki position x = 2t² + 3t (metres, t seconds mein) se di gayi hai. t = 2s par velocity aur acceleration nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">v = dx/dt = 4t + 3</span>
+                  <span class="step">t=2s par: v = 4(2) + 3 = 11 m/s</span>
+                  <span class="step">a = dv/dt = 4 m/s² &nbsp; <span class="step-note">(constant, t se independent)</span></span>
+                </div>
+                <p class="final-ans">Answer: v = 11 m/s, a = 4 m/s²</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q6. Ek driver ka reaction time 0.2 s hai. Car 15 m/s ki speed se chal rahi hai. Reaction time ke baad brake lagne par car 6 m/s² se decelerate hoti hai. Total stopping distance nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Reaction distance = speed × reaction time = 15 × 0.2 = 3 m</span>
+                  <span class="step">Braking distance: v² = u² + 2as → 0 = (15)² − 2(6)s → s = 225/12 = 18.75 m</span>
+                  <span class="step">Total stopping distance = Reaction distance + Braking distance = 3 + 18.75</span>
+                </div>
+                <p class="final-ans">Answer: Total stopping distance = 21.75 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q7. Ek car apni journey ka pehla half distance 40 km/h se aur doosra half distance 60 km/h se tay karti hai. Average speed nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Equal distances ke liye: Average speed = 2v₁v₂ / (v₁+v₂)</span>
+                  <span class="step">= 2(40)(60) / (40+60) = 4800/100</span>
+                </div>
+                <p class="final-ans">Answer: Average speed = 48 km/h</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q8. Car A 60 km/h se aur Car B 40 km/h se, dono same direction mein chal rahi hain. A ke reference frame mein B ki relative velocity nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Same direction mein: v(B rel A) = v(B) − v(A)</span>
+                  <span class="step">= 40 − 60 = −20 km/h</span>
+                </div>
+                <p class="final-ans">Answer: B, A se 20 km/h ki speed se peeche jaata dikhega (relative velocity = −20 km/h)</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q9. Ek ball 80 m height wali building se drop kiya jaata hai. Ground tak pahunchne mein kitna time lagega aur usska final speed kya hoga? (g = 10 m/s²)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">s = ut + ½at² → 80 = 0 + ½(10)t² → t² = 16 → t = 4 s</span>
+                  <span class="step">v = u + at = 0 + 10(4) = 40 m/s</span>
+                </div>
+                <p class="final-ans">Answer: Time = 4 s, Final speed = 40 m/s</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q10. Ek v-t graph mein velocity 0 se 10 m/s tak 2 second mein uniformly badhti hai, fir agle 3 second tak 10 m/s constant rehti hai. Total displacement nikaalo (area under graph se).</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Pehla part (triangle): Area = ½ × base × height = ½ × 2 × 10 = 10 m</span>
+                  <span class="step">Doosra part (rectangle): Area = base × height = 3 × 10 = 30 m</span>
+                  <span class="step">Total displacement = 10 + 30</span>
+                </div>
+                <p class="final-ans">Answer: Total displacement = 40 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q11. Train A, Train B se 100 m peeche hai aur 54 km/h se chal rahi hai; Train B 36 km/h se chal rahi hai, same direction mein. Train A, Train B ko kitni der mein pakad legi?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">54 km/h = 15 m/s, 36 km/h = 10 m/s</span>
+                  <span class="step">Relative velocity of A w.r.t. B = 15 − 10 = 5 m/s</span>
+                  <span class="step">Time = Distance / Relative velocity = 100/5</span>
+                </div>
+                <p class="final-ans">Answer: 20 seconds mein Train A, Train B ko pakad legi</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q12. Ek particle ki velocity v = 3t² − 2t (SI units) se di gayi hai. t=0 se t=2s tak uska displacement nikaalo (integration se).</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">s = ∫v dt = ∫(3t² − 2t) dt = t³ − t² &nbsp; <span class="step-note">(0 se 2 tak)</span></span>
+                  <span class="step">s = [(2)³ − (2)²] − [0 − 0] = 8 − 4</span>
+                </div>
+                <p class="final-ans">Answer: Displacement = 4 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q13. Ek stone tower se drop kiya jaata hai aur ground tak pahunchne mein 4 seconds lagte hain. Tower ki height nikaalo. (g = 10 m/s²)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">s = ut + ½at² = 0 + ½(10)(4)²</span>
+                  <span class="step">s = 5 × 16</span>
+                </div>
+                <p class="final-ans">Answer: Tower ki height = 80 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q14. Ek motorcyclist apni speed 5 m/s se 25 m/s tak 10 seconds mein uniformly badhata hai. Is dauraan cover ki gayi distance nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Average velocity method: s = [(u+v)/2] × t</span>
+                  <span class="step">s = [(5+25)/2] × 10 = 15 × 10</span>
+                </div>
+                <p class="final-ans">Answer: Distance = 150 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q15. Ek car apni journey ka pehla half time 40 km/h se aur doosra half time 60 km/h se chalti hai (distance nahi, time equal hai). Average speed nikaalo.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Equal TIME intervals ke liye: Average speed = (v₁ + v₂)/2 &nbsp; <span class="step-note">(equal distance wale case se alag formula)</span></span>
+                  <span class="step">= (40 + 60)/2</span>
+                </div>
+                <p class="final-ans">Answer: Average speed = 50 km/h</p>
+              </div>
+            </div>
+          </div>
         </div>`
       ],
         en:[
@@ -9869,6 +10494,167 @@ updateStudyTimeLabel();
           <div class="concept-body">
             <p><b>Relative velocity</b> is an object's velocity as measured in another moving object's reference frame — v(A relative to B) = v(A) − v(B). This concept is used to understand trains passing each other or the relative speed between two vehicles.</p>
             <p>An important distinction is <b>average speed vs average velocity</b> — speed is scalar (total distance ÷ time), velocity is a vector (total displacement ÷ time). If an object returns to its starting position, its average velocity will be zero (zero displacement), but its average speed won't be (since distance was still covered).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">✍️ NCERT Solved Examples — Click to Reveal</div>
+          <div class="concept-body">
+            <p>Try each question yourself first, then tap to reveal the answer.</p>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q1. A car moving at 20 m/s decelerates at 5 m/s² when the brakes are applied. Find the time and distance taken for it to stop.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">v = u + at → 0 = 20 + (−5)t → t = 4 s</span>
+                  <span class="step">v² = u² + 2as → 0 = (20)² + 2(−5)s → s = 400/10 = 40 m</span>
+                </div>
+                <p class="final-ans">Answer: Time = 4 s, Distance = 40 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q2. A ball is thrown straight up with an initial velocity of 30 m/s. Find the maximum height and time taken to reach it. (g = 10 m/s²)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">At the highest point, v = 0. v = u + at → 0 = 30 + (−10)t → t = 3 s</span>
+                  <span class="step">v² = u² + 2as → 0 = (30)² − 2(10)s → s = 900/20 = 45 m</span>
+                </div>
+                <p class="final-ans">Answer: Max height = 45 m, Time = 3 s</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q3. Train A moves at 72 km/h and Train B at 90 km/h, in opposite directions toward each other. Find their relative velocity.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">72 km/h = 20 m/s, 90 km/h = 25 m/s</span>
+                  <span class="step">For opposite directions: v(rel) = v(A) − (−v(B)) = v(A) + v(B)</span>
+                  <span class="step">v(rel) = 20 + 25 = 45 m/s</span>
+                </div>
+                <p class="final-ans">Answer: Relative velocity = 45 m/s (= 162 km/h)</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q4. A body starts from rest and accelerates uniformly at 2 m/s². Find the distance covered in the 10th second.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Formula: S(nth) = u + a/2 × (2n − 1)</span>
+                  <span class="step">S(10th) = 0 + (2/2) × (2×10 − 1) = 1 × 19</span>
+                </div>
+                <p class="final-ans">Answer: Distance in the 10th second = 19 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q5. A particle's position is given by x = 2t² + 3t (metres, t in seconds). Find its velocity and acceleration at t = 2s.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">v = dx/dt = 4t + 3</span>
+                  <span class="step">At t=2s: v = 4(2) + 3 = 11 m/s</span>
+                  <span class="step">a = dv/dt = 4 m/s² &nbsp; <span class="step-note">(constant, independent of t)</span></span>
+                </div>
+                <p class="final-ans">Answer: v = 11 m/s, a = 4 m/s²</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q6. A driver's reaction time is 0.2 s. The car is moving at 15 m/s. After the reaction time, the brakes decelerate the car at 6 m/s². Find the total stopping distance.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Reaction distance = speed × reaction time = 15 × 0.2 = 3 m</span>
+                  <span class="step">Braking distance: v² = u² + 2as → 0 = (15)² − 2(6)s → s = 225/12 = 18.75 m</span>
+                  <span class="step">Total stopping distance = Reaction distance + Braking distance = 3 + 18.75</span>
+                </div>
+                <p class="final-ans">Answer: Total stopping distance = 21.75 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q7. A car covers the first half of a journey's distance at 40 km/h and the second half at 60 km/h. Find the average speed.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">For equal distances: Average speed = 2v₁v₂ / (v₁+v₂)</span>
+                  <span class="step">= 2(40)(60) / (40+60) = 4800/100</span>
+                </div>
+                <p class="final-ans">Answer: Average speed = 48 km/h</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q8. Car A moves at 60 km/h and Car B at 40 km/h, both in the same direction. Find the relative velocity of B with respect to A.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">For the same direction: v(B rel A) = v(B) − v(A)</span>
+                  <span class="step">= 40 − 60 = −20 km/h</span>
+                </div>
+                <p class="final-ans">Answer: B appears to move 20 km/h backward relative to A (relative velocity = −20 km/h)</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q9. A ball is dropped from a building 80 m high. Find the time it takes to reach the ground and its final speed. (g = 10 m/s²)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">s = ut + ½at² → 80 = 0 + ½(10)t² → t² = 16 → t = 4 s</span>
+                  <span class="step">v = u + at = 0 + 10(4) = 40 m/s</span>
+                </div>
+                <p class="final-ans">Answer: Time = 4 s, Final speed = 40 m/s</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q10. In a v-t graph, velocity increases uniformly from 0 to 10 m/s over 2 seconds, then stays constant at 10 m/s for the next 3 seconds. Find the total displacement using the area under the graph.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">First part (triangle): Area = ½ × base × height = ½ × 2 × 10 = 10 m</span>
+                  <span class="step">Second part (rectangle): Area = base × height = 3 × 10 = 30 m</span>
+                  <span class="step">Total displacement = 10 + 30</span>
+                </div>
+                <p class="final-ans">Answer: Total displacement = 40 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q11. Train A is 100 m behind Train B and moves at 54 km/h; Train B moves at 36 km/h, in the same direction. How long will Train A take to catch up to Train B?</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">54 km/h = 15 m/s, 36 km/h = 10 m/s</span>
+                  <span class="step">Relative velocity of A w.r.t. B = 15 − 10 = 5 m/s</span>
+                  <span class="step">Time = Distance / Relative velocity = 100/5</span>
+                </div>
+                <p class="final-ans">Answer: Train A catches up in 20 seconds</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q12. A particle's velocity is given by v = 3t² − 2t (SI units). Find its displacement from t=0 to t=2s using integration.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">s = ∫v dt = ∫(3t² − 2t) dt = t³ − t² &nbsp; <span class="step-note">(from 0 to 2)</span></span>
+                  <span class="step">s = [(2)³ − (2)²] − [0 − 0] = 8 − 4</span>
+                </div>
+                <p class="final-ans">Answer: Displacement = 4 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q13. A stone is dropped from a tower and takes 4 seconds to reach the ground. Find the height of the tower. (g = 10 m/s²)</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">s = ut + ½at² = 0 + ½(10)(4)²</span>
+                  <span class="step">s = 5 × 16</span>
+                </div>
+                <p class="final-ans">Answer: Height of tower = 80 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q14. A motorcyclist uniformly increases speed from 5 m/s to 25 m/s over 10 seconds. Find the distance covered.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">Average velocity method: s = [(u+v)/2] × t</span>
+                  <span class="step">s = [(5+25)/2] × 10 = 15 × 10</span>
+                </div>
+                <p class="final-ans">Answer: Distance = 150 m</p>
+              </div>
+            </div>
+            <div class="solved-block">
+              <div class="solved-q" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')"><span class="solved-icon">▶</span> Q15. A car travels the first half of the TIME of its journey at 40 km/h and the second half at 60 km/h (equal time, not equal distance). Find the average speed.</div>
+              <div class="solved-answer">
+                <div class="derive-box">
+                  <span class="step">For equal TIME intervals: Average speed = (v₁ + v₂)/2 &nbsp; <span class="step-note">(different from the equal-distance case)</span></span>
+                  <span class="step">= (40 + 60)/2</span>
+                </div>
+                <p class="final-ans">Answer: Average speed = 50 km/h</p>
+              </div>
+            </div>
           </div>
         </div>`
       ]
@@ -11717,7 +12503,56 @@ updateStudyTimeLabel();
         `<p><b>Electric charge</b> ek fundamental property hai jo <b>quantized</b> hoti hai — matlab ye hamesha electron ki charge (e = 1.6×10⁻¹⁹ C) ka whole-number multiple hoti hai. Charge <b>conserve</b> bhi hoti hai — isolated system mein total charge constant rehta hai.</p>
         <p><b>Coulomb's Law</b> do point charges ke beech force describe karta hai: <b>F = kq₁q₂/r²</b>, jahan k = 9×10⁹ N·m²/C² hai. Ye Newton ke gravitation law jaisa hai, lekin gravity hamesha attractive hoti hai jabki electric force attractive (opposite charges) ya repulsive (same charges) dono ho sakti hai.</p>
         <p><b>Electric field (E)</b> space ka wo region hai jaha koi charge force experience karta hai — E = F/q. Field lines electric field ko visualize karne ka tareeka hain: ye positive charge se nikalti hain, negative mein enter karti hain, aur kabhi cross nahi hoti (kyunki ek point par field ki sirf ek direction ho sakti hai).</p>
-        <p><b>Gauss's Law</b> kehta hai ki ek closed surface (Gaussian surface) se guzarne wala total electric flux, us surface ke andar enclosed total charge ke directly proportional hota hai (Φ = Q/ε₀) — surface ki shape ya size irrelevant hai. Ye law symmetric charge distributions (spheres, cylinders, planes) ke electric field calculate karne ke liye extremely useful hai.</p>`],
+        <p><b>Gauss's Law</b> kehta hai ki ek closed surface (Gaussian surface) se guzarne wala total electric flux, us surface ke andar enclosed total charge ke directly proportional hota hai (Φ = Q/ε₀) — surface ki shape ya size irrelevant hai. Ye law symmetric charge distributions (spheres, cylinders, planes) ke electric field calculate karne ke liye extremely useful hai.</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">➕ Superposition Principle &amp; Vector Form</div>
+          <div class="concept-body">
+            <p>Coulomb's Law ka poora (vector) form hai: <span class="formula">F₁₂ = kq₁q₂/r² &middot; r̂₁₂</span> — jahan r̂₁₂ ek unit vector hai jo charge 2 se charge 1 ki taraf point karta hai. Force hamesha line joining the two charges ke along hoti hai.</p>
+            <p>Jab multiple charges present hon, to kisi ek charge par net force <b>Superposition Principle</b> se milta hai — har doosre charge ki wajah se lagne wala force <i>independently</i> calculate karo, phir sabko vector sum karo: <span class="formula">F(net) = F₁ + F₂ + F₃ + ...</span>. Ye principle isliye important hai kyunki iski wajah se complex charge systems ko simple pairwise calculations mein tod sakte hain.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">↔️ Electric Dipole</div>
+          <div class="concept-body">
+            <p>Do equal aur opposite charges (+q aur −q) jo ek chhoti si distance (2a) par separated hon, unhe <b>electric dipole</b> kehte hain. Iska <b>dipole moment</b> hota hai <span class="formula">p = q × 2a</span>, jo negative se positive charge ki taraf point karta hai (vector quantity).</p>
+            <div class="derive-box">
+              <span class="step">Axial line (dipole ke along) par field:</span>
+              <span class="step">E(axial) = 2kp/r³ &nbsp;<span class="step-note">(large r ke liye, r ≫ a)</span></span>
+              <span class="step">Equatorial line (perpendicular bisector) par field:</span>
+              <span class="step">E(equatorial) = −kp/r³ &nbsp;<span class="step-note">(direction dipole moment ke opposite)</span></span>
+            </div>
+            <p>Isse ek important fact nikalta hai — <b>axial field, equatorial field se exactly double hota hai</b> (same r par), aur dono hi r³ ke saath decrease hote hain (single charge ke r² se zyada tezi se), kyunki door se dekhne par dipole ka net charge zero lagta hai.</p>
+            <p>Agar dipole ko ek <b>uniform external electric field</b> mein rakha jaaye, to usme net force zero hota hai (kyunki dono charges par equal-opposite force lagta hai), lekin ek <b>torque</b> lagta hai jo dipole ko field ke along align karne ki koshish karta hai: <span class="formula">τ = p × E = pE sinθ</span>, jahan θ dipole moment aur field ke beech ka angle hai.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">📏 Continuous Charge Distribution</div>
+          <div class="concept-body">
+            <p>Jab charge ek object par continuously spread hoti hai (discrete points ki jagah), to use density ke through describe karte hain:</p>
+            <table class="compare-table">
+              <tr><th>Type</th><th>Symbol</th><th>Unit</th><th>Example</th></tr>
+              <tr><td>Linear charge density</td><td>λ = q/l</td><td>C/m</td><td>Charged wire/rod</td></tr>
+              <tr><td>Surface charge density</td><td>σ = q/A</td><td>C/m²</td><td>Charged plate/sheet</td></tr>
+              <tr><td>Volume charge density</td><td>ρ = q/V</td><td>C/m³</td><td>Charged sphere (solid)</td></tr>
+            </table>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧮 Gauss's Law Ke 3 Classic Applications</div>
+          <div class="concept-body">
+            <p>Gauss's Law symmetry use karke complicated integration ko avoid karta hai — ek smart Gaussian surface choose karke, jahan E constant ho aur surface ke perpendicular ho:</p>
+            <div class="derive-box">
+              <span class="step">1) Infinite line charge (linear density λ):</span>
+              <span class="step">Cylindrical Gaussian surface use karo → E = λ / (2πε₀r)</span>
+              <span class="step">2) Infinite plane sheet (surface density σ):</span>
+              <span class="step">Pillbox Gaussian surface use karo → E = σ / (2ε₀) &nbsp;<span class="step-note">(distance se independent!)</span></span>
+              <span class="step">3) Uniformly charged spherical shell (total charge Q, radius R):</span>
+              <span class="step">Sphere ke bahar (r &gt; R): E = kQ/r² &nbsp;<span class="step-note">(bilkul point charge jaisa)</span></span>
+              <span class="step">Sphere ke andar (r &lt; R): E = 0 &nbsp;<span class="step-note">(kyunki andar koi enclosed charge nahi)</span></span>
+            </div>
+            <p><span class="tag-label">Trap</span> Bahut students sochte hain sphere ke andar field zero isliye hai kyunki charge "center mein" hai — galat! Asli wajah ye hai ki shell ke andar kisi bhi Gaussian surface ke andar <b>koi charge enclosed hi nahi</b> hota (saara charge shell ki surface par hai), isliye Gauss's Law se seedha E=0 milta hai.</p>
+          </div>
+        </div>`],
         en:[
         `<ul>
           <li><b>Charge</b> is quantized — always a multiple of e (1.6×10⁻¹⁹ C)</li>
@@ -11736,21 +12571,72 @@ updateStudyTimeLabel();
         `<p><b>Electric charge</b> is a fundamental property that is <b>quantized</b> — meaning it's always a whole-number multiple of the electron's charge (e = 1.6×10⁻¹⁹ C). Charge is also <b>conserved</b> — the total charge in an isolated system stays constant.</p>
         <p><b>Coulomb's Law</b> describes the force between two point charges: <b>F = kq₁q₂/r²</b>, where k = 9×10⁹ N·m²/C². It resembles Newton's law of gravitation, but while gravity is always attractive, the electric force can be attractive (opposite charges) or repulsive (same charges).</p>
         <p>The <b>electric field (E)</b> is the region of space where a charge experiences a force — E = F/q. Field lines are a way to visualize the electric field: they emerge from positive charges, enter negative charges, and never cross (since a single point can only have one field direction).</p>
-        <p><b>Gauss's Law</b> states that the total electric flux through a closed surface (a Gaussian surface) is directly proportional to the total charge enclosed within it (Φ = Q/ε₀) — the surface's shape or size is irrelevant. This law is extremely useful for calculating the electric field of symmetric charge distributions (spheres, cylinders, planes).</p>`
+        <p><b>Gauss's Law</b> states that the total electric flux through a closed surface (a Gaussian surface) is directly proportional to the total charge enclosed within it (Φ = Q/ε₀) — the surface's shape or size is irrelevant. This law is extremely useful for calculating the electric field of symmetric charge distributions (spheres, cylinders, planes).</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">➕ Superposition Principle &amp; Vector Form</div>
+          <div class="concept-body">
+            <p>The full (vector) form of Coulomb's Law is: <span class="formula">F₁₂ = kq₁q₂/r² &middot; r̂₁₂</span> — where r̂₁₂ is a unit vector pointing from charge 2 towards charge 1. The force always acts along the line joining the two charges.</p>
+            <p>When multiple charges are present, the net force on any one charge is found using the <b>Superposition Principle</b> — calculate the force due to each other charge <i>independently</i>, then take the vector sum: <span class="formula">F(net) = F₁ + F₂ + F₃ + ...</span>. This principle matters because it lets us break complex charge systems into simple pairwise calculations.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">↔️ Electric Dipole</div>
+          <div class="concept-body">
+            <p>Two equal and opposite charges (+q and −q) separated by a small distance (2a) form an <b>electric dipole</b>. Its <b>dipole moment</b> is <span class="formula">p = q × 2a</span>, pointing from the negative to the positive charge (a vector quantity).</p>
+            <div class="derive-box">
+              <span class="step">Field on the axial line (along the dipole):</span>
+              <span class="step">E(axial) = 2kp/r³ &nbsp;<span class="step-note">(for large r, r ≫ a)</span></span>
+              <span class="step">Field on the equatorial line (perpendicular bisector):</span>
+              <span class="step">E(equatorial) = −kp/r³ &nbsp;<span class="step-note">(direction opposite to dipole moment)</span></span>
+            </div>
+            <p>This gives an important result — the <b>axial field is exactly double the equatorial field</b> (at the same r), and both decrease as r³ (faster than a single charge's r²), because from far away the dipole's net charge appears to be zero.</p>
+            <p>If a dipole is placed in a <b>uniform external electric field</b>, the net force on it is zero (equal-opposite forces on each charge), but it experiences a <b>torque</b> that tries to align it with the field: <span class="formula">τ = p × E = pE sinθ</span>, where θ is the angle between the dipole moment and the field.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">📏 Continuous Charge Distribution</div>
+          <div class="concept-body">
+            <p>When charge is spread continuously over an object (instead of discrete points), we describe it using density:</p>
+            <table class="compare-table">
+              <tr><th>Type</th><th>Symbol</th><th>Unit</th><th>Example</th></tr>
+              <tr><td>Linear charge density</td><td>λ = q/l</td><td>C/m</td><td>Charged wire/rod</td></tr>
+              <tr><td>Surface charge density</td><td>σ = q/A</td><td>C/m²</td><td>Charged plate/sheet</td></tr>
+              <tr><td>Volume charge density</td><td>ρ = q/V</td><td>C/m³</td><td>Charged sphere (solid)</td></tr>
+            </table>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧮 3 Classic Applications of Gauss's Law</div>
+          <div class="concept-body">
+            <p>Gauss's Law uses symmetry to avoid complicated integration — by choosing a smart Gaussian surface where E is constant and perpendicular to the surface:</p>
+            <div class="derive-box">
+              <span class="step">1) Infinite line charge (linear density λ):</span>
+              <span class="step">Use a cylindrical Gaussian surface → E = λ / (2πε₀r)</span>
+              <span class="step">2) Infinite plane sheet (surface density σ):</span>
+              <span class="step">Use a pillbox Gaussian surface → E = σ / (2ε₀) &nbsp;<span class="step-note">(independent of distance!)</span></span>
+              <span class="step">3) Uniformly charged spherical shell (total charge Q, radius R):</span>
+              <span class="step">Outside the sphere (r &gt; R): E = kQ/r² &nbsp;<span class="step-note">(exactly like a point charge)</span></span>
+              <span class="step">Inside the sphere (r &lt; R): E = 0 &nbsp;<span class="step-note">(no enclosed charge)</span></span>
+            </div>
+            <p><span class="tag-label">Trap</span> Many students think the field inside is zero because the charge is "at the center" — wrong! The real reason is that any Gaussian surface drawn inside the shell has <b>zero enclosed charge</b> (all the charge sits on the shell's surface), so Gauss's Law directly gives E=0.</p>
+          </div>
+        </div>`
       ]
     },
     sticky:{
       hi:[
         `Charge quantized (multiple of e) aur conserved hoti hai`,
-        `Coulomb's Law: <span class="formula">F = kq₁q₂/r²</span>`,
-        `Electric field E = F/q; field lines kabhi cross nahi hoti`,
-        `Gauss's Law: <span class="formula">Φ = Q(enclosed)/ε₀</span>, shape-independent`
+        `Coulomb's Law: <span class="formula">F = kq₁q₂/r²</span>; Superposition se net force nikalta hai`,
+        `Dipole moment p = q×2a; E(axial) = 2kp/r³, E(equatorial) = kp/r³; torque τ = pE sinθ`,
+        `λ (linear), σ (surface), ρ (volume) — continuous charge density`,
+        `Gauss's Law: <span class="formula">Φ = Q(enclosed)/ε₀</span> — line: E=λ/2πε₀r, sheet: E=σ/2ε₀, shell: E=0 inside`
       ],
       en:[
         `Charge is quantized (multiple of e) and conserved`,
-        `Coulomb's Law: <span class="formula">F = kq₁q₂/r²</span>`,
-        `Electric field E = F/q; field lines never cross`,
-        `Gauss's Law: <span class="formula">Φ = Q(enclosed)/ε₀</span>, shape-independent`
+        `Coulomb's Law: <span class="formula">F = kq₁q₂/r²</span>; Superposition gives net force`,
+        `Dipole moment p = q×2a; E(axial) = 2kp/r³, E(equatorial) = kp/r³; torque τ = pE sinθ`,
+        `λ (linear), σ (surface), ρ (volume) — continuous charge density`,
+        `Gauss's Law: <span class="formula">Φ = Q(enclosed)/ε₀</span> — line: E=λ/2πε₀r, sheet: E=σ/2ε₀, shell: E=0 inside`
       ]
     }
   },
@@ -11775,7 +12661,28 @@ updateStudyTimeLabel();
         `<p><b>Electric potential (V)</b> ek point par unit positive charge ko infinity se us point tak laane mein kiya gaya work hai. Ye scalar quantity hai (electric field vector hota hai), aur <b>equipotential surfaces</b> (same potential wale points ka set) hamesha electric field lines ke perpendicular hoti hain.</p>
         <p><b>Capacitance (C)</b> ek conductor ki property hai jo batati hai ki wo kitna charge store kar sakta hai per unit potential difference: <b>C = Q/V</b>, unit hai <b>Farad</b>. Ek <b>capacitor</b> mein do conductors hote hain (plates) jinke beech ek insulator (dielectric) hota hai — dielectric use karne se capacitance badh jaata hai kyunki wo effective field ko reduce karta hai.</p>
         <p><b>Series combination</b> mein capacitors ek line mein jude hote hain — charge same rehta hai, voltage divide hota hai, aur total capacitance individual capacitances se kam hoti hai (1/C = 1/C₁ + 1/C₂...). <b>Parallel combination</b> mein voltage same rehta hai, charge divide hota hai, aur total capacitance sabki sum hoti hai (C = C₁ + C₂...) — ye resistance ke combination rules se bilkul opposite hai.</p>
-        <p>Ek charged capacitor mein <b>energy stored</b> hoti hai: <b>U = ½CV² = ½QV = Q²/2C</b>. Ye energy electric field mein store hoti hai — capacitors flash photography, defibrillators, aur electronic circuits mein energy storage ke liye use hote hain.</p>`],
+        <p>Ek charged capacitor mein <b>energy stored</b> hoti hai: <b>U = ½CV² = ½QV = Q²/2C</b>. Ye energy electric field mein store hoti hai — capacitors flash photography, defibrillators, aur electronic circuits mein energy storage ke liye use hote hain.</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔗 Potential Aur Field Ka Rishta</div>
+          <div class="concept-body">
+            <p>Electric field aur potential ek doosre se directly related hain: <span class="formula">E = −dV/dr</span> — field wo direction batata hai jisme potential sabse tezi se <i>decrease</i> hota hai, aur ye ek negative gradient hai. Isi se ek useful rule nikalta hai: <b>equipotential surfaces hamesha field lines ke perpendicular hoti hain</b> (agar perpendicular na hon, to surface ke along ek component hoga jo potential change karega, jo equipotential ki definition ko violate karega).</p>
+            <p>Ek point charge Q se distance r par potential: <span class="formula">V = kQ/r</span>. Ye important hai kyunki potential <b>scalar</b> hai — multiple charges ka net potential simple algebraic sum se milta hai (vector addition ki zarurat nahi, jo field ke liye padti hai).</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">⚡ Potential Energy Of A Charge System</div>
+          <div class="concept-body">
+            <p>Do point charges ke system ki <b>potential energy</b> wo work hai jo unhe infinity se current positions tak laane mein kharch hota hai: <span class="formula">U = kq₁q₂/r₁₂</span>. Teen ya zyada charges ke liye, total PE har unique pair ke beech ki PE ka sum hota hai.</p>
+            <p><span class="tag-label">Trap</span> Potential Energy aur Potential mein confuse mat ho — <b>Potential (V)</b> ek point ki property hai (unit charge ke liye), jabki <b>Potential Energy (U)</b> do ya zyada charges ke system ki property hai. U = qV hota hai jab ek charge q ko potential V wale point par rakha jaaye.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧊 Dielectrics &amp; Energy Density</div>
+          <div class="concept-body">
+            <p><b>Dielectric</b> ek insulating material hai jo external field mein <b>polarize</b> ho jaata hai — uske molecules mein chhote induced dipoles ban jaate hain jo external field ko partially cancel karte hain. Isse net field kam ho jaata hai, aur capacitance <b>dielectric constant K</b> ke factor se badh jaati hai: <span class="formula">C' = K × C₀</span> (K hamesha ≥ 1 hota hai; vacuum ke liye K=1).</p>
+            <p>Electric field khud bhi energy carry karta hai — is energy ki <b>energy density</b> (per unit volume) hoti hai: <span class="formula">u = ½ε₀E²</span>. Ye concept batata hai ki energy sirf charges mein nahi, balki poore space mein jahan field exist karta hai, "store" hoti hai.</p>
+          </div>
+        </div>`],
         en:[
         `<ul>
           <li><b>Electric potential (V):</b> work done to bring a unit charge from infinity</li>
@@ -11793,21 +12700,44 @@ updateStudyTimeLabel();
         `<p><b>Electric potential (V)</b> at a point is the work done in bringing a unit positive charge from infinity to that point. It's a scalar quantity (unlike the electric field, which is a vector), and <b>equipotential surfaces</b> (sets of points at the same potential) are always perpendicular to electric field lines.</p>
         <p><b>Capacitance (C)</b> is a property that tells us how much charge a conductor can store per unit of potential difference: <b>C = Q/V</b>, measured in <b>Farads</b>. A <b>capacitor</b> consists of two conductors (plates) separated by an insulator (dielectric) — adding a dielectric increases capacitance because it reduces the effective field.</p>
         <p>In a <b>series combination</b>, capacitors connect in a line — charge stays the same, voltage divides, and total capacitance is smaller than any individual capacitance (1/C = 1/C₁ + 1/C₂...). In a <b>parallel combination</b>, voltage stays the same, charge divides, and total capacitance is the sum of all (C = C₁ + C₂...) — the exact opposite of resistance combination rules.</p>
-        <p>A charged capacitor stores <b>energy</b>: <b>U = ½CV² = ½QV = Q²/2C</b>. This energy is stored in the electric field — capacitors are used in flash photography, defibrillators, and electronic circuits for energy storage.</p>`
+        <p>A charged capacitor stores <b>energy</b>: <b>U = ½CV² = ½QV = Q²/2C</b>. This energy is stored in the electric field — capacitors are used in flash photography, defibrillators, and electronic circuits for energy storage.</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔗 The Field-Potential Relationship</div>
+          <div class="concept-body">
+            <p>Electric field and potential are directly related: <span class="formula">E = −dV/dr</span> — the field points in the direction where potential <i>decreases</i> fastest, and it's a negative gradient. This gives a useful rule: <b>equipotential surfaces are always perpendicular to field lines</b> (if they weren't, there'd be a component along the surface that changes potential, violating the definition of an equipotential).</p>
+            <p>The potential at distance r from a point charge Q is: <span class="formula">V = kQ/r</span>. This matters because potential is a <b>scalar</b> — the net potential from multiple charges is a simple algebraic sum (no vector addition needed, unlike the field).</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">⚡ Potential Energy of a Charge System</div>
+          <div class="concept-body">
+            <p>The <b>potential energy</b> of a system of two point charges is the work done in bringing them from infinity to their current positions: <span class="formula">U = kq₁q₂/r₁₂</span>. For three or more charges, the total PE is the sum of PE over every unique pair.</p>
+            <p><span class="tag-label">Trap</span> Don't confuse Potential Energy with Potential — <b>Potential (V)</b> is a property of a point (per unit charge), while <b>Potential Energy (U)</b> is a property of a system of two or more charges. U = qV when a charge q is placed at a point of potential V.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧊 Dielectrics &amp; Energy Density</div>
+          <div class="concept-body">
+            <p>A <b>dielectric</b> is an insulating material that gets <b>polarized</b> in an external field — its molecules form small induced dipoles that partially cancel the external field. This reduces the net field, and capacitance increases by a factor of the <b>dielectric constant K</b>: <span class="formula">C' = K × C₀</span> (K is always ≥ 1; K=1 for vacuum).</p>
+            <p>The electric field itself carries energy — this energy has an <b>energy density</b> (per unit volume): <span class="formula">u = ½ε₀E²</span>. This concept shows that energy isn't stored just in the charges, but throughout the space where the field exists.</p>
+          </div>
+        </div>`
       ]
     },
     sticky:{
       hi:[
         `Electric potential = scalar; equipotential surfaces field lines ke perpendicular`,
-        `Capacitance: <span class="formula">C = Q/V</span> (Farad)`,
+        `Capacitance: <span class="formula">C = Q/V</span> (Farad); E = −dV/dr`,
         `Series capacitance kam hoti hai, Parallel capacitance zyada — resistance se ulta`,
-        `Energy stored: <span class="formula">U = ½CV²</span>`
+        `Energy stored: <span class="formula">U = ½CV²</span>; energy density u = ½ε₀E²`,
+        `Dielectric: C' = K×C₀ (K≥1); PE of 2 charges U = kq₁q₂/r`
       ],
       en:[
         `Electric potential = scalar; equipotential surfaces are perpendicular to field lines`,
-        `Capacitance: <span class="formula">C = Q/V</span> (Farad)`,
+        `Capacitance: <span class="formula">C = Q/V</span> (Farad); E = −dV/dr`,
         `Series capacitance decreases, Parallel capacitance increases — opposite of resistance`,
-        `Energy stored: <span class="formula">U = ½CV²</span>`
+        `Energy stored: <span class="formula">U = ½CV²</span>; energy density u = ½ε₀E²`,
+        `Dielectric: C' = K×C₀ (K≥1); PE of 2 charges U = kq₁q₂/r`
       ]
     }
   },
@@ -11832,7 +12762,33 @@ updateStudyTimeLabel();
         `<p><b>Drift velocity</b> free electrons ki average velocity hai jab ek conductor mein electric field lagaya jaata hai — ye actual electron speed se bahut kam hoti hai (mm/s order mein), lekin current turant flow hota hai kyunki electric field poore conductor mein instantly establish ho jaata hai.</p>
         <p><b>Kirchhoff's Current Law (KCL)</b> conservation of charge par based hai — kisi bhi junction par, andar aane wala total current bahar jaane wale total current ke barabar hota hai (ΣI(in) = ΣI(out)). <b>Kirchhoff's Voltage Law (KVL)</b> conservation of energy par based hai — kisi bhi closed loop mein, EMFs aur voltage drops ka algebraic sum zero hota hai.</p>
         <p>Ye laws complex circuits (jinme simple series-parallel rules kaam nahi karte, jaise multiple loops wale circuits) solve karne ke liye use hote hain — har junction par KCL aur har loop par KVL apply karke simultaneous equations banti hain jinse unknown currents/voltages find kiye ja sakte hain.</p>
-        <p><b>Cells</b> mein hamesha kuch <b>internal resistance (r)</b> hoti hai, isliye terminal voltage (V) EMF (ε) se kam hota hai jab current flow ho raha ho: V = ε − Ir. Cells ko <b>series</b> mein jodne se total EMF badhta hai (achha hota hai jab high voltage chahiye), aur <b>parallel</b> mein jodne se effective internal resistance kam hoti hai (achha hota hai jab high current chahiye, jaise starter motors mein).</p>`],
+        <p><b>Cells</b> mein hamesha kuch <b>internal resistance (r)</b> hoti hai, isliye terminal voltage (V) EMF (ε) se kam hota hai jab current flow ho raha ho: V = ε − Ir. Cells ko <b>series</b> mein jodne se total EMF badhta hai (achha hota hai jab high voltage chahiye), aur <b>parallel</b> mein jodne se effective internal resistance kam hoti hai (achha hota hai jab high current chahiye, jaise starter motors mein).</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧱 Resistivity &amp; Temperature Dependence</div>
+          <div class="concept-body">
+            <p>Resistance (R) sirf material par nahi, geometry par bhi depend karta hai: <span class="formula">R = ρl/A</span> — jahan ρ (rho) <b>resistivity</b> hai (sirf material ki property, geometry-independent), l length aur A cross-section area hai. Isliye lambi patli wire ki resistance zyada, chhoti moti wire ki kam hoti hai.</p>
+            <div class="derive-box">
+              <span class="step">Conductors (metals) mein temperature badhne se R badhta hai:</span>
+              <span class="step">R(T) = R₀[1 + α(T−T₀)] &nbsp;<span class="step-note">(α = temperature coefficient, positive)</span></span>
+              <span class="step">Semiconductors mein temperature badhne se R ghatta hai (α negative)</span>
+              <span class="step-note">Wajah: metals mein temp badhne se atoms zyada vibrate karte hain, electrons ka path zyada obstruct hota hai; semiconductors mein temp badhne se zyada free electrons release hote hain</span>
+            </div>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔥 Power &amp; Heating Effect</div>
+          <div class="concept-body">
+            <p>Current ke flow se resistor mein heat generate hoti hai (Joule heating) — electrical <b>power</b> teen equivalent formulas se nikalta hai: <span class="formula">P = VI = I²R = V²/R</span> (in teeno mein se koi bhi use karo, jo bhi quantities pata hon unke hisaab se).</p>
+            <p><span class="tag-label">Trap</span> Series circuit mein same current sabhi resistors se guzarta hai, isliye <b>zyada resistance wale resistor mein zyada power dissipate hota hai</b> (P=I²R). Lekin parallel circuit mein sabhi resistors par same voltage hota hai, isliye <b>kam resistance wale resistor mein zyada power dissipate hota hai</b> (P=V²/R). Ye ulta lagta hai lekin exam mein bahut poocha jaata hai.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">⚖️ Wheatstone Bridge &amp; Potentiometer</div>
+          <div class="concept-body">
+            <p>Wheatstone Bridge 4 resistors (P, Q, R, S) ka ek diamond-shaped arrangement hai jo unknown resistance precisely measure karta hai. Jab bridge <b>balanced</b> hoti hai (galvanometer mein zero current), to: <span class="formula">P/Q = R/S</span>. Isse unknown resistance direct calculate ho jaata hai bina current ki exact value jaane.</p>
+            <p><b>Potentiometer</b> ek lambi uniform wire hoti hai jisse EMF ya potential difference <i>precisely</i> measure kiya jaata hai — voltmeter ke unlike, ye <b>null-deflection method</b> use karta hai (balance point par koi current unknown source se draw nahi hota), isliye ye ideal voltmeter jaisa behave karta hai aur zyada accurate hota hai.</p>
+          </div>
+        </div>`],
         en:[
         `<ul>
           <li><b>Drift velocity:</b> the average velocity of electrons during current flow</li>
@@ -11850,21 +12806,49 @@ updateStudyTimeLabel();
         `<p><b>Drift velocity</b> is the average velocity of free electrons when an electric field is applied to a conductor — it's much slower than actual electron speed (on the order of mm/s), but current flows instantly because the electric field establishes itself throughout the conductor almost immediately.</p>
         <p><b>Kirchhoff's Current Law (KCL)</b> is based on conservation of charge — at any junction, the total current entering equals the total current leaving (ΣI(in) = ΣI(out)). <b>Kirchhoff's Voltage Law (KVL)</b> is based on conservation of energy — around any closed loop, the algebraic sum of EMFs and voltage drops is zero.</p>
         <p>These laws are used to solve complex circuits (where simple series-parallel rules don't work, like circuits with multiple loops) — applying KCL at every junction and KVL around every loop gives simultaneous equations that can be solved for unknown currents/voltages.</p>
-        <p>Cells always have some <b>internal resistance (r)</b>, so terminal voltage (V) is less than EMF (ε) when current is flowing: V = ε − Ir. Connecting cells in <b>series</b> increases total EMF (useful when high voltage is needed), while connecting them in <b>parallel</b> decreases effective internal resistance (useful when high current is needed, like in starter motors).</p>`
+        <p>Cells always have some <b>internal resistance (r)</b>, so terminal voltage (V) is less than EMF (ε) when current is flowing: V = ε − Ir. Connecting cells in <b>series</b> increases total EMF (useful when high voltage is needed), while connecting them in <b>parallel</b> decreases effective internal resistance (useful when high current is needed, like in starter motors).</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧱 Resistivity &amp; Temperature Dependence</div>
+          <div class="concept-body">
+            <p>Resistance (R) depends not just on the material but also on geometry: <span class="formula">R = ρl/A</span> — where ρ (rho) is the <b>resistivity</b> (a property of the material only, independent of geometry), l is length and A is cross-section area. So a long thin wire has more resistance, a short thick wire has less.</p>
+            <div class="derive-box">
+              <span class="step">In conductors (metals), resistance increases with temperature:</span>
+              <span class="step">R(T) = R₀[1 + α(T−T₀)] &nbsp;<span class="step-note">(α = temperature coefficient, positive)</span></span>
+              <span class="step">In semiconductors, resistance decreases with temperature (α negative)</span>
+              <span class="step-note">Reason: in metals, higher temperature makes atoms vibrate more, obstructing the electrons' path more; in semiconductors, higher temperature releases more free electrons</span>
+            </div>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔥 Power &amp; Heating Effect</div>
+          <div class="concept-body">
+            <p>Current flow generates heat in a resistor (Joule heating) — electrical <b>power</b> can be found using three equivalent formulas: <span class="formula">P = VI = I²R = V²/R</span> (use whichever fits the quantities you know).</p>
+            <p><span class="tag-label">Trap</span> In a series circuit, the same current flows through all resistors, so <b>the resistor with higher resistance dissipates more power</b> (P=I²R). But in a parallel circuit, all resistors have the same voltage across them, so <b>the resistor with lower resistance dissipates more power</b> (P=V²/R). This feels counterintuitive but is asked often in exams.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">⚖️ Wheatstone Bridge &amp; Potentiometer</div>
+          <div class="concept-body">
+            <p>The Wheatstone Bridge is a diamond-shaped arrangement of 4 resistors (P, Q, R, S) used to precisely measure an unknown resistance. When the bridge is <b>balanced</b> (zero current through the galvanometer): <span class="formula">P/Q = R/S</span>. This lets you calculate the unknown resistance directly without knowing the exact current value.</p>
+            <p>A <b>potentiometer</b> is a long uniform wire used to <i>precisely</i> measure EMF or potential difference — unlike a voltmeter, it uses the <b>null-deflection method</b> (no current is drawn from the unknown source at the balance point), which makes it behave like an ideal voltmeter and gives much greater accuracy.</p>
+          </div>
+        </div>`
       ]
     },
     sticky:{
       hi:[
         `Drift velocity slow hoti hai, lekin current instant flow hota hai`,
         `KCL: junction par charge conserve. KVL: loop mein energy conserve`,
-        `Complex circuits (multiple loops) ke liye KCL+KVL use hote hain`,
-        `Cell: V = ε − Ir. Series → EMF badhta hai. Parallel → internal resistance ghatta hai`
+        `R = ρl/A; conductors mein R badhta hai temp ke saath, semiconductors mein ghatta hai`,
+        `Power: P = VI = I²R = V²/R; series mein high-R zyada power, parallel mein low-R zyada power`,
+        `Wheatstone Bridge balanced: P/Q = R/S; Potentiometer null-deflection se accurate EMF measure karta hai`
       ],
       en:[
         `Drift velocity is slow, but current flows instantly`,
         `KCL: charge conserved at junction. KVL: energy conserved in a loop`,
-        `Complex circuits (multiple loops) need KCL+KVL together`,
-        `Cell: V = ε − Ir. Series → EMF increases. Parallel → internal resistance decreases`
+        `R = ρl/A; R increases with temp in conductors, decreases in semiconductors`,
+        `Power: P = VI = I²R = V²/R; in series high-R dissipates more, in parallel low-R dissipates more`,
+        `Wheatstone Bridge balanced: P/Q = R/S; Potentiometer uses null-deflection for accurate EMF measurement`
       ]
     }
   },
@@ -11889,7 +12873,34 @@ updateStudyTimeLabel();
         `<p>Jab ek charge magnetic field mein move karta hai, usme <b>Lorentz force</b> lagta hai: <b>F = qvB sinθ</b>, jahan θ velocity aur field ke beech ka angle hai. Ye force velocity ke hamesha perpendicular hoti hai — isliye ye kabhi speed change nahi karti (work zero hota hai), sirf direction change karti hai, jisse particle circular ya helical path mein move karta hai.</p>
         <p><b>Biot-Savart Law</b> ek chhote current element se produce hone wale magnetic field ko calculate karta hai: dB ∝ (I dl sinθ)/r². Iska use karke lambe wires, loops, aur coils ke around magnetic field find kiya ja sakta hai.</p>
         <p><b>Ampere's Circuital Law</b> Biot-Savart ka simplified version hai jo symmetric current distributions (jaise straight infinite wire, solenoid) ke liye field calculate karne mein shortcut deta hai: ∮B·dl = μ₀I(enclosed).</p>
-        <p>Ye principles practical applications mein use hote hain — <b>cyclotron</b> charged particles ko magnetic field mein circular acceleration deta hai (particle physics research mein use), aur <b>moving coil galvanometer</b> current-carrying coil par magnetic torque ka use karke current measure karta hai.</p>`],
+        <p>Ye principles practical applications mein use hote hain — <b>cyclotron</b> charged particles ko magnetic field mein circular acceleration deta hai (particle physics research mein use), aur <b>moving coil galvanometer</b> current-carrying coil par magnetic torque ka use karke current measure karta hai.</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧲 Ampere's Law Ke Applications</div>
+          <div class="concept-body">
+            <div class="derive-box">
+              <span class="step">Infinite straight wire (current I) se distance r par field:</span>
+              <span class="step">B = μ₀I / (2πr) &nbsp;<span class="step-note">(concentric circles mein, right-hand rule se direction)</span></span>
+              <span class="step">Long solenoid (n turns/length, current I) ke andar field:</span>
+              <span class="step">B = μ₀nI &nbsp;<span class="step-note">(uniform, axis ke parallel; bahar approximately zero)</span></span>
+            </div>
+            <p><span class="tag-label">Right-Hand Rule</span> Agar thumb current ki direction mein point kare, to curled fingers magnetic field lines ki direction batati hain (straight wire ke around). Solenoid ke liye — agar fingers current ki direction mein curl karein, thumb North pole ki taraf point karta hai.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔀 Force Between Parallel Wires &amp; Definition Of Ampere</div>
+          <div class="concept-body">
+            <p>Do parallel current-carrying wires ek doosre par force lagate hain (kyunki har wire doosre ke magnetic field mein hota hai): <span class="formula">F/L = μ₀I₁I₂ / (2πd)</span>, jahan d unke beech ki distance hai.</p>
+            <p><span class="tag-label">Trap</span> Same direction mein current wale wires ek doosre ko <b>attract</b> karte hain, opposite direction wale <b>repel</b> karte hain — bilkul ulta current-carrying conductors mein (parallel currents attract, current jaisa charges ke liye jo repel karte the).</p>
+            <p>Isi force ka use karke <b>1 Ampere</b> officially define kiya gaya hai: agar do infinitely long parallel wires (1m apart, vacuum mein) mein equal current bahaya jaaye aur unke beech force per unit length 2×10⁻⁷ N/m ho, to us current ko 1 Ampere kehte hain.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔄 Torque On Current Loop &amp; Galvanometer</div>
+          <div class="concept-body">
+            <p>Jab ek current-carrying loop (area A, N turns, current I) ko magnetic field B mein rakha jaata hai, usme torque lagta hai: <span class="formula">τ = NIAB sinθ = m × B</span>, jahan <b>m = NIA</b> loop ka <b>magnetic moment</b> hai (dipole moment jaisa concept, electric dipole ke similar).</p>
+            <p><b>Moving coil galvanometer</b> isी principle par kaam karta hai — coil ek radial magnetic field mein rakhi jaati hai, aur current ki wajah se lagne wala torque spring ke restoring torque se balance hota hai; deflection current ke proportional hota hai. Galvanometer ko high current measure karne wala <b>ammeter</b> banane ke liye ek chhota <b>shunt resistance parallel</b> mein jodte hain (current ko galvanometer se bypass karne ke liye), aur high voltage measure karne wala <b>voltmeter</b> banane ke liye ek bada <b>resistance series</b> mein jodte hain (current limit karne ke liye).</p>
+          </div>
+        </div>`],
         en:[
         `<ul>
           <li><b>Lorentz Force:</b> the force of a magnetic field on a moving charge</li>
@@ -11907,21 +12918,50 @@ updateStudyTimeLabel();
         `<p>When a charge moves through a magnetic field, it experiences a <b>Lorentz force</b>: <b>F = qvB sinθ</b>, where θ is the angle between velocity and field. This force always acts perpendicular to velocity — so it never changes speed (work done is zero), only direction, causing the particle to move in a circular or helical path.</p>
         <p>The <b>Biot-Savart Law</b> calculates the magnetic field produced by a small current element: dB ∝ (I dl sinθ)/r². It's used to find the magnetic field around long wires, loops, and coils.</p>
         <p><b>Ampere's Circuital Law</b> is a simplified version of Biot-Savart that gives a shortcut for calculating fields with symmetric current distributions (like a straight infinite wire or a solenoid): ∮B·dl = μ₀I(enclosed).</p>
-        <p>These principles have practical applications — a <b>cyclotron</b> accelerates charged particles in a circular path using a magnetic field (used in particle physics research), and a <b>moving coil galvanometer</b> measures current using the magnetic torque on a current-carrying coil.</p>`
+        <p>These principles have practical applications — a <b>cyclotron</b> accelerates charged particles in a circular path using a magnetic field (used in particle physics research), and a <b>moving coil galvanometer</b> measures current using the magnetic torque on a current-carrying coil.</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧲 Applications Of Ampere's Law</div>
+          <div class="concept-body">
+            <div class="derive-box">
+              <span class="step">Field at distance r from an infinite straight wire (current I):</span>
+              <span class="step">B = μ₀I / (2πr) &nbsp;<span class="step-note">(concentric circles, direction from right-hand rule)</span></span>
+              <span class="step">Field inside a long solenoid (n turns/length, current I):</span>
+              <span class="step">B = μ₀nI &nbsp;<span class="step-note">(uniform, parallel to axis; approximately zero outside)</span></span>
+            </div>
+            <p><span class="tag-label">Right-Hand Rule</span> If the thumb points in the direction of current, the curled fingers give the direction of the magnetic field lines (around a straight wire). For a solenoid — if the fingers curl in the direction of current, the thumb points toward the North pole.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔀 Force Between Parallel Wires &amp; Definition Of Ampere</div>
+          <div class="concept-body">
+            <p>Two parallel current-carrying wires exert a force on each other (since each wire sits in the other's magnetic field): <span class="formula">F/L = μ₀I₁I₂ / (2πd)</span>, where d is the distance between them.</p>
+            <p><span class="tag-label">Trap</span> Wires carrying current in the <b>same direction attract</b> each other, while opposite directions <b>repel</b> — exactly opposite to charges (where like charges repel, but parallel currents attract).</p>
+            <p>This force is used to officially define <b>1 Ampere</b>: if two infinitely long parallel wires (1m apart, in vacuum) carry equal currents such that the force per unit length between them is 2×10⁻⁷ N/m, that current is defined as 1 Ampere.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔄 Torque On A Current Loop &amp; Galvanometer</div>
+          <div class="concept-body">
+            <p>When a current-carrying loop (area A, N turns, current I) is placed in a magnetic field B, it experiences a torque: <span class="formula">τ = NIAB sinθ = m × B</span>, where <b>m = NIA</b> is the loop's <b>magnetic moment</b> (a concept similar to the electric dipole moment).</p>
+            <p>A <b>moving coil galvanometer</b> works on this exact principle — the coil sits in a radial magnetic field, and the torque due to current is balanced by a spring's restoring torque; deflection is proportional to current. To convert a galvanometer into an <b>ammeter</b> (measures high currents), a small <b>shunt resistance is added in parallel</b> (to bypass most of the current). To convert it into a <b>voltmeter</b> (measures high voltage), a large <b>resistance is added in series</b> (to limit the current).</p>
+          </div>
+        </div>`
       ]
     },
     sticky:{
       hi:[
         `Lorentz Force: <span class="formula">F = qvB sinθ</span>, velocity ke perpendicular`,
         `Magnetic force sirf direction change karti hai, speed nahi`,
-        `Biot-Savart Law: current element se field. Ampere's Law: symmetric cases ka shortcut`,
-        `Applications: Cyclotron (accelerator), Galvanometer (current measurement)`
+        `Straight wire: B=μ₀I/2πr; Solenoid: B=μ₀nI`,
+        `Parallel wires: same direction → attract, opposite → repel; 1 Ampere isi force se defined hai`,
+        `Torque on loop: τ = NIAB sinθ = m×B; Galvanometer→Ammeter (shunt parallel), →Voltmeter (R series)`
       ],
       en:[
         `Lorentz Force: <span class="formula">F = qvB sinθ</span>, perpendicular to velocity`,
         `Magnetic force only changes direction, never speed`,
-        `Biot-Savart Law: field from a current element. Ampere's Law: shortcut for symmetric cases`,
-        `Applications: Cyclotron (accelerator), Galvanometer (current measurement)`
+        `Straight wire: B=μ₀I/2πr; Solenoid: B=μ₀nI`,
+        `Parallel wires: same direction → attract, opposite → repel; 1 Ampere is defined using this force`,
+        `Torque on loop: τ = NIAB sinθ = m×B; Galvanometer→Ammeter (shunt parallel), →Voltmeter (R series)`
       ]
     }
   },
@@ -11947,7 +12987,35 @@ updateStudyTimeLabel();
         `<p><b>Faraday's Law of Electromagnetic Induction</b> kehta hai ki jab kisi coil ke through magnetic flux change hota hai, coil mein EMF induce hoti hai: <b>EMF = −N(dΦ/dt)</b>, jahan N turns ki number hai. Jitni fast flux change hoti hai, utni zyada induced EMF hoti hai.</p>
         <p><b>Lenz's Law</b> (negative sign se represent hota hai) kehta hai ki induced current ki direction aisi hoti hai ki wo apne hi cause (jo change use produce kar raha hai) ko oppose kare — ye energy conservation ka direct consequence hai, kyunki agar induced current apne cause ko support karta, to system mein free energy generate ho jaati, jo impossible hai.</p>
         <p><b>Alternating Current (AC)</b> wo current hai jo periodically apni direction aur magnitude change karta hai (typically sinusoidal), jabki <b>Direct Current (DC)</b> ek hi direction mein flow karta hai. AC circuits mein components ka behaviour DC se alag hota hai — <b>Resistor</b> mein voltage aur current same phase mein hote hain, <b>Inductor</b> mein voltage current se 90° aage hota hai, aur <b>Capacitor</b> mein voltage current se 90° peeche hota hai.</p>
-        <p>Ye principle <b>transformers</b> mein use hota hai (voltage step-up/step-down electromagnetic induction se), aur <b>AC generators</b> mein bhi (jahan coil ko magnetic field mein ghumaya jaata hai). AC ka main advantage ye hai ki ise easily transformer se different voltages mein convert kiya ja sakta hai, isliye long-distance power transmission mein AC prefer hoti hai (high voltage → less current → less energy loss).</p>`],
+        <p>Ye principle <b>transformers</b> mein use hota hai (voltage step-up/step-down electromagnetic induction se), aur <b>AC generators</b> mein bhi (jahan coil ko magnetic field mein ghumaya jaata hai). AC ka main advantage ye hai ki ise easily transformer se different voltages mein convert kiya ja sakta hai, isliye long-distance power transmission mein AC prefer hoti hai (high voltage → less current → less energy loss).</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧲 Motional EMF &amp; Inductance</div>
+          <div class="concept-body">
+            <p>Jab ek conducting rod (length l) magnetic field B mein velocity v se move karti hai, usme <b>motional EMF</b> induce hoti hai: <span class="formula">EMF = Bvl</span> — ye Faraday's Law ka ek special case hai (rod ke movement se flux change ho raha hai).</p>
+            <p><b>Self-inductance (L)</b> ek coil ki wo property hai jisse coil apni khud ki current change ko oppose karti hai (induced EMF = −L(dI/dt)). <b>Mutual inductance (M)</b> do coils ke beech hota hai — ek coil ki current change se doosri coil mein EMF induce hoti hai (transformers isi principle par kaam karte hain).</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">📈 RMS Values, Reactance &amp; Impedance</div>
+          <div class="concept-body">
+            <p>AC ki value continuously change hoti hai, isliye average power calculate karne ke liye <b>RMS (Root Mean Square)</b> value use karte hain: <span class="formula">I(rms) = I₀/√2</span>, <span class="formula">V(rms) = V₀/√2</span> — ghar mein "220V AC" ka matlab hota hai V(rms) = 220V.</p>
+            <div class="derive-box">
+              <span class="step">Inductor ka opposition (Inductive Reactance):</span>
+              <span class="step">X(L) = ωL &nbsp;<span class="step-note">(frequency badhने se reactance badhta hai)</span></span>
+              <span class="step">Capacitor ka opposition (Capacitive Reactance):</span>
+              <span class="step">X(C) = 1/ωC &nbsp;<span class="step-note">(frequency badhने se reactance ghatta hai)</span></span>
+            </div>
+            <p><span class="tag-label">Trap</span> Resistor ki tarah, reactance bhi ohms mein measure hoti hai, lekin ye <b>energy dissipate nahi karti</b> — sirf energy ko field aur circuit ke beech store/return karti hai (isliye "reactance" naam hai, "resistance" nahi).</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔁 LCR Circuit, Resonance &amp; Transformers</div>
+          <div class="concept-body">
+            <p>Series LCR circuit ki total opposition <b>impedance (Z)</b> hoti hai: <span class="formula">Z = √[R² + (X(L)−X(C))²]</span>. Jab X(L) = X(C), circuit <b>resonance</b> mein hota hai — Z minimum (= R) ho jaata hai aur current maximum hota hai. Resonant frequency: <span class="formula">ω₀ = 1/√(LC)</span>.</p>
+            <p><b>Power factor</b> (cosφ) batata hai kitna fraction of apparent power actually useful hai: <span class="formula">P(avg) = V(rms)I(rms)cosφ</span>. Pure resistor mein cosφ=1 (max power), pure inductor/capacitor mein cosφ=0 (zero average power — energy sirf oscillate karti hai, consume nahi hoti).</p>
+            <p><b>Transformer</b> mutual inductance use karke voltage change karta hai: <span class="formula">V(s)/V(p) = N(s)/N(p) = I(p)/I(s)</span> — ideal transformer mein input power = output power (VpIp = VsIs). Real transformers mein <b>eddy currents</b> (core ke andar induced circular currents) se energy loss hota hai, isliye core ko laminated sheets se banaya jaata hai (eddy currents ko restrict karne ke liye).</p>
+          </div>
+        </div>`],
         en:[
         `<ul>
           <li><b>Faraday's Law:</b> changing magnetic flux → induced EMF</li>
@@ -11966,21 +13034,51 @@ updateStudyTimeLabel();
         `<p><b>Faraday's Law of Electromagnetic Induction</b> states that when magnetic flux through a coil changes, an EMF is induced in the coil: <b>EMF = −N(dΦ/dt)</b>, where N is the number of turns. The faster the flux changes, the greater the induced EMF.</p>
         <p><b>Lenz's Law</b> (represented by the negative sign) states that the induced current's direction always opposes the very change that produces it — this is a direct consequence of energy conservation, since if induced current supported its own cause, it would generate free energy in the system, which is impossible.</p>
         <p><b>Alternating Current (AC)</b> is current that periodically reverses direction and magnitude (typically sinusoidal), while <b>Direct Current (DC)</b> flows in one direction only. AC circuit components behave differently from DC — in a <b>Resistor</b>, voltage and current are in phase; in an <b>Inductor</b>, voltage leads current by 90°; and in a <b>Capacitor</b>, voltage lags current by 90°.</p>
-        <p>This principle is used in <b>transformers</b> (stepping voltage up/down via electromagnetic induction), and in <b>AC generators</b> (where a coil rotates in a magnetic field). AC's main advantage is that it can easily be converted to different voltages using transformers, which is why AC is preferred for long-distance power transmission (high voltage → less current → less energy loss).</p>`
+        <p>This principle is used in <b>transformers</b> (stepping voltage up/down via electromagnetic induction), and in <b>AC generators</b> (where a coil rotates in a magnetic field). AC's main advantage is that it can easily be converted to different voltages using transformers, which is why AC is preferred for long-distance power transmission (high voltage → less current → less energy loss).</p>`,
+        `<div class="concept-block">
+          <div class="concept-head">🧲 Motional EMF &amp; Inductance</div>
+          <div class="concept-body">
+            <p>When a conducting rod (length l) moves with velocity v through a magnetic field B, it develops a <b>motional EMF</b>: <span class="formula">EMF = Bvl</span> — this is a special case of Faraday's Law (the rod's movement changes the flux).</p>
+            <p><b>Self-inductance (L)</b> is a coil's property of opposing changes in its own current (induced EMF = −L(dI/dt)). <b>Mutual inductance (M)</b> exists between two coils — a change in one coil's current induces EMF in the other (this is exactly how transformers work).</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">📈 RMS Values, Reactance &amp; Impedance</div>
+          <div class="concept-body">
+            <p>Since AC values change continuously, we use the <b>RMS (Root Mean Square)</b> value to calculate average power: <span class="formula">I(rms) = I₀/√2</span>, <span class="formula">V(rms) = V₀/√2</span> — when we say household "220V AC", we mean V(rms) = 220V.</p>
+            <div class="derive-box">
+              <span class="step">An inductor's opposition (Inductive Reactance):</span>
+              <span class="step">X(L) = ωL &nbsp;<span class="step-note">(reactance increases with frequency)</span></span>
+              <span class="step">A capacitor's opposition (Capacitive Reactance):</span>
+              <span class="step">X(C) = 1/ωC &nbsp;<span class="step-note">(reactance decreases with frequency)</span></span>
+            </div>
+            <p><span class="tag-label">Trap</span> Like resistance, reactance is measured in ohms, but it <b>does not dissipate energy</b> — it only stores/returns energy between the field and the circuit (which is why it's called "reactance", not "resistance").</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔁 LCR Circuit, Resonance &amp; Transformers</div>
+          <div class="concept-body">
+            <p>A series LCR circuit's total opposition is called <b>impedance (Z)</b>: <span class="formula">Z = √[R² + (X(L)−X(C))²]</span>. When X(L) = X(C), the circuit is at <b>resonance</b> — Z becomes minimum (= R) and current becomes maximum. Resonant frequency: <span class="formula">ω₀ = 1/√(LC)</span>.</p>
+            <p><b>Power factor</b> (cosφ) tells us what fraction of apparent power is actually useful: <span class="formula">P(avg) = V(rms)I(rms)cosφ</span>. In a pure resistor cosφ=1 (max power), while in a pure inductor/capacitor cosφ=0 (zero average power — energy just oscillates, none is consumed).</p>
+            <p>A <b>transformer</b> uses mutual inductance to change voltage: <span class="formula">V(s)/V(p) = N(s)/N(p) = I(p)/I(s)</span> — in an ideal transformer, input power = output power (VpIp = VsIs). Real transformers lose energy to <b>eddy currents</b> (induced circular currents within the core), so the core is built from laminated sheets to restrict these eddy currents.</p>
+          </div>
+        </div>`
       ]
     },
     sticky:{
       hi:[
         `Faraday's Law: <span class="formula">EMF = −N(dΦ/dt)</span>`,
         `Lenz's Law: induced current apna cause oppose karta hai (energy conservation)`,
-        `AC: Resistor (in phase), Inductor (V 90° aage), Capacitor (V 90° peeche)`,
-        `AC preferred for transmission: transformer se easily voltage convert hoti hai`
+        `Motional EMF = Bvl; Self-inductance L, Mutual inductance M`,
+        `RMS: I₀/√2; X(L)=ωL, X(C)=1/ωC — dono energy dissipate nahi karti`,
+        `Z=√[R²+(XL−XC)²]; Resonance: XL=XC, ω₀=1/√(LC); Transformer: Vs/Vp=Ns/Np`
       ],
       en:[
         `Faraday's Law: <span class="formula">EMF = −N(dΦ/dt)</span>`,
         `Lenz's Law: induced current opposes its own cause (energy conservation)`,
-        `AC: Resistor (in phase), Inductor (V leads by 90°), Capacitor (V lags by 90°)`,
-        `AC preferred for transmission: easily converted between voltages via transformers`
+        `Motional EMF = Bvl; Self-inductance L, Mutual inductance M`,
+        `RMS: I₀/√2; X(L)=ωL, X(C)=1/ωC — neither dissipates energy`,
+        `Z=√[R²+(XL−XC)²]; Resonance: XL=XC, ω₀=1/√(LC); Transformer: Vs/Vp=Ns/Np`
       ]
     }
   },
@@ -12238,17 +13336,19 @@ updateStudyTimeLabel();
     renderAll();
   }
 
-  document.getElementById('backToMenuBtn').addEventListener('click', ()=>{
+  function closeAppToSubjects(){
     if('speechSynthesis' in window) window.speechSynthesis.cancel();
     if(typeof closePapersPage === 'function') closePapersPage();
     if(typeof closeQuizPage === 'function') closeQuizPage();
     document.body.classList.remove('philosophy-theme');
     document.getElementById('appMain').style.display = 'none';
     showScreen(subjectScreen);
-  });
+  }
 
-  document.getElementById('scienceBackBtn').addEventListener('click', ()=> showScreen(subjectScreen));
-  document.getElementById('comingSoonBackBtn').addEventListener('click', ()=> showScreen(subjectScreen));
+  document.getElementById('backToMenuBtn').addEventListener('click', ()=> history.back());
+  document.getElementById('scienceBackBtn').addEventListener('click', ()=> history.back());
+  document.getElementById('comingSoonBackBtn').addEventListener('click', ()=> history.back());
+  document.getElementById('pdfBackBtn').addEventListener('click', ()=> history.back());
 
   /* ================= DARK VERSE (hidden, locked gate) ================= */
   function computeOverallProgress(){
@@ -12274,18 +13374,404 @@ updateStudyTimeLabel();
       document.getElementById('dvProgressFill').style.width = pct + '%';
       document.getElementById('dvProgressLabel').textContent = pct + '% overall';
       showScreen(darkVerseScreen);
+      pushNav(()=> showScreen(subjectScreen));
     });
   }
   const darkVerseBackBtn = document.getElementById('darkVerseBackBtn');
-  if(darkVerseBackBtn) darkVerseBackBtn.addEventListener('click', ()=> showScreen(subjectScreen));
+  if(darkVerseBackBtn) darkVerseBackBtn.addEventListener('click', ()=> history.back());
 
   renderSubjectGrid();
   renderScienceGrid();
 
+  /* ================= MY PDFs FEATURE ================= */
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  const PDF_DB_NAME = 'itihaas_pdfs_v1';
+  const PDF_STORE = 'files';
+  let pdfDBPromise = null;
+  function openPdfDB(){
+    if(pdfDBPromise) return pdfDBPromise;
+    pdfDBPromise = new Promise((resolve, reject)=>{
+      const req = indexedDB.open(PDF_DB_NAME, 1);
+      req.onupgradeneeded = ()=>{
+        const db = req.result;
+        if(!db.objectStoreNames.contains(PDF_STORE)){
+          const store = db.createObjectStore(PDF_STORE, {keyPath:'id', autoIncrement:true});
+          store.createIndex('addedAt', 'addedAt');
+        }
+      };
+      req.onsuccess = ()=> resolve(req.result);
+      req.onerror = ()=> reject(req.error);
+    });
+    return pdfDBPromise;
+  }
+  async function pdfDbAdd(name, data){
+    const db = await openPdfDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(PDF_STORE, 'readwrite');
+      const req = tx.objectStore(PDF_STORE).add({name, data, addedAt: Date.now(), lastPage:1});
+      req.onsuccess = ()=> resolve(req.result);
+      req.onerror = ()=> reject(req.error);
+    });
+  }
+  async function pdfDbGetAll(){
+    const db = await openPdfDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(PDF_STORE, 'readonly');
+      const req = tx.objectStore(PDF_STORE).getAll();
+      req.onsuccess = ()=> resolve(req.result.sort((a,b)=> b.addedAt - a.addedAt));
+      req.onerror = ()=> reject(req.error);
+    });
+  }
+  async function pdfDbGet(id){
+    const db = await openPdfDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(PDF_STORE, 'readonly');
+      const req = tx.objectStore(PDF_STORE).get(id);
+      req.onsuccess = ()=> resolve(req.result);
+      req.onerror = ()=> reject(req.error);
+    });
+  }
+  async function pdfDbDelete(id){
+    const db = await openPdfDB();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction(PDF_STORE, 'readwrite');
+      const req = tx.objectStore(PDF_STORE).delete(id);
+      req.onsuccess = ()=> resolve();
+      req.onerror = ()=> reject(req.error);
+    });
+  }
+  async function pdfDbSetLastPage(id, page){
+    const db = await openPdfDB();
+    const tx = db.transaction(PDF_STORE, 'readwrite');
+    const store = tx.objectStore(PDF_STORE);
+    const rec = await new Promise(r=> { const rq = store.get(id); rq.onsuccess=()=>r(rq.result); });
+    if(rec){ rec.lastPage = page; store.put(rec); }
+  }
+
+  const pdfFileInput = document.getElementById('pdfFileInput');
+  const pdfUploadBtn = document.getElementById('pdfUploadBtn');
+  const pdfListEl = document.getElementById('pdfList');
+  const pdfListView = document.getElementById('pdfListView');
+  const pdfReaderView = document.getElementById('pdfReader');
+  const pdfCanvasWrap = document.getElementById('pdfCanvasWrap');
+  const pdfReaderTitle = document.getElementById('pdfReaderTitle');
+  const pdfPageLabel = document.getElementById('pdfPageLabel');
+
+  pdfUploadBtn.addEventListener('click', ()=> pdfFileInput.click());
+  pdfFileInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    if(file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){
+      alert(settings.lang==='hi' ? 'Sirf PDF file upload karein.' : 'Please upload a PDF file only.');
+      return;
+    }
+    pdfUploadBtn.textContent = settings.lang==='hi' ? 'Upload ho raha hai...' : 'Uploading...';
+    try{
+      const buf = await file.arrayBuffer();
+      await pdfDbAdd(file.name, buf);
+      await renderPdfList();
+    }catch(err){
+      alert(settings.lang==='hi' ? 'Upload nahi ho payi. Dubara try karein.' : 'Upload failed. Please try again.');
+    }
+    pdfUploadBtn.textContent = '+ PDF Upload Karo';
+    pdfFileInput.value = '';
+  });
+
+  async function renderPdfList(){
+    pdfListEl.innerHTML = '';
+    let files = [];
+    try{ files = await pdfDbGetAll(); }catch(e){}
+    if(!files.length){
+      const empty = document.createElement('div');
+      empty.className = 'pdf-empty';
+      empty.textContent = settings.lang==='hi' ? 'Abhi tak koi PDF upload nahi hui. Upar button se apni pehli PDF daalein.' : 'No PDFs uploaded yet. Use the button above to add your first PDF.';
+      pdfListEl.appendChild(empty);
+      return;
+    }
+    files.forEach(f=>{
+      const item = document.createElement('div');
+      item.className = 'pdf-list-item';
+      const sizeKB = Math.round(f.data.byteLength/1024);
+      item.innerHTML = `<span class="nm">${f.name}<br><span class="meta">${sizeKB} KB &middot; page ${f.lastPage||1}</span></span><span class="del" title="Delete">&#128465;</span>`;
+      item.querySelector('.nm').addEventListener('click', ()=> openPdfReader(f.id));
+      item.querySelector('.del').addEventListener('click', async (ev)=>{
+        ev.stopPropagation();
+        if(confirm(settings.lang==='hi' ? 'Ye PDF delete kar dein?' : 'Delete this PDF?')){
+          await pdfDbDelete(f.id);
+          renderPdfList();
+        }
+      });
+      pdfListEl.appendChild(item);
+    });
+  }
+
+  let currentPdfDoc = null;
+  let currentPdfId = null;
+  let currentPdfPage = 1;
+  let currentPdfZoomMult = 1.0; // multiplier on top of the auto fit-to-screen-width scale
+
+  async function openPdfReader(id){
+    if(!window.pdfjsLib){
+      alert(settings.lang==='hi' ? 'PDF reader load nahi ho paya. Internet check karein.' : 'PDF reader failed to load. Please check your internet connection.');
+      return;
+    }
+    const rec = await pdfDbGet(id);
+    if(!rec) return;
+    pdfListView.style.display = 'none';
+    pdfReaderView.style.display = 'block';
+    pdfReaderTitle.textContent = rec.name;
+    pdfReaderTitle.title = rec.name;
+    pdfCanvasWrap.innerHTML = `<div style="padding:30px;font-size:0.85rem;opacity:0.7;">${settings.lang==='hi'?'PDF khul rahi hai...':'Opening PDF...'}</div>`;
+    currentPdfId = id;
+    currentPdfZoomMult = 1.0;
+    try{
+      const loadingTask = pdfjsLib.getDocument({data: rec.data.slice(0)});
+      currentPdfDoc = await loadingTask.promise;
+      currentPdfPage = rec.lastPage && rec.lastPage <= currentPdfDoc.numPages ? rec.lastPage : 1;
+      await renderPdfPage(currentPdfPage);
+      pushNav(closePdfReader);
+    }catch(err){
+      pdfCanvasWrap.innerHTML = `<div style="padding:30px;font-size:0.85rem;opacity:0.7;">${settings.lang==='hi'?'Ye PDF nahi khul payi.':'This PDF could not be opened.'}</div>`;
+    }
+  }
+
+  function closePdfReader(){
+    pdfReaderView.style.display = 'none';
+    pdfListView.style.display = '';
+    currentPdfDoc = null;
+    hidePdfMeaningUI();
+  }
+  document.getElementById('pdfReaderBackBtn').addEventListener('click', ()=> history.back());
+
+  async function renderPdfPage(num){
+    if(!currentPdfDoc) return;
+    const page = await currentPdfDoc.getPage(num);
+    // Always fit the page to the available screen width first, so it never
+    // overflows sideways on a phone; zoom buttons then multiply on top of that.
+    const unscaledViewport = page.getViewport({scale: 1});
+    const availableWidth = (pdfCanvasWrap.clientWidth || window.innerWidth) - 4;
+    const fitScale = Math.max(0.25, availableWidth / unscaledViewport.width);
+    const finalScale = fitScale * currentPdfZoomMult;
+    const viewport = page.getViewport({scale: finalScale});
+    pdfCanvasWrap.innerHTML = '';
+    const pageWrap = document.createElement('div');
+    pageWrap.className = 'pdf-page-wrap';
+    pageWrap.style.width = viewport.width + 'px';
+    pageWrap.style.height = viewport.height + 'px';
+    const canvas = document.createElement('canvas');
+    // Render at full device pixel density so text/images stay sharp on phones,
+    // while the canvas is still *displayed* at the fitted CSS size.
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(viewport.width * dpr);
+    canvas.height = Math.round(viewport.height * dpr);
+    canvas.style.width = viewport.width + 'px';
+    canvas.style.height = viewport.height + 'px';
+    const ctx = canvas.getContext('2d');
+    const renderViewport = page.getViewport({scale: finalScale * dpr});
+    pageWrap.appendChild(canvas);
+    const textLayerDiv = document.createElement('div');
+    textLayerDiv.className = 'textLayer';
+    textLayerDiv.style.width = viewport.width + 'px';
+    textLayerDiv.style.height = viewport.height + 'px';
+    // Critical: pdf.js positions each text span using this CSS variable as the
+    // scale reference. Without it (or with a wrong value) the invisible
+    // selectable text drifts away from the actual glyphs the moment the page
+    // isn't shown at scale 1 — which is why selection looked "misaligned".
+    textLayerDiv.style.setProperty('--scale-factor', String(finalScale));
+    pageWrap.appendChild(textLayerDiv);
+    pdfCanvasWrap.appendChild(pageWrap);
+
+    await page.render({canvasContext: ctx, viewport: renderViewport}).promise;
+    const textContent = await page.getTextContent();
+    if(pdfjsLib.renderTextLayer){
+      await pdfjsLib.renderTextLayer({ textContentSource: textContent, container: textLayerDiv, viewport, textDivs: [] }).promise;
+    }
+    pdfPageLabel.textContent = num + ' / ' + currentPdfDoc.numPages;
+    if(currentPdfId) pdfDbSetLastPage(currentPdfId, num);
+  }
+
+  document.getElementById('pdfPrevPage').addEventListener('click', ()=>{
+    if(!currentPdfDoc || currentPdfPage<=1) return;
+    currentPdfPage--; renderPdfPage(currentPdfPage); hidePdfMeaningUI();
+  });
+  document.getElementById('pdfNextPage').addEventListener('click', ()=>{
+    if(!currentPdfDoc || currentPdfPage>=currentPdfDoc.numPages) return;
+    currentPdfPage++; renderPdfPage(currentPdfPage); hidePdfMeaningUI();
+  });
+  document.getElementById('pdfZoomIn').addEventListener('click', ()=>{
+    if(!currentPdfDoc) return;
+    currentPdfZoomMult = Math.min(currentPdfZoomMult + 0.2, 2.5);
+    renderPdfPage(currentPdfPage); hidePdfMeaningUI();
+  });
+  document.getElementById('pdfZoomOut').addEventListener('click', ()=>{
+    if(!currentPdfDoc) return;
+    currentPdfZoomMult = Math.max(currentPdfZoomMult - 0.2, 0.5);
+    renderPdfPage(currentPdfPage); hidePdfMeaningUI();
+  });
+  let pdfResizeTimer = null;
+  window.addEventListener('resize', ()=>{
+    if(!currentPdfDoc || pdfReaderView.style.display === 'none') return;
+    clearTimeout(pdfResizeTimer);
+    pdfResizeTimer = setTimeout(()=> renderPdfPage(currentPdfPage), 250);
+  });
+
+  /* ---- selection -> meaning lookup ---- */
+  const pdfMeaningBtn = document.getElementById('pdfMeaningBtn');
+  const pdfMeaningPopup = document.getElementById('pdfMeaningPopup');
+  let pdfLastSelectedText = '';
+
+  function hidePdfMeaningUI(){
+    pdfMeaningBtn.style.display = 'none';
+    pdfMeaningPopup.classList.remove('open');
+  }
+
+  document.addEventListener('mouseup', handlePdfSelection);
+  document.addEventListener('touchend', ()=> setTimeout(handlePdfSelection, 50));
+  // On phones, text selection via long-press + drag handles doesn't always
+  // fire a clean touchend on the text itself, so also watch selectionchange
+  // (debounced, since it fires rapidly while dragging the handles).
+  let pdfSelChangeTimer = null;
+  document.addEventListener('selectionchange', ()=>{
+    if(pdfReaderView.style.display === 'none') return;
+    clearTimeout(pdfSelChangeTimer);
+    pdfSelChangeTimer = setTimeout(handlePdfSelection, 300);
+  });
+
+  function handlePdfSelection(){
+    if(pdfReaderView.style.display === 'none') return;
+    const sel = window.getSelection();
+    const text = sel && sel.toString().trim();
+    if(!text || text.length < 2 || text.length > 200){
+      pdfMeaningBtn.style.display = 'none';
+      return;
+    }
+    const anchorNode = sel.anchorNode;
+    if(!anchorNode || !pdfCanvasWrap.contains(anchorNode instanceof Element ? anchorNode : anchorNode.parentElement)){
+      pdfMeaningBtn.style.display = 'none';
+      return;
+    }
+    pdfLastSelectedText = text;
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    pdfMeaningBtn.style.left = (rect.left + window.scrollX) + 'px';
+    pdfMeaningBtn.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+    pdfMeaningBtn.style.display = 'block';
+    pdfMeaningPopup.classList.remove('open');
+  }
+
+  pdfMeaningBtn.addEventListener('click', async (e)=>{
+    e.stopPropagation();
+    const btnRect = pdfMeaningBtn.getBoundingClientRect();
+    pdfMeaningPopup.style.left = (btnRect.left + window.scrollX) + 'px';
+    pdfMeaningPopup.style.top = (btnRect.bottom + window.scrollY + 6) + 'px';
+    pdfMeaningPopup.classList.add('open');
+    pdfMeaningBtn.style.display = 'none';
+    pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>Dhoondh rahe hain...</div>`;
+    pdfMeaningPopup.querySelector('.close-x').addEventListener('click', ()=> pdfMeaningPopup.classList.remove('open'));
+    await showPdfMeaning(pdfLastSelectedText);
+  });
+
+  /* ---- always-visible "Meaning" toolbar button ---- */
+  const pdfTranslateBtn = document.getElementById('pdfTranslateBtn');
+  async function handleMeaningBtnActivate(e){
+    try{
+      if(e){ e.preventDefault(); e.stopPropagation(); }
+      // Read the live selection first, but by the time a button-tap registers on
+      // mobile the browser has often already cleared it — so fall back to the
+      // last selection we cached while the user was still selecting text.
+      const sel = window.getSelection();
+      let text = (sel && sel.toString().trim()) || pdfLastSelectedText || '';
+      if(!text){
+        alert('Pehle koi shabd ya line select karo (finger dabakar rakho, fir ghaseeto), fir Meaning dabao.');
+        return;
+      }
+      pdfLastSelectedText = text.length > 200 ? text.slice(0,200) : text;
+      const btnRect = pdfTranslateBtn.getBoundingClientRect();
+      pdfMeaningPopup.style.left = Math.max(8, btnRect.left + window.scrollX - 60) + 'px';
+      pdfMeaningPopup.style.top = (btnRect.bottom + window.scrollY + 8) + 'px';
+      pdfMeaningPopup.classList.add('open');
+      pdfMeaningBtn.style.display = 'none';
+      pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>Dhoondh rahe hain...</div>`;
+      pdfMeaningPopup.querySelector('.close-x').addEventListener('click', ()=> pdfMeaningPopup.classList.remove('open'));
+      await showPdfMeaning(pdfLastSelectedText);
+    }catch(err){
+      // Surfaced on-screen (not just console) since mobile browsers have no
+      // easy devtools access — temporary while we track down the mobile bug.
+      alert('DEBUG ERROR: ' + (err && err.message ? err.message : err));
+    }
+  }
+  // Bound to both click (desktop/most browsers) and touchend with
+  // preventDefault (so the tap can't be swallowed by the browser's own
+  // text-selection-dismiss handling on Android before our JS runs).
+  pdfTranslateBtn.addEventListener('click', handleMeaningBtnActivate);
+  pdfTranslateBtn.addEventListener('touchend', handleMeaningBtnActivate);
+
+  function splitIntoBullets(extract, maxBullets){
+    const sentences = extract.replace(/\s+/g,' ').trim().split(/(?<=[.!?])\s+/).filter(Boolean);
+    return sentences.slice(0, maxBullets);
+  }
+
+  // PDF content is in English, so always look it up in English Wikipedia —
+  // regardless of the app's Hinglish/English display-language toggle.
+  async function fetchWikipediaSummaryEnglish(word){
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('not found');
+    const data = await res.json();
+    if(!data.extract) throw new Error('no extract');
+    return data;
+  }
+
+  async function showPdfMeaning(rawText){
+    const word = rawText.trim();
+    const normalized = normalizeWord(word);
+    // 1) check the app's own quick dictionary first, for common single words
+    if(!word.includes(' ') && DICTIONARY[normalized]){
+      const entry = DICTIONARY[normalized];
+      pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><h5>${word}</h5><div>${entry.hi} <span style="opacity:0.7;">(${entry.en})</span></div><div style="margin-top:6px;">${entry.def}</div>`;
+      pdfMeaningPopup.querySelector('.close-x').addEventListener('click', ()=> pdfMeaningPopup.classList.remove('open'));
+      return;
+    }
+    // 2) fall back to Wikipedia (English source text — can't be auto-translated
+    // without an AI/API key, as discussed), reformatted into short bullet
+    // points with Hinglish labels around it (not a raw copy-paste)
+    try{
+      const wiki = await fetchWikipediaSummaryEnglish(word);
+      if(wiki && wiki.extract){
+        const bullets = splitIntoBullets(wiki.extract, 4);
+        const listHtml = bullets.map(b=> `<li>${b}</li>`).join('');
+        const pageUrl = wiki.content_urls && wiki.content_urls.desktop ? wiki.content_urls.desktop.page : null;
+        pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><h5>${wiki.title || word}</h5><ul>${listHtml}</ul>` +
+          `<div class="src">Wikipedia ke aadhar par, saral roop mein${pageUrl ? ` &middot; <a href="${pageUrl}" target="_blank" rel="noopener">poora padhein</a>` : ''}</div>`;
+      } else {
+        pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>Iska matlab nahi mil paya.</div>`;
+      }
+    }catch(err){
+      pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>Matlab nahi mila — poori line ki jagah sirf ek zaroori shabd select karke dekho, ya internet check karo.</div>`;
+    }
+    const closeX = pdfMeaningPopup.querySelector('.close-x');
+    if(closeX) closeX.addEventListener('click', ()=> pdfMeaningPopup.classList.remove('open'));
+  }
+
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('#pdfMeaningPopup, #pdfMeaningBtn')){
+      pdfMeaningPopup.classList.remove('open');
+    }
+  });
+
   /* ================= COPY / SCREENSHOT DETERRENTS ================= */
   (function(){
-    // 1) block right-click context menu
-    document.addEventListener('contextmenu', e=> e.preventDefault());
+    // 1) block right-click context menu (but allow it inside the PDF reader's
+    // text layer — on Android Chrome, long-press-to-select fires a contextmenu
+    // event as part of starting text selection, so blocking it globally was
+    // silently preventing selection inside PDFs, which the "Meaning" feature
+    // depends on)
+    document.addEventListener('contextmenu', e=>{
+      if(e.target.closest('.textLayer')) return;
+      e.preventDefault();
+    });
 
     // 2) block copy / cut of content (search box still works via CSS user-select allow, but block copy event too since clipboard write is separate)
     document.addEventListener('copy', e=>{
@@ -12353,6 +13839,7 @@ updateStudyTimeLabel();
     }
   }
 
+  history.replaceState({navDepth: 0}, '');
   setTimeout(()=>{
     introScreen.classList.add('fade-out');
     setTimeout(()=> showScreen(subjectScreen), 400);
