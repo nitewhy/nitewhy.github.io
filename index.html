@@ -2,9 +2,8 @@
 <html lang="hi">
 <head>
 <script>
-  // TEMP DEBUG: surface any silent JS error on-screen since mobile has no devtools.
   window.onerror = function(msg, url, line, col, err){
-    alert('PAGE ERROR: ' + msg + ' (line ' + line + ')');
+    console.error('Page error:', msg, 'line', line);
     return false;
   };
 </script>
@@ -361,12 +360,14 @@
   .shelf-book{
     position:relative; width:58px; flex:0 0 auto; border-radius:5px 5px 3px 3px; cursor:pointer;
     display:flex; align-items:flex-start; justify-content:center; padding:10px 0 16px;
-    box-shadow: 1px 0 0 rgba(255,255,255,0.08) inset, -2px 0 6px rgba(0,0,0,0.35) inset, 0 6px 10px -4px rgba(0,0,0,0.5);
-    transition: transform .18s ease, box-shadow .18s ease; z-index:1;
+    box-shadow: 1px 0 0 rgba(255,255,255,0.08) inset, -2px 0 6px rgba(0,0,0,0.35) inset, 0 6px 10px -4px rgba(0,0,0,0.5),
+      2px 2px 0 rgba(0,0,0,0.3), 4px 4px 0 rgba(0,0,0,0.15);
+    transition: transform .2s ease, box-shadow .2s ease; z-index:1;
   }
   .shelf-book:hover, .shelf-book:focus-visible{
-    transform: translateY(-10px) rotate(-1deg);
-    box-shadow: 1px 0 0 rgba(255,255,255,0.1) inset, -2px 0 6px rgba(0,0,0,0.35) inset, 0 16px 20px -6px rgba(0,0,0,0.55);
+    transform: translateY(-10px) translateZ(16px) rotateY(-14deg);
+    box-shadow: 1px 0 0 rgba(255,255,255,0.1) inset, -2px 0 6px rgba(0,0,0,0.35) inset, 0 20px 26px -6px rgba(0,0,0,0.6),
+      3px 3px 0 rgba(0,0,0,0.3), 7px 6px 10px rgba(0,0,0,0.4);
   }
   .shelf-book::before, .shelf-book::after{ /* foil rules */
     content:''; position:absolute; left:6px; right:6px; height:2px; background: rgba(255,255,255,0.22); border-radius:2px;
@@ -403,6 +404,19 @@
   .shelf-book .pct-badge{
     position:absolute; bottom:-18px; left:0; right:0; text-align:center; font-family:'JetBrains Mono',monospace;
     font-size:0.58rem; opacity:0.7; letter-spacing:0.02em;
+  }
+  /* right-edge page stack — makes the spine read as a closed book, not a flat card */
+  .shelf-book .page-edge{
+    position:absolute; top:2px; bottom:2px; right:1px; width:6px; border-radius:0 4px 4px 0;
+    background: repeating-linear-gradient(180deg, #F6EEDA 0 1.6px, #E3D5AC 1.6px 2.4px, #F6EEDA 2.4px 3px);
+    box-shadow: inset -1px 0 1px rgba(0,0,0,0.3), inset 1px 0 0 rgba(255,255,255,0.15), 1px 0 2px rgba(0,0,0,0.25);
+    z-index:0;
+  }
+  .shelf-book .spine-title, .shelf-book .vine-track{ z-index:1; }
+  /* soft glossy sheen across the cover, like light catching a book jacket */
+  .shelf-book .cover-sheen{
+    position:absolute; inset:0; border-radius:5px 5px 3px 3px; pointer-events:none;
+    background: linear-gradient(115deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.02) 22%, transparent 45%);
   }
 
   .pdf-empty{
@@ -484,14 +498,70 @@
     position:sticky; top:0; z-index:40; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px;
     padding:10px 8px; margin-bottom:14px; background: rgba(11,14,23,0.85); backdrop-filter: blur(10px);
     border-radius:12px; border:1px solid rgba(127,227,216,0.2);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.3), 0 10px 20px -6px rgba(0,0,0,0.5);
   }
   body.light .pdf-reader-toolbar{ background: rgba(239,232,216,0.9); }
   #pdfReaderTitle{ font-size:0.8rem; opacity:0.85; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   #pdfPageLabel{ font-family:'JetBrains Mono',monospace; font-size:0.75rem; min-width:70px; text-align:center; }
   .pdf-hint{ text-align:center; font-size:0.68rem; opacity:0.55; margin:-6px auto 14px; font-family:'JetBrains Mono',monospace; }
-  .pdf-canvas-wrap{ display:flex; flex-direction:column; align-items:center; gap:18px; }
-  .pdf-page-wrap{ position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.4); background:#fff; }
+  .pdf-canvas-wrap{ display:flex; flex-direction:column; align-items:center; gap:18px; perspective:1400px; position:relative; touch-action: pan-y; }
+  .pdf-flip-stage{ position:relative; }
+
+  /* ---- Full View: toolbar tucks away to a side handle so the PDF gets the
+     whole screen; tapping the handle brings the same toolbar back briefly ---- */
+  .pdf-side-handle{
+    position:fixed; top:50%; right:0; transform:translateY(-50%);
+    width:32px; height:64px; border-radius:12px 0 0 12px;
+    background: rgba(11,14,23,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border:1px solid rgba(127,227,216,0.35); border-right:none;
+    color: var(--glow); display:flex; align-items:center; justify-content:center;
+    font-size:1.05rem; cursor:pointer; z-index:160;
+    box-shadow:-4px 0 14px rgba(0,0,0,0.35);
+  }
+  body.light .pdf-side-handle{ background: rgba(239,232,216,0.9); }
+  .pdf-reader.full-view .pdf-reader-toolbar{
+    position:fixed; top:0; left:0; right:0; z-index:150;
+    transform: translateY(-120%);
+    transition: transform .28s ease;
+    border-radius:0 0 14px 14px;
+    margin-bottom:0;
+  }
+  .pdf-reader.full-view .pdf-reader-toolbar.peek{ transform: translateY(0); }
+  .pdf-reader.full-view .pdf-hint{ display:none; }
+  #pdfFullViewBtn.active{ background: var(--gold); color:#0B0E17; }
+  .pdf-page-wrap{
+    position:relative; box-shadow:0 3px 0 rgba(0,0,0,0.25), 0 8px 0 rgba(0,0,0,0.15), 0 22px 40px -8px rgba(0,0,0,0.55); background:#fff;
+    transform-style:preserve-3d; backface-visibility:hidden;
+  }
   .pdf-page-wrap canvas{ display:block; }
+  /* real page-turn: the old page flips away first (like it's lifting off the
+     paper stack), the new page flips in right behind it from the same hinge —
+     together it reads as one continuous flip instead of a swap. */
+  .pdf-page-wrap.stage-old, .pdf-page-wrap.stage-new{ position:absolute; top:0; left:0; }
+  @keyframes flipOutNext{ 0%{ transform:rotateY(0deg); filter:brightness(1); } 100%{ transform:rotateY(-110deg); filter:brightness(0.5); } }
+  @keyframes flipInNext{ 0%{ transform:rotateY(110deg); filter:brightness(0.5); } 100%{ transform:rotateY(0deg); filter:brightness(1); } }
+  @keyframes flipOutPrev{ 0%{ transform:rotateY(0deg); filter:brightness(1); } 100%{ transform:rotateY(110deg); filter:brightness(0.5); } }
+  @keyframes flipInPrev{ 0%{ transform:rotateY(-110deg); filter:brightness(0.5); } 100%{ transform:rotateY(0deg); filter:brightness(1); } }
+  .pdf-page-wrap.turning-out-next{ transform-origin:left center; animation: flipOutNext .3s cubic-bezier(.5,0,.75,0) forwards; z-index:2; }
+  .pdf-page-wrap.turning-in-next{ transform-origin:left center; animation: flipInNext .32s cubic-bezier(.25,.46,.45,.94) .24s both; z-index:1; }
+  .pdf-page-wrap.turning-out-prev{ transform-origin:right center; animation: flipOutPrev .3s cubic-bezier(.5,0,.75,0) forwards; z-index:2; }
+  .pdf-page-wrap.turning-in-prev{ transform-origin:right center; animation: flipInPrev .32s cubic-bezier(.25,.46,.45,.94) .24s both; z-index:1; }
+
+  /* ---- diagonal corner-peel page turn (drag se kahi se bhi shuru ho sakta
+     hai — jaise ek asli kitaab ka corner uthta hai) ---- */
+  .pdf-peel-stage{ position:relative; }
+  .pdf-peel-under, .pdf-peel-top{ position:absolute; top:0; left:0; background:#fff; box-shadow:0 10px 30px rgba(0,0,0,0.4); }
+  .pdf-peel-under canvas, .pdf-peel-top canvas{ display:block; }
+  .pdf-peel-top{ z-index:3; will-change: clip-path; }
+  .pdf-peel-under{ z-index:1; }
+  .pdf-peel-flap{
+    position:absolute; top:0; left:0; z-index:4; pointer-events:none;
+    background: linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(220,214,196,0.55) 35%, rgba(70,60,50,0.35) 100%);
+    filter: drop-shadow(-3px 3px 8px rgba(0,0,0,0.45));
+    display:none;
+  }
+  .pdf-peel-shade{ position:absolute; top:0; left:0; z-index:2; pointer-events:none; background:rgba(0,0,0,0.28); display:none; }
+  .pdf-canvas-wrap.dragging-peel{ touch-action:none; }
   .textLayer{
     position:absolute; text-align:initial; inset:0; overflow:hidden; opacity:1; line-height:1;
     -webkit-text-size-adjust:none; text-size-adjust:none; forced-color-adjust:none; transform-origin:0 0;
@@ -500,23 +570,61 @@
   .textLayer ::selection{ background: rgba(127,227,216,0.45); }
 
   #pdfMeaningBtn{
-    position:fixed; z-index:210; display:none; background: var(--glow); color:#0B0E17;
+    position:fixed; z-index:1100; display:none; background: var(--glow); color:#0B0E17;
     font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:600; padding:7px 12px;
     border-radius:16px; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,0.4);
   }
-  #pdfMeaningPopup{
+  #pdfMeaningPopup, #pdfSummaryPopup{
     display:none; margin: 0 12px 10px; max-width:none; max-height:240px; overflow-y:auto;
     background: rgba(20,24,36,0.95); color: var(--parchment); border:1px solid rgba(127,227,216,0.3);
     border-radius:12px; padding:14px; font-size:0.82rem; box-shadow:0 10px 32px rgba(0,0,0,0.5);
   }
-  body.light #pdfMeaningPopup{ background: rgba(255,253,248,0.97); color: var(--charcoal); }
-  #pdfMeaningPopup.open{ display:block; }
-  #pdfMeaningPopup h5{ margin:0 0 8px; font-family:'Marcellus',serif; font-size:0.92rem; color: var(--gold); }
-  #pdfMeaningPopup ul{ margin:6px 0 0; padding-left:18px; }
-  #pdfMeaningPopup li{ margin-bottom:6px; }
-  #pdfMeaningPopup .src{ margin-top:10px; font-size:0.68rem; opacity:0.6; }
-  #pdfMeaningPopup .src a{ color: var(--glow); }
-  #pdfMeaningPopup .close-x{ float:right; cursor:pointer; opacity:0.7; }
+  body.light #pdfMeaningPopup, body.light #pdfSummaryPopup{ background: rgba(255,253,248,0.97); color: var(--charcoal); }
+  #pdfMeaningPopup.open, #pdfSummaryPopup.open{ display:block; }
+  #pdfMeaningPopup h5, #pdfSummaryPopup h5{ margin:0 0 8px; font-family:'Marcellus',serif; font-size:0.92rem; color: var(--gold); }
+  #pdfMeaningPopup ul, #pdfSummaryPopup ul{ margin:6px 0 0; padding-left:18px; }
+  #pdfMeaningPopup li, #pdfSummaryPopup li{ margin-bottom:6px; }
+  #pdfMeaningPopup .src, #pdfSummaryPopup .src{ margin-top:10px; font-size:0.68rem; opacity:0.6; }
+  #pdfMeaningPopup .src a, #pdfSummaryPopup .src a{ color: var(--glow); }
+  #pdfMeaningPopup .close-x, #pdfSummaryPopup .close-x{ float:right; cursor:pointer; opacity:0.7; }
+
+  /* ================= AI KEY MODAL + PAGE CHAT ================= */
+  .ai-modal-overlay{
+    position:fixed; inset:0; z-index:1200; display:none; align-items:center; justify-content:center;
+    padding:16px; background: rgba(4,5,10,0.88);
+  }
+  .ai-modal-overlay.open{ display:flex; }
+  .ai-modal-box{
+    position:relative; width:100%; max-width:420px; max-height:88vh; overflow-y:auto;
+    background: linear-gradient(165deg, rgba(20,24,34,0.96), rgba(11,14,23,0.98));
+    border:1px solid rgba(127,227,216,0.35); border-radius:16px; padding:20px 18px;
+    box-shadow: 0 0 40px rgba(127,227,216,0.14);
+  }
+  .ai-modal-close{
+    position:absolute; top:12px; right:12px; width:30px; height:30px; border-radius:50%;
+    border:1px solid var(--glow); background:rgba(127,227,216,0.08); color:var(--glow);
+    font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;
+  }
+  .ai-modal-box h4{ margin:0 26px 6px 0; font-family:'Marcellus',serif; color:var(--gold); font-size:1.05rem; }
+  .ai-modal-box p{ font-size:0.78rem; opacity:0.8; line-height:1.5; margin:0 0 12px; }
+  .ai-modal-box input[type="text"], .ai-modal-box input[type="password"]{
+    width:100%; box-sizing:border-box; padding:10px 12px; border-radius:10px; margin-bottom:10px;
+    border:1px solid rgba(127,227,216,0.4); background: rgba(127,227,216,0.05); color:inherit;
+    font-family:'JetBrains Mono',monospace; font-size:0.82rem;
+  }
+  .ai-modal-box .row{ display:flex; gap:8px; margin-top:4px; }
+  #pdfChatOverlay .ai-modal-box{ max-width:520px; height:82vh; display:flex; flex-direction:column; padding-bottom:12px; }
+  #pdfChatMsgs{ flex:1; overflow-y:auto; margin:8px 0 10px; padding-right:4px; }
+  .ai-chat-msg{ margin-bottom:10px; font-size:0.82rem; line-height:1.5; }
+  .ai-chat-msg .who{ font-family:'JetBrains Mono',monospace; font-size:0.65rem; opacity:0.6; margin-bottom:2px; text-transform:uppercase; letter-spacing:0.05em; }
+  .ai-chat-msg.user .who{ color: var(--gold); }
+  .ai-chat-msg.bot .who{ color: var(--glow); }
+  #pdfChatInputRow{ display:flex; gap:8px; }
+  #pdfChatInput{
+    flex:1; box-sizing:border-box; padding:10px 12px; border-radius:10px;
+    border:1px solid rgba(127,227,216,0.4); background: rgba(127,227,216,0.05); color:inherit;
+    font-family:'JetBrains Mono',monospace; font-size:0.82rem;
+  }
 
   /* ---- Notes feature ---- */
   #pdfNoteBtn{
@@ -752,7 +860,8 @@
   /* ---- Intro + Subject Selection Screens ---- */
   .screen{
     position: fixed; inset:0; z-index:1000;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
     background:
       radial-gradient(circle at 15% -10%, rgba(127,227,216,0.10), transparent 40%),
       radial-gradient(circle at 90% 0%, rgba(201,162,39,0.10), transparent 45%),
@@ -761,6 +870,8 @@
     padding: 24px; text-align:center; color: var(--parchment);
     transition: opacity .4s ease;
   }
+  .intro-screen{ justify-content:center; }
+  .subject-screen{ justify-content:flex-start; padding-bottom: 60px; }
   .screen.fade-out{ opacity:0; pointer-events:none; }
   .intro-logo{
     font-family:'Marcellus',serif; font-size: clamp(2.4rem,10vw,4rem); color: var(--gold);
@@ -781,10 +892,16 @@
   .subject-card{
     background: rgba(127,227,216,0.05); border:1px solid rgba(127,227,216,0.3); border-radius:14px;
     padding: 26px 12px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.85rem;
-    color: var(--parchment); letter-spacing:0.03em; transition: box-shadow .2s, transform .2s, border-color .2s;
+    color: var(--parchment); letter-spacing:0.03em; transition: box-shadow .22s, transform .22s, border-color .2s;
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.35), 0 5px 0 rgba(0,0,0,0.22), 0 12px 18px -6px rgba(0,0,0,0.55);
   }
-  .subject-card:hover{ box-shadow: 0 0 20px rgba(127,227,216,0.25); transform: translateY(-3px); border-color: var(--glow); }
+  .subject-card:hover{
+    box-shadow: 0 3px 0 rgba(0,0,0,0.35), 0 8px 0 rgba(0,0,0,0.2), 0 26px 32px -10px rgba(0,0,0,0.6), 0 0 22px rgba(127,227,216,0.3);
+    transform: translateY(-8px) translateZ(14px) rotateX(6deg) rotateY(-6deg);
+    border-color: var(--glow);
+  }
+  .subject-card:active{ transform: translateY(-2px) translateZ(4px) rotateX(1deg) rotateY(-1deg); }
   .subject-card.locked{ opacity:0.6; }
   .subject-card .badge{ display:block; font-size:0.6rem; color: var(--sindoor); margin-top:8px; letter-spacing:0.06em; text-transform:uppercase; }
   .back-btn{
@@ -890,7 +1007,28 @@
     filter: drop-shadow(0 0 10px rgba(127,227,216,0.65));
   }
   @keyframes ringSpin{ to{ transform: rotate(360deg); } }
-  .intro-logo{ position:relative; z-index:2; text-shadow: 0 0 30px rgba(201,162,39,0.7), 0 0 60px rgba(127,227,216,0.4), 0 0 90px rgba(201,162,39,0.3); }
+  /* ---- 3D THEME: intro / subject cards / library ---- */
+  .intro-rings{ perspective: 900px; }
+  .intro-logo{
+    position:relative; z-index:2; transform-style: preserve-3d;
+    text-shadow:
+      0 1px 0 #8a6b16, 0 2px 0 #7a5d13, 0 3px 0 #6a4f10, 0 4px 0 #5a410d,
+      0 6px 10px rgba(0,0,0,0.5),
+      0 0 30px rgba(201,162,39,0.7), 0 0 60px rgba(127,227,216,0.4), 0 0 90px rgba(201,162,39,0.3);
+    animation: introPulse 1.6s ease-in-out infinite, intro3dTilt 5s ease-in-out infinite;
+  }
+  @keyframes intro3dTilt{
+    0%,100%{ transform: perspective(700px) rotateX(0deg) rotateY(0deg); }
+    25%{ transform: perspective(700px) rotateX(8deg) rotateY(-10deg); }
+    50%{ transform: perspective(700px) rotateX(-6deg) rotateY(0deg); }
+    75%{ transform: perspective(700px) rotateX(6deg) rotateY(10deg); }
+  }
+  .ring-spinner{ transform: rotateX(35deg); }
+  .subject-grid{ perspective: 1100px; }
+  .subject-card{ transform-style: preserve-3d; will-change: transform; }
+  .subject-card .badge{ transform: translateZ(6px); }
+  .shelf-row{ perspective: 900px; }
+  .shelf-book{ transform-style: preserve-3d; will-change: transform; }
   .intro-loadbar{ position:relative; z-index:1; width:180px; height:3px; border-radius:2px; background:rgba(127,227,216,0.15); margin-top:26px; overflow:hidden; }
   .intro-loadbar-fill{ height:100%; width:0%; background: linear-gradient(90deg,var(--glow),var(--gold)); box-shadow:0 0 8px var(--glow); animation: loadFill 3s ease forwards; }
   @keyframes loadFill{ from{ width:0%; } to{ width:100%; } }
@@ -1128,7 +1266,7 @@
   </div>
 
   <div class="pdf-reader" id="pdfReader" style="display:none;">
-    <div class="pdf-reader-toolbar">
+    <div class="pdf-reader-toolbar" id="pdfReaderToolbar">
       <button class="pill small" id="pdfReaderBackBtn">&larr; List</button>
       <span id="pdfReaderTitle"></span>
       <button class="pill small" id="pdfPrevPage">&#9664;</button>
@@ -1137,9 +1275,15 @@
       <button class="pill small" id="pdfZoomOut">A-</button>
       <button class="pill small" id="pdfZoomIn">A+</button>
       <button class="pill small" id="pdfTranslateBtn" style="border-color:var(--glow);color:var(--glow);">&#127760; Meaning</button>
+      <button class="pill small" id="pdfSummariseBtn" style="border-color:var(--gold);color:var(--gold);">&#128221; Summary</button>
+      <button class="pill small" id="pdfChatBtn" style="border-color:var(--leaf-bright);color:var(--leaf-bright);">&#128172; Chat</button>
+      <button class="pill small" id="pdfAiKeyBtn">&#128273; AI Key</button>
       <button class="pill small" id="pdfNotesBtn" style="border-color:var(--leaf-bright);color:var(--leaf-bright);">&#128221; Notes</button>
+      <button class="pill small" id="pdfFullViewBtn" style="border-color:var(--gold);color:var(--gold);">&#9974; Full View</button>
     </div>
+    <div class="pdf-side-handle" id="pdfSideHandle" style="display:none;">&#9776;</div>
     <div class="pdf-hint" id="pdfHint">Text select karo, fir "Meaning" ya "Note" dabao</div>
+    <div id="pdfSummaryPopup"></div>
     <div class="notes-panel" id="notesPanel">
       <div class="notes-panel-head">
         <h5 id="notesPanelTitle">Notes</h5>
@@ -1153,6 +1297,33 @@
 </div>
 
 <div id="pdfMeaningBtn">Matlab dekhein</div>
+
+
+<div class="ai-modal-overlay" id="pdfAiKeyOverlay">
+  <div class="ai-modal-box">
+    <span class="ai-modal-close" id="pdfAiKeyCloseBtn">&times;</span>
+    <h4>Gemini AI Key</h4>
+    <p>Apni free Gemini API key yahan paste karo — Summary aur Meaning ab Hinglish mein AI se aayenge, aur PDF ke baare mein chat bhi kar sakte ho. Key sirf isi phone/browser mein save hoti hai, kahi bhejī nahi jaati (Google ke seedhe fetch ke alawa). Key kisi aur ko share mat karna.</p>
+    <input type="password" id="pdfAiKeyInput" placeholder="AIza... (Gemini API key)">
+    <div class="row">
+      <button class="pill small" id="pdfAiKeySaveBtn" style="border-color:var(--gold);color:var(--gold);">Save</button>
+      <button class="pill small" id="pdfAiKeyClearBtn">Hatao</button>
+    </div>
+  </div>
+</div>
+
+<div class="ai-modal-overlay" id="pdfChatOverlay">
+  <div class="ai-modal-box">
+    <span class="ai-modal-close" id="pdfChatCloseBtn">&times;</span>
+    <h4 id="pdfChatTitle">Is page ke baare mein baat karo</h4>
+    <div id="pdfChatMsgs"></div>
+    <div id="pdfChatInputRow">
+      <input type="text" id="pdfChatInput" placeholder="Apna sawaal Hinglish mein likho...">
+      <button class="pill small" id="pdfChatSendBtn" style="border-color:var(--glow);color:var(--glow);">Bhejo</button>
+    </div>
+  </div>
+</div>
+
 <div id="pdfNoteBtn">&#128221; Note banao</div>
 <div id="pdfNoteEditor">
   <div class="quote" id="pdfNoteEditorQuote"></div>
@@ -13998,6 +14169,8 @@ updateStudyTimeLabel();
       const statusIcon = pct >= 95 ? '&#127942;' : (pct > 0 ? '&#128214;' : '');
       const statusTitle = pct >= 95 ? (settings.lang==='hi'?'Poori hui':'Finished') : (settings.lang==='hi'?'Jaari hai':'In progress');
       book.innerHTML = `
+        <span class="page-edge"></span>
+        <span class="cover-sheen"></span>
         ${statusIcon ? `<span class="status-badge" title="${statusTitle}">${statusIcon}</span>` : ''}
         ${noteCount ? `<span class="note-badge" title="${noteCount} notes">&#128221;${noteCount}</span>` : ''}
         <span class="edit" title="${settings.lang==='hi'?'Naam/category badlein':'Rename / set category'}">&#9998;</span>
@@ -14058,6 +14231,7 @@ updateStudyTimeLabel();
     pdfReaderView.style.display = 'block';
     pdfReaderTitle.textContent = rec.name;
     pdfReaderTitle.title = rec.name;
+    if(typeof clearPageBitmapCache === 'function') clearPageBitmapCache();
     pdfCanvasWrap.innerHTML = `<div style="padding:30px;font-size:0.85rem;opacity:0.7;">${settings.lang==='hi'?'PDF khul rahi hai...':'Opening PDF...'}</div>`;
     currentPdfId = id;
     currentPdfZoomMult = 1.0;
@@ -14086,8 +14260,54 @@ updateStudyTimeLabel();
   }
   document.getElementById('pdfReaderBackBtn').addEventListener('click', ()=> history.back());
 
-  async function renderPdfPage(num){
+  /* ---- Full View toggle: tucks the toolbar to a side handle, PDF gets the
+     whole screen; tapping the handle brings the same toolbar back briefly,
+     everything inside it still works exactly as before ---- */
+  (function(){
+    const toolbar = document.getElementById('pdfReaderToolbar');
+    const handle = document.getElementById('pdfSideHandle');
+    const btn = document.getElementById('pdfFullViewBtn');
+    let fullViewOn = false;
+    function setPeek(show){ toolbar.classList.toggle('peek', show); }
+    btn.addEventListener('click', ()=>{
+      fullViewOn = !fullViewOn;
+      pdfReaderView.classList.toggle('full-view', fullViewOn);
+      handle.style.display = fullViewOn ? 'flex' : 'none';
+      setPeek(false);
+      btn.classList.toggle('active', fullViewOn);
+      btn.innerHTML = fullViewOn ? '&#9974; Exit Full' : '&#9974; Full View';
+    });
+    handle.addEventListener('click', ()=>{
+      setPeek(!toolbar.classList.contains('peek'));
+    });
+    // page ke khali hisse pe tap karne se peeked toolbar wapas side me chala jaye
+    pdfCanvasWrap.addEventListener('pointerdown', ()=>{
+      if(fullViewOn && toolbar.classList.contains('peek')) setPeek(false);
+    });
+  })();
+
+  let pdfFlipCleanupTimer = null;
+  // If a flip animation is still mid-flight (e.g. user tapped next/prev fast
+  // twice), snap it to its finished state instantly instead of stacking
+  // animations on top of each other.
+  function finishAnyPendingFlip(){
+    if(pdfFlipCleanupTimer){ clearTimeout(pdfFlipCleanupTimer); pdfFlipCleanupTimer = null; }
+    const stage = pdfCanvasWrap.querySelector('.pdf-flip-stage');
+    if(!stage) return;
+    const newPage = stage.querySelector('.stage-new');
+    if(newPage){
+      newPage.classList.remove('stage-new','turning-in-next','turning-in-prev');
+      newPage.style.position = '';
+      newPage.style.top = ''; newPage.style.left = '';
+      pdfCanvasWrap.replaceChild(newPage, stage);
+    } else {
+      stage.remove();
+    }
+  }
+
+  async function renderPdfPage(num, dir){
     if(!currentPdfDoc) return;
+    finishAnyPendingFlip();
     const page = await currentPdfDoc.getPage(num);
     // Always fit the page to the available screen width first, so it never
     // overflows sideways on a phone; zoom buttons then multiply on top of that.
@@ -14096,9 +14316,26 @@ updateStudyTimeLabel();
     const fitScale = Math.max(0.25, availableWidth / unscaledViewport.width);
     const finalScale = fitScale * currentPdfZoomMult;
     const viewport = page.getViewport({scale: finalScale});
-    pdfCanvasWrap.innerHTML = '';
+
+    // For a real page-turn: keep the outgoing page on screen and flip it away
+    // while the new page renders and flips in right behind it, instead of
+    // just wiping the old page and popping the new one in.
+    const oldWrap = dir ? pdfCanvasWrap.querySelector('.pdf-page-wrap') : null;
+    let stage = null;
+    if(oldWrap && dir){
+      stage = document.createElement('div');
+      stage.className = 'pdf-flip-stage';
+      stage.style.width = Math.max(parseFloat(oldWrap.style.width)||0, viewport.width) + 'px';
+      stage.style.height = Math.max(parseFloat(oldWrap.style.height)||0, viewport.height) + 'px';
+      pdfCanvasWrap.replaceChild(stage, oldWrap);
+      stage.appendChild(oldWrap);
+      oldWrap.classList.add('stage-old', dir==='next' ? 'turning-out-next' : 'turning-out-prev');
+    } else {
+      pdfCanvasWrap.innerHTML = '';
+    }
+
     const pageWrap = document.createElement('div');
-    pageWrap.className = 'pdf-page-wrap';
+    pageWrap.className = 'pdf-page-wrap' + (stage ? (' stage-new ' + (dir==='next' ? 'turning-in-next' : 'turning-in-prev')) : '');
     pageWrap.style.width = viewport.width + 'px';
     pageWrap.style.height = viewport.height + 'px';
     const canvas = document.createElement('canvas');
@@ -14122,7 +14359,7 @@ updateStudyTimeLabel();
     // isn't shown at scale 1 — which is why selection looked "misaligned".
     textLayerDiv.style.setProperty('--scale-factor', String(finalScale));
     pageWrap.appendChild(textLayerDiv);
-    pdfCanvasWrap.appendChild(pageWrap);
+    if(stage) stage.appendChild(pageWrap); else pdfCanvasWrap.appendChild(pageWrap);
 
     await page.render({canvasContext: ctx, viewport: renderViewport}).promise;
     const textContent = await page.getTextContent();
@@ -14131,31 +14368,215 @@ updateStudyTimeLabel();
     }
     pdfPageLabel.textContent = num + ' / ' + currentPdfDoc.numPages;
     if(currentPdfId) pdfDbSetLastPage(currentPdfId, num);
+
+    if(stage){
+      // out: .3s, in starts at .24s and runs .32s -> finishes ~.56s; give a small buffer
+      pdfFlipCleanupTimer = setTimeout(()=>{
+        pageWrap.classList.remove('stage-new','turning-in-next','turning-in-prev');
+        pageWrap.style.position = '';
+        pageWrap.style.top = ''; pageWrap.style.left = '';
+        if(stage.parentNode) pdfCanvasWrap.replaceChild(pageWrap, stage);
+        pdfFlipCleanupTimer = null;
+      }, 600);
+    }
   }
 
   document.getElementById('pdfPrevPage').addEventListener('click', ()=>{
     if(!currentPdfDoc || currentPdfPage<=1) return;
-    currentPdfPage--; renderPdfPage(currentPdfPage); hidePdfMeaningUI();
+    currentPdfPage--; renderPdfPage(currentPdfPage, 'prev'); hidePdfMeaningUI();
   });
   document.getElementById('pdfNextPage').addEventListener('click', ()=>{
     if(!currentPdfDoc || currentPdfPage>=currentPdfDoc.numPages) return;
-    currentPdfPage++; renderPdfPage(currentPdfPage); hidePdfMeaningUI();
+    currentPdfPage++; renderPdfPage(currentPdfPage, 'next'); hidePdfMeaningUI();
   });
   document.getElementById('pdfZoomIn').addEventListener('click', ()=>{
     if(!currentPdfDoc) return;
     currentPdfZoomMult = Math.min(currentPdfZoomMult + 0.2, 2.5);
+    clearPageBitmapCache();
     renderPdfPage(currentPdfPage); hidePdfMeaningUI();
   });
   document.getElementById('pdfZoomOut').addEventListener('click', ()=>{
     if(!currentPdfDoc) return;
     currentPdfZoomMult = Math.max(currentPdfZoomMult - 0.2, 0.5);
+    clearPageBitmapCache();
     renderPdfPage(currentPdfPage); hidePdfMeaningUI();
   });
+  // ---- prefetched page bitmaps, used by the drag corner-peel below so the
+  // page underneath the folding corner is already real content, not blank ----
+  const pageBitmapCache = new Map();
+  function clearPageBitmapCache(){ pageBitmapCache.clear(); }
+  async function getPageBitmap(num){
+    if(pageBitmapCache.has(num)) return pageBitmapCache.get(num);
+    if(!currentPdfDoc || num<1 || num>currentPdfDoc.numPages) return null;
+    const page = await currentPdfDoc.getPage(num);
+    const unscaledViewport = page.getViewport({scale:1});
+    const availableWidth = (pdfCanvasWrap.clientWidth || window.innerWidth) - 4;
+    const fitScale = Math.max(0.25, availableWidth / unscaledViewport.width);
+    const finalScale = fitScale * currentPdfZoomMult;
+    const viewport = page.getViewport({scale: finalScale});
+    const dpr = window.devicePixelRatio || 1;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(viewport.width*dpr);
+    canvas.height = Math.round(viewport.height*dpr);
+    canvas.style.width = viewport.width+'px';
+    canvas.style.height = viewport.height+'px';
+    const ctx = canvas.getContext('2d');
+    const renderViewport = page.getViewport({scale: finalScale*dpr});
+    await page.render({canvasContext: ctx, viewport: renderViewport}).promise;
+    const bitmap = {canvas, width: viewport.width, height: viewport.height};
+    pageBitmapCache.set(num, bitmap);
+    return bitmap;
+  }
+
+  // drag se, page par kahi se bhi shuru karke, diagonal corner-peel se page
+  // turn karna — jaise asli kitaab ka corner uthta hai. Nearest corner touch
+  // point se decide hota hai, aur drag direction se next/prev tay hota hai.
+  (function(){
+    let downActive=false, blocked=false, dragging=false, pointerId=null;
+    let downX=0, downY=0, startClientX=0;
+    let corner=null, pageW=0, pageH=0, topWrap=null, underEl=null, flapEl=null, destNum=null, currentT=0;
+
+    function cornerGradient(c){
+      const dir = c==='br' ? '135deg' : c==='tr' ? '225deg' : c==='bl' ? '45deg' : '315deg';
+      return `linear-gradient(${dir}, rgba(255,255,255,0.82), rgba(210,202,180,0.5) 42%, rgba(55,46,38,0.4))`;
+    }
+    function peelPoints(w,h,c,t){
+      const lx=t*w, ly=t*h;
+      if(c==='br') return [[0,0],[w,0],[w,h-ly],[w-lx,h],[0,h]];
+      if(c==='tr') return [[0,0],[w-lx,0],[w,ly],[w,h],[0,h]];
+      if(c==='bl') return [[lx,h],[0,h-ly],[0,0],[w,0],[w,h]];
+      return [[0,ly],[lx,0],[w,0],[w,h],[0,h]]; // tl
+    }
+    function triPoints(w,h,c,t){
+      const lx=t*w, ly=t*h;
+      const cx = (c==='br'||c==='tr') ? w : 0;
+      const cy = (c==='br'||c==='bl') ? h : 0;
+      const ax = cx + ((c==='br'||c==='tr') ? -lx : lx);
+      const bx = cx, by = cy + ((c==='br'||c==='bl') ? -ly : ly);
+      return [[cx,cy],[ax,cy],[bx,by]];
+    }
+    function clipStr(pts){ return 'polygon(' + pts.map(p=>p[0].toFixed(1)+'px '+p[1].toFixed(1)+'px').join(',') + ')'; }
+
+    function cleanupPeelDom(){
+      if(underEl){ underEl.remove(); underEl=null; }
+      if(flapEl){ flapEl.remove(); flapEl=null; }
+      if(topWrap){ topWrap.style.clipPath=''; topWrap.style.zIndex=''; topWrap.style.transition=''; }
+      topWrap=null;
+    }
+
+    function startPeel(clientX, clientY){
+      finishAnyPendingFlip();
+      topWrap = pdfCanvasWrap.querySelector('.pdf-page-wrap');
+      if(!currentPdfDoc || !topWrap) return false;
+      const rect = topWrap.getBoundingClientRect();
+      pageW = rect.width; pageH = rect.height;
+      const relX = clientX-rect.left, relY = clientY-rect.top;
+      corner = (relY>pageH/2?'b':'t') + (relX>pageW/2?'r':'l');
+      const rightSide = corner==='br'||corner==='tr';
+      destNum = rightSide ? currentPdfPage+1 : currentPdfPage-1;
+      if(destNum<1 || destNum>currentPdfDoc.numPages){ destNum=null; return false; }
+      dragging = true; currentT = 0;
+      pdfCanvasWrap.classList.add('dragging-peel');
+      const wrapRect = pdfCanvasWrap.getBoundingClientRect();
+      const offLeft = rect.left - wrapRect.left;
+      const offTop = rect.top - wrapRect.top;
+      underEl = document.createElement('div');
+      underEl.className = 'pdf-peel-under';
+      underEl.style.left = offLeft+'px'; underEl.style.top = offTop+'px';
+      underEl.style.width = pageW+'px'; underEl.style.height = pageH+'px';
+      pdfCanvasWrap.appendChild(underEl);
+      flapEl = document.createElement('div');
+      flapEl.className = 'pdf-peel-flap';
+      flapEl.style.left = offLeft+'px'; flapEl.style.top = offTop+'px';
+      flapEl.style.width = pageW+'px'; flapEl.style.height = pageH+'px';
+      flapEl.style.backgroundImage = cornerGradient(corner);
+      flapEl.style.display = 'block';
+      pdfCanvasWrap.appendChild(flapEl);
+      topWrap.style.zIndex = '3';
+      getPageBitmap(destNum).then(bmp=>{
+        if(bmp && underEl){ underEl.innerHTML=''; underEl.appendChild(bmp.canvas); }
+      });
+      return true;
+    }
+
+    function updatePeel(clientX){
+      if(!dragging || !topWrap) return;
+      const rightSide = corner==='br'||corner==='tr';
+      const dx = clientX - startClientX;
+      const t = rightSide
+        ? Math.max(0, Math.min(1, -dx / (pageW*0.92)))
+        : Math.max(0, Math.min(1, dx / (pageW*0.92)));
+      currentT = t;
+      topWrap.style.clipPath = clipStr(peelPoints(pageW,pageH,corner,t));
+      if(flapEl) flapEl.style.clipPath = clipStr(triPoints(pageW,pageH,corner,t));
+    }
+
+    function endPeel(){
+      if(!dragging) return;
+      dragging = false;
+      pdfCanvasWrap.classList.remove('dragging-peel');
+      const commit = destNum && currentT > 0.32;
+      if(topWrap) topWrap.style.transition = 'clip-path .22s ease-' + (commit?'in':'out');
+      if(flapEl) flapEl.style.transition = 'clip-path .22s ease-' + (commit?'in':'out') + ', opacity .2s ease-out';
+      if(topWrap) topWrap.style.clipPath = clipStr(peelPoints(pageW,pageH,corner, commit?1:0));
+      if(flapEl){
+        flapEl.style.clipPath = clipStr(triPoints(pageW,pageH,corner, commit?1:0.001));
+        flapEl.style.opacity = '0';
+      }
+      const goNum = destNum;
+      setTimeout(()=>{
+        if(commit){
+          currentPdfPage = goNum;
+          cleanupPeelDom();
+          renderPdfPage(currentPdfPage);
+          hidePdfMeaningUI();
+        } else {
+          cleanupPeelDom();
+        }
+      }, 230);
+    }
+
+    function onDown(e){
+      if(e.target.closest('.pdf-reader-toolbar, #pdfMeaningBtn, #pdfMeaningPopup, #pdfNoteBtn, #pdfNoteEditor')) return;
+      if(e.pointerType==='mouse' && e.button!==0) return;
+      const sel = window.getSelection();
+      if(sel && !sel.isCollapsed) return;
+      downActive = true; blocked = false;
+      downX = e.clientX; downY = e.clientY;
+      pointerId = e.pointerId;
+      try{ pdfCanvasWrap.setPointerCapture(e.pointerId); }catch(_){}
+    }
+    function onMove(e){
+      if(!downActive || pointerId!==e.pointerId) return;
+      const sel = window.getSelection();
+      if(sel && !sel.isCollapsed){ downActive=false; if(dragging) endPeel(); return; }
+      if(!dragging){
+        if(blocked) return;
+        const dx = e.clientX-downX, dy = e.clientY-downY;
+        if(Math.abs(dx) < 12 || Math.abs(dx) < Math.abs(dy)*1.3) return;
+        startClientX = downX;
+        if(!startPeel(downX, downY)){ blocked = true; return; }
+      }
+      e.preventDefault();
+      updatePeel(e.clientX);
+    }
+    function onUp(e){
+      if(pointerId!==e.pointerId) return;
+      try{ pdfCanvasWrap.releasePointerCapture(e.pointerId); }catch(_){}
+      downActive = false; pointerId = null;
+      if(dragging) endPeel();
+    }
+    pdfCanvasWrap.addEventListener('pointerdown', onDown);
+    pdfCanvasWrap.addEventListener('pointermove', onMove, {passive:false});
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  })();
+
   let pdfResizeTimer = null;
   window.addEventListener('resize', ()=>{
     if(!currentPdfDoc || pdfReaderView.style.display === 'none') return;
     clearTimeout(pdfResizeTimer);
-    pdfResizeTimer = setTimeout(()=> renderPdfPage(currentPdfPage), 250);
+    pdfResizeTimer = setTimeout(()=>{ clearPageBitmapCache(); renderPdfPage(currentPdfPage); }, 250);
   });
 
   /* ---- selection -> meaning lookup ---- */
@@ -14358,9 +14779,7 @@ updateStudyTimeLabel();
       pdfMeaningPopup.scrollIntoView({behavior:'smooth', block:'center'});
       await showPdfMeaning(pdfLastSelectedText);
     }catch(err){
-      // Surfaced on-screen (not just console) since mobile browsers have no
-      // easy devtools access — temporary while we track down the mobile bug.
-      alert('DEBUG ERROR: ' + (err && err.message ? err.message : err));
+      alert('Kuch gadbad ho gayi: ' + (err && err.message ? err.message : err));
     }
   }
   // Bound to both click (desktop/most browsers) and touchend with
@@ -14368,6 +14787,162 @@ updateStudyTimeLabel();
   // text-selection-dismiss handling on Android before our JS runs).
   pdfTranslateBtn.addEventListener('click', handleMeaningBtnActivate);
   pdfTranslateBtn.addEventListener('touchend', handleMeaningBtnActivate);
+
+  /* ================= GEMINI AI (optional, user-supplied key) ================= */
+  const GEMINI_KEY_STORAGE = 'itihaas_gemini_key';
+  function getGeminiKey(){ try{ return localStorage.getItem(GEMINI_KEY_STORAGE) || ''; }catch(e){ return ''; } }
+  function setGeminiKey(k){
+    try{
+      if(k) localStorage.setItem(GEMINI_KEY_STORAGE, k);
+      else localStorage.removeItem(GEMINI_KEY_STORAGE);
+    }catch(e){}
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  // Turn plain AI text into safe HTML with line breaks preserved.
+  function aiTextToHtml(s){ return escapeHtml(s).replace(/\n/g, '<br>'); }
+
+  const GEMINI_MODEL = 'gemini-2.0-flash';
+  async function callGemini(contents){
+    const key = getGeminiKey();
+    if(!key) throw new Error('no-key');
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ contents })
+    });
+    if(!res.ok){
+      let detail = '';
+      try{ const j = await res.json(); detail = (j && j.error && j.error.message) || ''; }catch(e){}
+      throw new Error('Gemini error ' + res.status + (detail ? (': ' + detail) : ''));
+    }
+    const data = await res.json();
+    const text = data && data.candidates && data.candidates[0] && data.candidates[0].content &&
+      data.candidates[0].content.parts && data.candidates[0].content.parts.map(p=>p.text||'').join('');
+    if(!text || !text.trim()) throw new Error('Gemini se khaali jawab aaya');
+    return text.trim();
+  }
+  async function callGeminiSingle(prompt){
+    return callGemini([{ role:'user', parts:[{text: prompt}] }]);
+  }
+  async function getCurrentPdfPageText(){
+    if(!currentPdfDoc) return '';
+    const page = await currentPdfDoc.getPage(currentPdfPage);
+    const content = await page.getTextContent();
+    return content.items.map(it=> it.str).join(' ').replace(/\s+/g,' ').trim();
+  }
+
+  /* ---- AI Key modal ---- */
+  const pdfAiKeyOverlay = document.getElementById('pdfAiKeyOverlay');
+  const pdfAiKeyInput = document.getElementById('pdfAiKeyInput');
+  document.getElementById('pdfAiKeyBtn').addEventListener('click', ()=>{
+    pdfAiKeyInput.value = getGeminiKey();
+    pdfAiKeyOverlay.classList.add('open');
+  });
+  document.getElementById('pdfAiKeyCloseBtn').addEventListener('click', ()=> pdfAiKeyOverlay.classList.remove('open'));
+  pdfAiKeyOverlay.addEventListener('click', (e)=>{ if(e.target === pdfAiKeyOverlay) pdfAiKeyOverlay.classList.remove('open'); });
+  document.getElementById('pdfAiKeySaveBtn').addEventListener('click', ()=>{
+    const v = pdfAiKeyInput.value.trim();
+    if(!v){ alert('Pehle apni Gemini key paste karo.'); return; }
+    setGeminiKey(v);
+    pdfAiKeyOverlay.classList.remove('open');
+    alert('Key save ho gayi. Ab Meaning aur Summary Hinglish mein AI se aayenge.');
+  });
+  document.getElementById('pdfAiKeyClearBtn').addEventListener('click', ()=>{
+    setGeminiKey('');
+    pdfAiKeyInput.value = '';
+    alert('Key hata di gayi. Ab purana (Wikipedia/English) tareeka use hoga.');
+  });
+
+  /* ---- Summarise button ---- */
+  const pdfSummaryPopup = document.getElementById('pdfSummaryPopup');
+  document.getElementById('pdfSummariseBtn').addEventListener('click', async ()=>{
+    if(!getGeminiKey()){
+      alert('Pehle "AI Key" button se apni free Gemini key daalo, tabhi Summary bana payenge.');
+      pdfAiKeyOverlay.classList.add('open');
+      return;
+    }
+    pdfMeaningPopup.classList.remove('open');
+    pdfSummaryPopup.innerHTML = `<span class="close-x">&times;</span><div>Page padh rahe hain aur Hinglish mein summary bana rahe hain...</div>`;
+    pdfSummaryPopup.classList.add('open');
+    try{
+      const pageText = await getCurrentPdfPageText();
+      if(!pageText){
+        pdfSummaryPopup.innerHTML = `<span class="close-x">&times;</span><div>Is page par koi text nahi mila (shayad ye ek image/scan hai).</div>`;
+      } else {
+        const prompt = `Tum ek friendly tutor ho jo Hinglish mein baat karte ho (Hindi + English mix, Roman/English letters mein — Devanagari script bilkul mat use karo, jaise students aapas mein WhatsApp par baat karte hain). Neeche kisi kitaab/PDF ke ek page ka text diya hai. Ise 4-6 chhote bullet points mein Hinglish mein summarize karo, taaki student ko jaldi samajh aa jaye. Sirf summary do, extra intro/outro mat likho.
+
+Page text:
+"""
+${pageText.slice(0, 6000)}
+"""`;
+        const summary = await callGeminiSingle(prompt);
+        pdfSummaryPopup.innerHTML = `<span class="close-x">&times;</span><h5>Page ${currentPdfPage} ka summary</h5><div>${aiTextToHtml(summary)}</div><div class="src">AI (Gemini) se, Hinglish mein</div>`;
+      }
+    }catch(err){
+      pdfSummaryPopup.innerHTML = `<span class="close-x">&times;</span><div>Summary nahi ban payi (${escapeHtml(err.message||err)}). Apni key "AI Key" mein check karo, ya internet dekho.</div>`;
+    }
+    const closeX = pdfSummaryPopup.querySelector('.close-x');
+    if(closeX) closeX.addEventListener('click', ()=> pdfSummaryPopup.classList.remove('open'));
+  });
+
+  /* ---- Page chat ---- */
+  const pdfChatOverlay = document.getElementById('pdfChatOverlay');
+  const pdfChatMsgs = document.getElementById('pdfChatMsgs');
+  const pdfChatInput = document.getElementById('pdfChatInput');
+  let pdfChatHistory = []; // [{role:'user'|'model', text}]
+  let pdfChatForPage = null; // "pdfId:pageNum" the current history belongs to
+
+  function renderPdfChat(){
+    pdfChatMsgs.innerHTML = pdfChatHistory.map(m=>
+      `<div class="ai-chat-msg ${m.role==='user'?'user':'bot'}"><div class="who">${m.role==='user'?'Tum':'AI'}</div><div>${aiTextToHtml(m.text)}</div></div>`
+    ).join('') || `<div class="ai-chat-msg bot"><div class="who">AI</div><div>Is page ke baare mein kuch bhi pooch sakte ho — Hinglish mein jawab dunga.</div></div>`;
+    pdfChatMsgs.scrollTop = pdfChatMsgs.scrollHeight;
+  }
+
+  document.getElementById('pdfChatBtn').addEventListener('click', ()=>{
+    if(!getGeminiKey()){
+      alert('Pehle "AI Key" button se apni free Gemini key daalo, tabhi chat kaam karega.');
+      pdfAiKeyOverlay.classList.add('open');
+      return;
+    }
+    const pageKey = currentPdfId + ':' + currentPdfPage;
+    if(pdfChatForPage !== pageKey){ pdfChatHistory = []; pdfChatForPage = pageKey; }
+    document.getElementById('pdfChatTitle').textContent = 'Page ' + currentPdfPage + ' ke baare mein baat karo';
+    renderPdfChat();
+    pdfChatOverlay.classList.add('open');
+    pdfChatInput.focus();
+  });
+  document.getElementById('pdfChatCloseBtn').addEventListener('click', ()=> pdfChatOverlay.classList.remove('open'));
+  pdfChatOverlay.addEventListener('click', (e)=>{ if(e.target === pdfChatOverlay) pdfChatOverlay.classList.remove('open'); });
+
+  async function sendPdfChatMessage(){
+    const msg = pdfChatInput.value.trim();
+    if(!msg) return;
+    pdfChatInput.value = '';
+    pdfChatHistory.push({role:'user', text: msg});
+    renderPdfChat();
+    pdfChatHistory.push({role:'model', text: '...'});
+    renderPdfChat();
+    try{
+      const pageText = await getCurrentPdfPageText();
+      const systemPreamble = `Tum ek friendly tutor ho jo Hinglish mein baat karte ho (Hindi + English mix, Roman letters mein, Devanagari mat likho). Neeche kitaab ke is page ka text hai — student isi ke baare mein sawaal poochega, usi context mein jawab do, chhota aur seedha.\n\nPage text:\n"""${pageText.slice(0,6000)}"""`;
+      const contents = [
+        { role:'user', parts:[{text: systemPreamble}] },
+        { role:'model', parts:[{text: 'Theek hai, samajh gaya. Kya poochna hai is page ke baare mein?'}] },
+        ...pdfChatHistory.slice(0, -1).map(m=> ({ role: m.role, parts:[{text: m.text}] }))
+      ];
+      const reply = await callGemini(contents);
+      pdfChatHistory[pdfChatHistory.length-1] = {role:'model', text: reply};
+    }catch(err){
+      pdfChatHistory[pdfChatHistory.length-1] = {role:'model', text: 'Jawab nahi mila (' + (err.message||err) + '). Key ya internet check karo.'};
+    }
+    renderPdfChat();
+  }
+  document.getElementById('pdfChatSendBtn').addEventListener('click', sendPdfChatMessage);
+  pdfChatInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendPdfChatMessage(); } });
 
   function splitIntoBullets(extract, maxBullets){
     const sentences = extract.replace(/\s+/g,' ').trim().split(/(?<=[.!?])\s+/).filter(Boolean);
@@ -14388,6 +14963,27 @@ updateStudyTimeLabel();
   async function showPdfMeaning(rawText){
     const word = rawText.trim();
     const normalized = normalizeWord(word);
+
+    // 0) if the user has set a Gemini key, prefer a real Hinglish explanation
+    if(getGeminiKey()){
+      pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>Soch rahe hain (AI)...</div>`;
+      const closeXEarly = pdfMeaningPopup.querySelector('.close-x');
+      if(closeXEarly) closeXEarly.addEventListener('click', ()=> pdfMeaningPopup.classList.remove('open'));
+      try{
+        const prompt = `Tum ek Hindi-English tutor ho jo Hinglish mein baat karte ho (Hindi + English mix, Roman/English letters mein likha hua — Devanagari script bilkul mat use karo, jaise students aapas mein baat karte hain). Neeche diya gaya shabd ya line kisi kitaab/PDF se select kiya gaya hai. Iska seedha, saral matlab Hinglish mein 2-4 lines mein samjhao. Agar ye koi naam/term hai to uska thoda context bhi do. Sirf jawab do, extra intro mat likho.
+
+Text: "${word}"`;
+        const answer = await callGeminiSingle(prompt);
+        pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><h5>${escapeHtml(word)}</h5><div>${aiTextToHtml(answer)}</div><div class="src">AI (Gemini) se, Hinglish mein</div>`;
+        const closeX = pdfMeaningPopup.querySelector('.close-x');
+        if(closeX) closeX.addEventListener('click', ()=> pdfMeaningPopup.classList.remove('open'));
+        return;
+      }catch(err){
+        // fall through to the Wikipedia-based flow below, but let the user know AI failed
+        pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>AI se jawab nahi mila (${escapeHtml(err.message||err)}) — purana tareeka try kar rahe hain...</div>`;
+      }
+    }
+
     // 1) check the app's own quick dictionary first, for common single words
     if(!word.includes(' ') && DICTIONARY[normalized]){
       const entry = DICTIONARY[normalized];
@@ -14410,7 +15006,6 @@ updateStudyTimeLabel();
         pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>Iska matlab nahi mil paya.</div>`;
       }
     }catch(err){
-      alert('DEBUG: showPdfMeaning catch fired: ' + (err && err.message ? err.message : err)); // TEMP DEBUG
       pdfMeaningPopup.innerHTML = `<span class="close-x">&times;</span><div>Matlab nahi mila — poori line ki jagah sirf ek zaroori shabd select karke dekho, ya internet check karo.</div>`;
     }
     const closeX = pdfMeaningPopup.querySelector('.close-x');
@@ -14503,6 +15098,34 @@ updateStudyTimeLabel();
       particlesContainer.appendChild(p);
     }
   }
+
+  /* ---- 3D pointer-follow tilt for subject cards & library books ---- */
+  (function(){
+    const TILT_SEL = '.subject-card, .shelf-book';
+    function applyTilt(el, clientX, clientY){
+      const r = el.getBoundingClientRect();
+      const px = (clientX - r.left) / r.width;   // 0..1
+      const py = (clientY - r.top) / r.height;   // 0..1
+      const rx = (0.5 - py) * 16;  // rotateX
+      const ry = (px - 0.5) * 16;  // rotateY
+      el.style.transform = `translateY(-6px) translateZ(10px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    }
+    function resetTilt(el){ el.style.transform = ''; }
+    document.addEventListener('pointermove', (e)=>{
+      const el = e.target.closest(TILT_SEL);
+      if(!el){ return; }
+      if(e.pointerType === 'touch') return; // keep touch behavior default (tap/scroll)
+      applyTilt(el, e.clientX, e.clientY);
+    });
+    document.addEventListener('pointerleave', (e)=>{
+      const el = e.target.closest && e.target.closest(TILT_SEL);
+      if(el) resetTilt(el);
+    }, true);
+    document.addEventListener('pointerdown', (e)=>{
+      const el = e.target.closest(TILT_SEL);
+      if(el && e.pointerType !== 'touch') applyTilt(el, e.clientX, e.clientY);
+    });
+  })();
 
   history.replaceState({navDepth: 0}, '');
   setTimeout(()=>{
