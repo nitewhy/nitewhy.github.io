@@ -527,6 +527,9 @@
     margin-bottom:0;
   }
   .pdf-reader.full-view .pdf-reader-toolbar.peek{ transform: translateY(0); }
+  #pdfScreen.full-view{ padding:0; }
+  .pdf-reader.full-view{ max-width:100%; padding:0; }
+  .pdf-reader.full-view .pdf-canvas-wrap{ gap:8px; }
   .pdf-reader.full-view .pdf-hint{ display:none; }
   #pdfFullViewBtn.active{ background: var(--gold); color:#0B0E17; }
   .pdf-page-wrap{
@@ -625,6 +628,42 @@
     border:1px solid rgba(127,227,216,0.4); background: rgba(127,227,216,0.05); color:inherit;
     font-family:'JetBrains Mono',monospace; font-size:0.82rem;
   }
+
+  /* ---- Vocab Gate (pre-page vocab study + quiz) ---- */
+  #pdfVocabGateBox{ max-width:460px; }
+  #pdfVocabGateBody h4{ margin:0 26px 6px 0; font-family:'Marcellus',serif; color:var(--gold); font-size:1.05rem; }
+  #pdfVocabGateBody p.sub{ font-size:0.78rem; opacity:0.8; line-height:1.5; margin:0 0 12px; }
+  .vg-progress{ font-family:'JetBrains Mono',monospace; font-size:0.68rem; opacity:0.65; margin-bottom:10px; letter-spacing:0.04em; }
+  .vg-card{
+    border:1px solid rgba(127,227,216,0.35); border-radius:12px; padding:12px 14px; margin-bottom:10px;
+    background: rgba(127,227,216,0.05);
+  }
+  .vg-card .word{ font-family:'Marcellus',serif; color:var(--glow); font-size:1rem; margin-bottom:4px; }
+  .vg-card .meaning{ font-size:0.82rem; line-height:1.5; opacity:0.92; }
+  .vg-actions{ display:flex; gap:8px; margin-top:14px; }
+  .vg-actions button{
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; padding:9px 14px; border-radius:14px; cursor:pointer;
+    border:1px solid var(--gold); background:rgba(201,162,39,0.1); color:var(--gold); flex:1;
+  }
+  .vg-quiz-q{ font-size:0.9rem; margin-bottom:12px; line-height:1.5; }
+  .vg-quiz-q b{ color:var(--glow); }
+  .vg-option{
+    display:block; width:100%; text-align:left; box-sizing:border-box; padding:10px 12px; margin-bottom:8px;
+    border-radius:10px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.03);
+    color:inherit; font-size:0.8rem; cursor:pointer; line-height:1.4;
+  }
+  .vg-option:active{ opacity:0.8; }
+  .vg-option.correct{ border-color:var(--leaf-bright); background:rgba(143,203,110,0.18); }
+  .vg-option.wrong{ border-color:var(--sindoor); background:rgba(179,63,63,0.18); }
+  .vg-fb{ font-size:0.78rem; margin-top:8px; line-height:1.5; }
+  .vg-fb.ok{ color:var(--leaf-bright); }
+  .vg-fb.no{ color:var(--sindoor); }
+  #pdfVocabGateBody textarea{
+    width:100%; min-height:60px; resize:vertical; border-radius:10px; box-sizing:border-box;
+    border:1px solid rgba(127,227,216,0.4); background:rgba(127,227,216,0.05); color:inherit;
+    font-family:inherit; font-size:0.82rem; padding:10px; margin-top:8px;
+  }
+  .vg-spinner{ font-size:0.82rem; opacity:0.8; }
 
   /* ---- Notes feature ---- */
   #pdfNoteBtn{
@@ -1278,6 +1317,7 @@
       <button class="pill small" id="pdfSummariseBtn" style="border-color:var(--gold);color:var(--gold);">&#128221; Summary</button>
       <button class="pill small" id="pdfChatBtn" style="border-color:var(--leaf-bright);color:var(--leaf-bright);">&#128172; Chat</button>
       <button class="pill small" id="pdfAiKeyBtn">&#128273; AI Key</button>
+      <button class="pill small" id="pdfVocabGateToggleBtn" style="border-color:var(--sindoor);color:var(--sindoor);">&#128218; Vocab Test: OFF</button>
       <button class="pill small" id="pdfNotesBtn" style="border-color:var(--leaf-bright);color:var(--leaf-bright);">&#128221; Notes</button>
       <button class="pill small" id="pdfFullViewBtn" style="border-color:var(--gold);color:var(--gold);">&#9974; Full View</button>
     </div>
@@ -1321,6 +1361,13 @@
       <input type="text" id="pdfChatInput" placeholder="Apna sawaal Hinglish mein likho...">
       <button class="pill small" id="pdfChatSendBtn" style="border-color:var(--glow);color:var(--glow);">Bhejo</button>
     </div>
+  </div>
+</div>
+
+<div class="ai-modal-overlay" id="pdfVocabGateOverlay">
+  <div class="ai-modal-box" id="pdfVocabGateBox">
+    <span class="ai-modal-close" id="pdfVocabGateSkipBtn" title="Skip, seedha page dikhao">&times;</span>
+    <div id="pdfVocabGateBody"></div>
   </div>
 </div>
 
@@ -1493,7 +1540,7 @@
 /* which subject app is currently active — drives header text below */
 let currentSubject = 'history';
 let selectedChapter = null;
-const CHAPTER_MODE_SUBJECTS = ['physics'];
+const CHAPTER_MODE_SUBJECTS = ['physics','math'];
 const SUBJECT_HEADER_TEXT = {
   history: {
     eyebrow: { hi:'Prachin Kaal Se Aadhunik Bharat Tak', en:'From Prehistory to Modern India' },
@@ -4223,7 +4270,7 @@ updateStudyTimeLabel();
   const SUBJECTS = [
     {id:'history', name:'History', unlocked:true},
     {id:'science', name:'Science', unlocked:'sub'},
-    {id:'math', name:'Math', unlocked:false},
+    {id:'math', name:'Math', unlocked:true},
     {id:'gk', name:'GK', unlocked:false},
     {id:'geography', name:'Geography', unlocked:false},
     {id:'civics', name:'Civics', unlocked:false},
@@ -4274,6 +4321,7 @@ updateStudyTimeLabel();
         if(s.id==='history'){ enterHistoryApp(); pushNav(closeAppToSubjects); }
         else if(s.id==='english'){ enterEnglishApp(); pushNav(closeAppToSubjects); }
         else if(s.id==='philosophy'){ enterPhilosophyApp(); pushNav(closeAppToSubjects); }
+        else if(s.id==='math'){ enterMathApp(); pushNav(closeAppToSubjects); }
         else if(s.id==='mypdfs'){ showScreen(pdfScreen); renderPdfList(); pushNav(()=> showScreen(subjectScreen)); }
         else if(s.unlocked==='sub'){ showScreen(scienceScreen); pushNav(()=> showScreen(subjectScreen)); }
         else { showComingSoon(s.name); pushNav(()=> showScreen(subjectScreen)); }
@@ -13723,6 +13771,360 @@ updateStudyTimeLabel();
     {type:'fill', era:'class12', q:{hi:'de Broglie wavelength ka formula hai: λ = h/________', en:'The de Broglie wavelength formula is: λ = h/________'}, answers:['p']}
   ];
 
+  const MATH_ERA_ORDER = ['class9'];
+  const MATH_ERA_TITLES = {
+    class9: { hi:'Class 9', en:'Class 9', short:{hi:'Class 9', en:'Class 9'} }
+  };
+  const MATH_STORY_MODE = {};
+
+  const MATH_TOPICS = [
+  {
+    id:'math-c9-numbersystems', tag:'Chapter 1', era:'class9',
+    title:{hi:'Number Systems', en:'Number Systems'},
+    levels:{
+      hi:[
+        `<ul>
+          <li><b>Natural (N):</b> 1,2,3... &nbsp; <b>Whole (W):</b> 0,1,2,3... &nbsp; <b>Integers (Z):</b> ...-2,-1,0,1,2...</li>
+          <li><b>Rational number (Q):</b> jo p/q form mein likha ja sake (q≠0) — terminating ya repeating decimal</li>
+          <li><b>Irrational number:</b> jo p/q form mein NAHI likha ja sakta — non-terminating, non-repeating decimal (jaise √2, √3, π)</li>
+          <li><b>Real numbers (R):</b> Rational + Irrational dono milkar — number line ka har point ek real number hai</li>
+          <li>Do rational numbers ke beech infinite rational numbers hote hain</li>
+          <li>√2 ko number line par <b>Pythagoras theorem</b> se locate karte hain, aur uske aas-paas fine location <b>successive magnification</b> se</li>
+          <li>Rational + Irrational = hamesha Irrational; par Irrational + Irrational kabhi Rational bhi ho sakta hai</li>
+          <li><b>Rationalising denominator:</b> surd wale denominator ko us surd (ya conjugate) se multiply karke rational banana</li>
+          <li><b>Laws of Exponents:</b> aᵐ·aⁿ = aᵐ⁺ⁿ, aᵐ/aⁿ = aᵐ⁻ⁿ, (aᵐ)ⁿ = aᵐⁿ, aᵐ·bᵐ = (ab)ᵐ</li>
+        </ul>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔢 Number System Ka Recap</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Set</th><th>Symbol</th><th>Examples</th></tr>
+              <tr><td>Natural Numbers</td><td>N</td><td>1, 2, 3, 4...</td></tr>
+              <tr><td>Whole Numbers</td><td>W</td><td>0, 1, 2, 3...</td></tr>
+              <tr><td>Integers</td><td>Z</td><td>...-2, -1, 0, 1, 2...</td></tr>
+              <tr><td>Rational Numbers</td><td>Q</td><td>p/q form, q≠0 — jaise 3/4, -5, 0.6</td></tr>
+            </table>
+            <p>Yaani <b>N ⊂ W ⊂ Z ⊂ Q</b> — har natural number whole hai, har whole integer hai, aur har integer rational hai (kyunki n ko n/1 likh sakte hain).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">❓ Irrational Numbers Kya Hote Hain</div>
+          <div class="concept-body">
+            <p>Jo number <b>p/q</b> form mein (q≠0, p aur q integers) NAHI likha ja sakta, use <b>irrational number</b> kehte hain. Examples: √2, √3, √5, π, e.</p>
+            <p><span class="tag-label">Proof Idea</span> √2 irrational hai — yeh <b>contradiction method</b> se prove hota hai: agar √2 = p/q (lowest form) maan liya jaaye, to dikhaya jaata hai ki p aur q dono even ho jaate hain, jo lowest form ke contradiction hai. Isliye √2 ko p/q form mein likhna possible nahi.</p>
+            <p>Note: √4 = 2 hai, jo <b>rational</b> hai — har square root irrational nahi hota, sirf non-perfect-square wale hote hain.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📊 Decimal Expansion Se Pehchaan</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Type</th><th>Example</th><th>Number kaisa hai</th></tr>
+              <tr><td>Terminating decimal</td><td>7/8 = 0.875</td><td>Rational</td></tr>
+              <tr><td>Non-terminating, repeating</td><td>1/3 = 0.333...</td><td>Rational</td></tr>
+              <tr><td>Non-terminating, non-repeating</td><td>√2 = 1.41421356...</td><td>Irrational</td></tr>
+            </table>
+            <p><span class="tag-label">Trap</span> 0.101001000100001... (pattern kabhi repeat nahi karta) — is <b>irrational</b> hai, jabki 0.101010101... (10 repeat) <b>rational</b> hai.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">📏 Number Line Par Irrational Number (√2)</div>
+          <div class="concept-body">
+            <svg viewBox="0 0 320 160" style="width:100%;max-width:340px;display:block;margin:6px auto;">
+              <line x1="20" y1="120" x2="300" y2="120" stroke="#8a8264" stroke-width="2"/>
+              <text x="18" y="140" font-size="11" fill="#8a8264">0</text>
+              <text x="98" y="140" font-size="11" fill="#8a8264">1</text>
+              <text x="178" y="140" font-size="11" fill="#8a8264">√2</text>
+              <text x="258" y="140" font-size="11" fill="#8a8264">2</text>
+              <circle cx="20" cy="120" r="2.5" fill="#e05252"/>
+              <circle cx="100" cy="120" r="2.5" fill="#e05252"/>
+              <circle cx="180" cy="120" r="2.5" fill="#c9a227"/>
+              <circle cx="260" cy="120" r="2.5" fill="#e05252"/>
+              <line x1="100" y1="120" x2="100" y2="40" stroke="#7fe3d8" stroke-width="2"/>
+              <line x1="20" y1="120" x2="100" y2="40" stroke="#7fe3d8" stroke-width="2" stroke-dasharray="4,3"/>
+              <text x="105" y="80" font-size="10" fill="#7fe3d8">1 unit</text>
+              <text x="45" y="70" font-size="10" fill="#7fe3d8">√2 (hypotenuse)</text>
+              <path d="M 20 120 A 100 100 0 0 1 180 120" fill="none" stroke="#c9a227" stroke-width="1.5" stroke-dasharray="3,2"/>
+            </svg>
+            <p><b>Step 1:</b> Point O (0) se 1 unit ka perpendicular OB banao point A (1) par.</p>
+            <p><b>Step 2:</b> O ko B se joddo — Pythagoras se OB = √(1² + 1²) = <b>√2</b>.</p>
+            <p><b>Step 3:</b> O ko center maan kar OB radius se arc lagao jab tak number line ko cross na kare — woh point <b>√2</b> hai.</p>
+            <p>Isi tarah √3 nikalne ke liye √2 wale point se 1 unit ka perpendicular banate hain — yeh chain <b>successive magnification</b> se aage badhti hai, jisse √3, √4... sab locate ho sakte hain.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">➕ Operations on Real Numbers</div>
+          <div class="concept-body">
+            <p><b>Rational ± Irrational = Irrational</b> (hamesha). Example: 5 + √2 irrational hai.</p>
+            <p><b>Irrational ± Irrational</b> kabhi Rational bhi ho sakta hai! Example: (2 + √3) + (2 − √3) = <b>4</b> (rational). Ya (√5)×(√5) = <b>5</b> (rational).</p>
+            <p><b>Rational × Irrational</b> (non-zero rational ho to) = Irrational. Example: 3 × √2 = 3√2, irrational.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🧮 Rationalising the Denominator</div>
+          <div class="concept-body">
+            <p>Jab denominator mein surd (irrational root) ho, use rational banane ke liye numerator-denominator ko usi surd se multiply karte hain.</p>
+            <p><span class="tag-label">Example</span> 1/√2 ko rationalise karo: 1/√2 × √2/√2 = <b>√2/2</b></p>
+            <p><span class="tag-label">Example (conjugate)</span> 1/(3+√2) ko rationalise karo: conjugate (3−√2) se multiply karo → (3−√2)/((3)²−(√2)²) = (3−√2)/7</p>
+            <p>Formula yaad rakho: (a+b)(a−b) = a² − b² — isi se conjugate ka denominator rational ban jaata hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">⚡ Laws of Exponents for Real Numbers</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Law</th><th>Example</th></tr>
+              <tr><td>aᵐ · aⁿ = aᵐ⁺ⁿ</td><td>2³ · 2² = 2⁵ = 32</td></tr>
+              <tr><td>aᵐ / aⁿ = aᵐ⁻ⁿ</td><td>2⁵ / 2² = 2³ = 8</td></tr>
+              <tr><td>(aᵐ)ⁿ = aᵐⁿ</td><td>(2²)³ = 2⁶ = 64</td></tr>
+              <tr><td>aᵐ · bᵐ = (ab)ᵐ</td><td>2³ · 3³ = 6³ = 216</td></tr>
+              <tr><td>a⁰ = 1 (a≠0)</td><td>5⁰ = 1</td></tr>
+              <tr><td>a⁻ⁿ = 1/aⁿ</td><td>2⁻² = 1/4</td></tr>
+              <tr><td>a^(1/n) = ⁿ√a</td><td>8^(1/3) = ³√8 = 2</td></tr>
+              <tr><td>a^(p/q) = ᵠ√(aᵖ)</td><td>4^(3/2) = √(4³) = 8</td></tr>
+            </table>
+            <p>Ye saare laws integers ke liye toh valid the hi, ab <b>rational exponents (p/q)</b> ke liye bhi same tarah apply hote hain jab base positive ho.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">⚠️ Common Mistakes / Exam Traps</div>
+          <div class="concept-body">
+            <p><span class="tag-label">Trap</span> Har square root irrational nahi hota — √9 = 3 rational hai, sirf non-perfect squares (√2, √3, √5...) irrational hote hain.</p>
+            <p><span class="tag-label">Trap</span> (√a + √b)² ≠ a + b. Sahi tarika: (√a+√b)² = a + b + 2√(ab). Students yahan common mistake karte hain.</p>
+            <p><span class="tag-label">Trap</span> Sum ya product of two irrationals hamesha irrational nahi hota — counter example yaad rakho: √2 × √2 = 2 (rational).</p>
+            <p><span class="tag-label">Trap</span> Rationalising karte waqt sirf denominator change hota hai, value same rehti hai (kyunki hum √2/√2 = 1 se multiply kar rahe hain).</p>
+            <p><span class="tag-label">Trap</span> Decimal expansion check karte waqt pattern repeat ho raha hai ya nahi — dhyan se dekho, ek digit bhi miss hui to answer badal jaata hai.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">✅ Solved Examples (NCERT-style)</div>
+          <div class="concept-body">
+            <p><b>Q1.</b> Simplify 7√3 − 2√3.<br><b>Solution:</b> Same surd (√3) hai, isliye coefficients subtract karo → (7−2)√3 = <b>5√3</b>.</p>
+            <p><b>Q2.</b> Rationalise 5/(√3 − √2).<br><b>Solution:</b> Multiply by conjugate (√3+√2): 5(√3+√2) / ((√3)²−(√2)²) = 5(√3+√2)/1 = <b>5√3 + 5√2</b>.</p>
+            <p><b>Q3.</b> Simplify (2^(2/3))·(2^(1/3)).<br><b>Solution:</b> Same base, exponents add karo → 2^(2/3+1/3) = 2¹ = <b>2</b>.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📌 Quick Recap Table</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Concept</th><th>Key Point</th></tr>
+              <tr><td>Rational</td><td>p/q form, terminating/repeating decimal</td></tr>
+              <tr><td>Irrational</td><td>Non-terminating, non-repeating decimal</td></tr>
+              <tr><td>Real Numbers</td><td>Rational + Irrational</td></tr>
+              <tr><td>√2 on number line</td><td>Pythagoras theorem + successive magnification</td></tr>
+              <tr><td>Rationalise</td><td>Multiply by same surd or conjugate</td></tr>
+              <tr><td>Exponent laws</td><td>aᵐ·aⁿ=aᵐ⁺ⁿ, (aᵐ)ⁿ=aᵐⁿ, a⁰=1, a⁻ⁿ=1/aⁿ</td></tr>
+            </table>
+          </div>
+        </div>`
+      ],
+      en:[
+        `<ul>
+          <li><b>Natural (N):</b> 1,2,3... &nbsp; <b>Whole (W):</b> 0,1,2,3... &nbsp; <b>Integers (Z):</b> ...-2,-1,0,1,2...</li>
+          <li><b>Rational number (Q):</b> can be written as p/q (q≠0) — terminating or repeating decimal</li>
+          <li><b>Irrational number:</b> canNOT be written as p/q — non-terminating, non-repeating decimal (like √2, √3, π)</li>
+          <li><b>Real numbers (R):</b> Rational + Irrational together — every point on the number line is a real number</li>
+          <li>There are infinitely many rational numbers between any two rational numbers</li>
+          <li>√2 is located on the number line using the <b>Pythagoras theorem</b>, and pinpointed more precisely by <b>successive magnification</b></li>
+          <li>Rational + Irrational = always Irrational; but Irrational + Irrational can sometimes be Rational</li>
+          <li><b>Rationalising the denominator:</b> multiplying by the same surd (or its conjugate) to make the denominator rational</li>
+          <li><b>Laws of Exponents:</b> aᵐ·aⁿ = aᵐ⁺ⁿ, aᵐ/aⁿ = aᵐ⁻ⁿ, (aᵐ)ⁿ = aᵐⁿ, aᵐ·bᵐ = (ab)ᵐ</li>
+        </ul>`,
+        `<div class="concept-block">
+          <div class="concept-head">🔢 Number System Recap</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Set</th><th>Symbol</th><th>Examples</th></tr>
+              <tr><td>Natural Numbers</td><td>N</td><td>1, 2, 3, 4...</td></tr>
+              <tr><td>Whole Numbers</td><td>W</td><td>0, 1, 2, 3...</td></tr>
+              <tr><td>Integers</td><td>Z</td><td>...-2, -1, 0, 1, 2...</td></tr>
+              <tr><td>Rational Numbers</td><td>Q</td><td>p/q form, q≠0 — like 3/4, -5, 0.6</td></tr>
+            </table>
+            <p>So <b>N ⊂ W ⊂ Z ⊂ Q</b> — every natural number is whole, every whole number is an integer, and every integer is rational (since n can be written as n/1).</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">❓ What Are Irrational Numbers</div>
+          <div class="concept-body">
+            <p>A number that CANNOT be written in <b>p/q</b> form (q≠0, p and q integers) is called an <b>irrational number</b>. Examples: √2, √3, √5, π, e.</p>
+            <p><span class="tag-label">Proof Idea</span> √2 is proven irrational by <b>contradiction</b>: if we assume √2 = p/q (in lowest form), it can be shown that both p and q must be even — contradicting the "lowest form" assumption. So √2 cannot be written as p/q.</p>
+            <p>Note: √4 = 2, which is <b>rational</b> — not every square root is irrational, only those of non-perfect squares are.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📊 Identifying Numbers by Decimal Expansion</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Type</th><th>Example</th><th>Number is</th></tr>
+              <tr><td>Terminating decimal</td><td>7/8 = 0.875</td><td>Rational</td></tr>
+              <tr><td>Non-terminating, repeating</td><td>1/3 = 0.333...</td><td>Rational</td></tr>
+              <tr><td>Non-terminating, non-repeating</td><td>√2 = 1.41421356...</td><td>Irrational</td></tr>
+            </table>
+            <p><span class="tag-label">Trap</span> 0.101001000100001... (the pattern never repeats) is <b>irrational</b>, while 0.101010101... (repeating "10") is <b>rational</b>.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">📏 Representing √2 on the Number Line</div>
+          <div class="concept-body">
+            <svg viewBox="0 0 320 160" style="width:100%;max-width:340px;display:block;margin:6px auto;">
+              <line x1="20" y1="120" x2="300" y2="120" stroke="#8a8264" stroke-width="2"/>
+              <text x="18" y="140" font-size="11" fill="#8a8264">0</text>
+              <text x="98" y="140" font-size="11" fill="#8a8264">1</text>
+              <text x="178" y="140" font-size="11" fill="#8a8264">√2</text>
+              <text x="258" y="140" font-size="11" fill="#8a8264">2</text>
+              <circle cx="20" cy="120" r="2.5" fill="#e05252"/>
+              <circle cx="100" cy="120" r="2.5" fill="#e05252"/>
+              <circle cx="180" cy="120" r="2.5" fill="#c9a227"/>
+              <circle cx="260" cy="120" r="2.5" fill="#e05252"/>
+              <line x1="100" y1="120" x2="100" y2="40" stroke="#7fe3d8" stroke-width="2"/>
+              <line x1="20" y1="120" x2="100" y2="40" stroke="#7fe3d8" stroke-width="2" stroke-dasharray="4,3"/>
+              <text x="105" y="80" font-size="10" fill="#7fe3d8">1 unit</text>
+              <text x="45" y="70" font-size="10" fill="#7fe3d8">√2 (hypotenuse)</text>
+              <path d="M 20 120 A 100 100 0 0 1 180 120" fill="none" stroke="#c9a227" stroke-width="1.5" stroke-dasharray="3,2"/>
+            </svg>
+            <p><b>Step 1:</b> At point O (0), draw a perpendicular OB of 1 unit at point A (1).</p>
+            <p><b>Step 2:</b> Join O to B — by Pythagoras, OB = √(1² + 1²) = <b>√2</b>.</p>
+            <p><b>Step 3:</b> With O as centre and radius OB, draw an arc until it cuts the number line — that point is <b>√2</b>.</p>
+            <p>To get √3, draw a 1-unit perpendicular from the √2 point — this chain continues via <b>successive magnification</b>, letting you locate √3, √4... and so on.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">➕ Operations on Real Numbers</div>
+          <div class="concept-body">
+            <p><b>Rational ± Irrational = Irrational</b> (always). Example: 5 + √2 is irrational.</p>
+            <p><b>Irrational ± Irrational</b> can sometimes be Rational! Example: (2 + √3) + (2 − √3) = <b>4</b> (rational). Or (√5)×(√5) = <b>5</b> (rational).</p>
+            <p><b>Rational × Irrational</b> (with non-zero rational) = Irrational. Example: 3 × √2 = 3√2, irrational.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">🧮 Rationalising the Denominator</div>
+          <div class="concept-body">
+            <p>When the denominator has a surd (irrational root), we multiply numerator and denominator by that same surd to make it rational.</p>
+            <p><span class="tag-label">Example</span> Rationalise 1/√2: 1/√2 × √2/√2 = <b>√2/2</b></p>
+            <p><span class="tag-label">Example (conjugate)</span> Rationalise 1/(3+√2): multiply by conjugate (3−√2) → (3−√2)/((3)²−(√2)²) = (3−√2)/7</p>
+            <p>Remember: (a+b)(a−b) = a² − b² — this is what makes the conjugate's denominator rational.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">⚡ Laws of Exponents for Real Numbers</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Law</th><th>Example</th></tr>
+              <tr><td>aᵐ · aⁿ = aᵐ⁺ⁿ</td><td>2³ · 2² = 2⁵ = 32</td></tr>
+              <tr><td>aᵐ / aⁿ = aᵐ⁻ⁿ</td><td>2⁵ / 2² = 2³ = 8</td></tr>
+              <tr><td>(aᵐ)ⁿ = aᵐⁿ</td><td>(2²)³ = 2⁶ = 64</td></tr>
+              <tr><td>aᵐ · bᵐ = (ab)ᵐ</td><td>2³ · 3³ = 6³ = 216</td></tr>
+              <tr><td>a⁰ = 1 (a≠0)</td><td>5⁰ = 1</td></tr>
+              <tr><td>a⁻ⁿ = 1/aⁿ</td><td>2⁻² = 1/4</td></tr>
+              <tr><td>a^(1/n) = ⁿ√a</td><td>8^(1/3) = ³√8 = 2</td></tr>
+              <tr><td>a^(p/q) = ᵠ√(aᵖ)</td><td>4^(3/2) = √(4³) = 8</td></tr>
+            </table>
+            <p>These laws, already valid for integer exponents, also hold the same way for <b>rational exponents (p/q)</b> when the base is positive.</p>
+          </div>
+        </div>`,
+        `<div class="concept-block">
+          <div class="concept-head">⚠️ Common Mistakes / Exam Traps</div>
+          <div class="concept-body">
+            <p><span class="tag-label">Trap</span> Not every square root is irrational — √9 = 3 is rational; only non-perfect squares (√2, √3, √5...) are irrational.</p>
+            <p><span class="tag-label">Trap</span> (√a + √b)² ≠ a + b. Correct expansion: (√a+√b)² = a + b + 2√(ab). This is a very common mistake.</p>
+            <p><span class="tag-label">Trap</span> The sum or product of two irrationals isn't always irrational — remember the counter-example: √2 × √2 = 2 (rational).</p>
+            <p><span class="tag-label">Trap</span> Rationalising only changes the denominator's form, the value stays the same (because you're multiplying by √2/√2 = 1).</p>
+            <p><span class="tag-label">Trap</span> When checking decimal expansions, look carefully whether the pattern truly repeats — missing even one digit changes the answer.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">✅ Solved Examples (NCERT-style)</div>
+          <div class="concept-body">
+            <p><b>Q1.</b> Simplify 7√3 − 2√3.<br><b>Solution:</b> Same surd (√3), so subtract coefficients → (7−2)√3 = <b>5√3</b>.</p>
+            <p><b>Q2.</b> Rationalise 5/(√3 − √2).<br><b>Solution:</b> Multiply by conjugate (√3+√2): 5(√3+√2) / ((√3)²−(√2)²) = 5(√3+√2)/1 = <b>5√3 + 5√2</b>.</p>
+            <p><b>Q3.</b> Simplify (2^(2/3))·(2^(1/3)).<br><b>Solution:</b> Same base, add exponents → 2^(2/3+1/3) = 2¹ = <b>2</b>.</p>
+          </div>
+        </div>
+        <div class="concept-block">
+          <div class="concept-head">📌 Quick Recap Table</div>
+          <div class="concept-body">
+            <table class="compare-table">
+              <tr><th>Concept</th><th>Key Point</th></tr>
+              <tr><td>Rational</td><td>p/q form, terminating/repeating decimal</td></tr>
+              <tr><td>Irrational</td><td>Non-terminating, non-repeating decimal</td></tr>
+              <tr><td>Real Numbers</td><td>Rational + Irrational</td></tr>
+              <tr><td>√2 on number line</td><td>Pythagoras theorem + successive magnification</td></tr>
+              <tr><td>Rationalise</td><td>Multiply by same surd or conjugate</td></tr>
+              <tr><td>Exponent laws</td><td>aᵐ·aⁿ=aᵐ⁺ⁿ, (aᵐ)ⁿ=aᵐⁿ, a⁰=1, a⁻ⁿ=1/aⁿ</td></tr>
+            </table>
+          </div>
+        </div>`
+      ]
+    },
+    sticky:{
+      hi:[
+        `Q = p/q form (q≠0). Irrational = p/q mein NAHI likha ja sakta. Real = Rational + Irrational`,
+        `Terminating/repeating decimal = Rational. Non-terminating non-repeating = Irrational. √(perfect square) = Rational`,
+        `<span class="formula">√2 on line: Pythagoras + successive magnification</span> &nbsp; Rationalise: multiply by same surd/conjugate`,
+        `<span class="formula">aᵐ·aⁿ=aᵐ⁺ⁿ, (aᵐ)ⁿ=aᵐⁿ, a⁰=1, a⁻ⁿ=1/aⁿ</span> — (√a+√b)² = a+b+2√(ab), yaad rakho`
+      ],
+      en:[
+        `Q = p/q form (q≠0). Irrational = CANNOT be written as p/q. Real = Rational + Irrational`,
+        `Terminating/repeating decimal = Rational. Non-terminating non-repeating = Irrational. √(perfect square) = Rational`,
+        `<span class="formula">√2 on line: Pythagoras + successive magnification</span> &nbsp; Rationalise: multiply by same surd/conjugate`,
+        `<span class="formula">aᵐ·aⁿ=aᵐ⁺ⁿ, (aᵐ)ⁿ=aᵐⁿ, a⁰=1, a⁻ⁿ=1/aⁿ</span> — remember (√a+√b)² = a+b+2√(ab)`
+      ]
+    }
+  }
+  ];
+
+  const MATH_QUIZ_BANK = [
+    {type:'mcq', era:'class9', q:{hi:'Kaunsa number irrational hai?', en:'Which number is irrational?'},
+      options:{hi:['√4','√9','√2','16/4'], en:['√4','√9','√2','16/4']}, answer:2},
+    {type:'mcq', era:'class9', q:{hi:'Rational number ki pehchaan kya hai?', en:'What identifies a rational number?'},
+      options:{hi:['Non-terminating non-repeating decimal','Terminating ya repeating decimal','Sirf integers','Sirf fractions'], en:['Non-terminating, non-repeating decimal','Terminating or repeating decimal','Only integers','Only fractions']}, answer:1},
+    {type:'fill', era:'class9', q:{hi:'Har integer n ko ________ form mein likha ja sakta hai, isliye har integer rational hota hai.', en:'Every integer n can be written in the ________ form, so every integer is rational.'}, answers:['n/1']},
+    {type:'mcq', era:'class9', q:{hi:'0.101001000100001... (kabhi repeat na hone waala) kaisa number hai?', en:'What type of number is 0.101001000100001... (never repeating)?'},
+      options:{hi:['Rational','Irrational','Integer','Whole number'], en:['Rational','Irrational','Integer','Whole number']}, answer:1},
+    {type:'mcq', era:'class9', q:{hi:'√2 ko number line par locate karne ke liye kaunsa theorem use hota hai?', en:'Which theorem is used to locate √2 on the number line?'},
+      options:{hi:['Pythagoras Theorem','Thales Theorem','Euclid Division Lemma','Basic Proportionality Theorem'], en:['Pythagoras Theorem','Thales Theorem','Euclid Division Lemma','Basic Proportionality Theorem']}, answer:0},
+    {type:'fill', era:'class9', q:{hi:'√2 ke aage √3, √4... locate karne ki technique ko ________ magnification kehte hain.', en:'The technique of locating √3, √4... after √2 is called successive ________.'}, answers:['magnification']},
+    {type:'mcq', era:'class9', q:{hi:'1/√2 ko rationalise karne par kya milta hai?', en:'Rationalising 1/√2 gives what?'},
+      options:{hi:['√2/2','2/√2','1/2','2√2'], en:['√2/2','2/√2','1/2','2√2']}, answer:0},
+    {type:'mcq', era:'class9', q:{hi:'1/(3+√2) ko rationalise karne ke liye kis se multiply karenge?', en:'To rationalise 1/(3+√2), which do you multiply by?'},
+      options:{hi:['(3+√2)','(3−√2)','(√2)','(3)'], en:['(3+√2)','(3−√2)','(√2)','(3)']}, answer:1},
+    {type:'mcq', era:'class9', q:{hi:'aᵐ · aⁿ barabar hai:', en:'aᵐ · aⁿ equals:'},
+      options:{hi:['aᵐ⁺ⁿ','aᵐ⁻ⁿ','aᵐⁿ','aᵐ/ⁿ'], en:['aᵐ⁺ⁿ','aᵐ⁻ⁿ','aᵐⁿ','aᵐ/ⁿ']}, answer:0},
+    {type:'mcq', era:'class9', q:{hi:'(aᵐ)ⁿ barabar hai:', en:'(aᵐ)ⁿ equals:'},
+      options:{hi:['aᵐ⁺ⁿ','aᵐ⁻ⁿ','aᵐⁿ','aᵐ⁄ⁿ'], en:['aᵐ⁺ⁿ','aᵐ⁻ⁿ','aᵐⁿ','aᵐ⁄ⁿ']}, answer:2},
+    {type:'fill', era:'class9', q:{hi:'a⁰ ka value hamesha ________ hoti hai (jab a≠0).', en:'The value of a⁰ is always ________ (when a≠0).'}, answers:['1']},
+    {type:'mcq', era:'class9', q:{hi:'a⁻ⁿ barabar hai:', en:'a⁻ⁿ equals:'},
+      options:{hi:['1/aⁿ','aⁿ','−aⁿ','n/a'], en:['1/aⁿ','aⁿ','−aⁿ','n/a']}, answer:0},
+    {type:'mcq', era:'class9', q:{hi:'(2+√3) + (2−√3) ka result kaisa hai?', en:'What is the result of (2+√3) + (2−√3)?'},
+      options:{hi:['Irrational','Rational (=4)','Zero','Undefined'], en:['Irrational','Rational (=4)','Zero','Undefined']}, answer:1},
+    {type:'mcq', era:'class9', q:{hi:'(√a+√b)² ka sahi expansion kya hai?', en:'What is the correct expansion of (√a+√b)²?'},
+      options:{hi:['a + b','a + b + 2√(ab)','a − b','a² + b²'], en:['a + b','a + b + 2√(ab)','a − b','a² + b²']}, answer:1},
+    {type:'mcq', era:'class9', q:{hi:'7/8 kaisa decimal expansion deta hai?', en:'What type of decimal expansion does 7/8 give?'},
+      options:{hi:['Non-terminating repeating','Non-terminating non-repeating','Terminating','Undefined'], en:['Non-terminating repeating','Non-terminating non-repeating','Terminating','Undefined']}, answer:2},
+    {type:'fill', era:'class9', q:{hi:'8^(1/3) ka value ________ hai.', en:'The value of 8^(1/3) is ________.'}, answers:['2']},
+    {type:'mcq', era:'class9', q:{hi:'√2 irrational hai — iska proof kis method se hota hai?', en:'√2 is irrational — which method proves this?'},
+      options:{hi:['Contradiction method','Induction method','Direct substitution','Trial and error'], en:['Contradiction method','Induction method','Direct substitution','Trial and error']}, answer:0},
+    {type:'mcq', era:'class9', q:{hi:'Do rational numbers ke beech kitne rational numbers hote hain?', en:'How many rational numbers lie between two rational numbers?'},
+      options:{hi:['Sirf ek','Zero','Infinite','Sirf do'], en:['Only one','Zero','Infinite','Only two']}, answer:2}
+  ];
+
+  function enterMathApp(){
+    if(typeof closePapersPage === 'function') closePapersPage();
+    if(typeof closeQuizPage === 'function') closeQuizPage();
+    currentSubject = 'math';
+    TOPICS = MATH_TOPICS; ERA_TITLES = MATH_ERA_TITLES; ERA_ORDER = MATH_ERA_ORDER; STORY_MODE = MATH_STORY_MODE; QUIZ_BANK = MATH_QUIZ_BANK;
+    settings.currentEra = MATH_ERA_ORDER[0];
+    selectedChapter = null;
+    saveSettings();
+    document.getElementById('overviewBanner').style.display = 'none';
+    if(papersBtn) papersBtn.style.display = 'none';
+    if(papersWrap) papersWrap.style.display = 'none';
+    allScreens.forEach(s=>{ if(s) s.style.display = 'none'; });
+    document.getElementById('appMain').style.display = '';
+    renderAll();
+  }
+
   function enterPhysicsApp(){
     if(typeof closePapersPage === 'function') closePapersPage();
     if(typeof closeQuizPage === 'function') closeQuizPage();
@@ -13776,6 +14178,7 @@ updateStudyTimeLabel();
     if(typeof ENGLISH_TOPICS !== 'undefined') pools.push(ENGLISH_TOPICS);
     if(typeof PHILOSOPHY_TOPICS !== 'undefined') pools.push(PHILOSOPHY_TOPICS);
     if(typeof PHYSICS_TOPICS !== 'undefined') pools.push(PHYSICS_TOPICS);
+    if(typeof MATH_TOPICS !== 'undefined') pools.push(MATH_TOPICS);
     let total = 0, done = 0;
     pools.forEach(pool=>{
       pool.forEach(t=>{
@@ -14242,7 +14645,7 @@ updateStudyTimeLabel();
       currentPdfDoc = await loadingTask.promise;
       currentPdfPage = rec.lastPage && rec.lastPage <= currentPdfDoc.numPages ? rec.lastPage : 1;
       pdfDbSetTotalPages(id, currentPdfDoc.numPages);
-      await renderPdfPage(currentPdfPage);
+      await goToPdfPage(currentPdfPage);
       pushNav(closePdfReader);
     }catch(err){
       pdfCanvasWrap.innerHTML = `<div style="padding:30px;font-size:0.85rem;opacity:0.7;">${settings.lang==='hi'?'Ye PDF nahi khul payi.':'This PDF could not be opened.'}</div>`;
@@ -14272,10 +14675,15 @@ updateStudyTimeLabel();
     btn.addEventListener('click', ()=>{
       fullViewOn = !fullViewOn;
       pdfReaderView.classList.toggle('full-view', fullViewOn);
+      pdfScreen.classList.toggle('full-view', fullViewOn);
       handle.style.display = fullViewOn ? 'flex' : 'none';
       setPeek(false);
       btn.classList.toggle('active', fullViewOn);
       btn.innerHTML = fullViewOn ? '&#9974; Exit Full' : '&#9974; Full View';
+      if(currentPdfDoc){
+        clearPageBitmapCache();
+        renderPdfPage(currentPdfPage);
+      }
     });
     handle.addEventListener('click', ()=>{
       setPeek(!toolbar.classList.contains('peek'));
@@ -14383,11 +14791,11 @@ updateStudyTimeLabel();
 
   document.getElementById('pdfPrevPage').addEventListener('click', ()=>{
     if(!currentPdfDoc || currentPdfPage<=1) return;
-    currentPdfPage--; renderPdfPage(currentPdfPage, 'prev'); hidePdfMeaningUI();
+    currentPdfPage--; goToPdfPage(currentPdfPage, 'prev'); hidePdfMeaningUI();
   });
   document.getElementById('pdfNextPage').addEventListener('click', ()=>{
     if(!currentPdfDoc || currentPdfPage>=currentPdfDoc.numPages) return;
-    currentPdfPage++; renderPdfPage(currentPdfPage, 'next'); hidePdfMeaningUI();
+    currentPdfPage++; goToPdfPage(currentPdfPage, 'next'); hidePdfMeaningUI();
   });
   document.getElementById('pdfZoomIn').addEventListener('click', ()=>{
     if(!currentPdfDoc) return;
@@ -14528,7 +14936,7 @@ updateStudyTimeLabel();
         if(commit){
           currentPdfPage = goNum;
           cleanupPeelDom();
-          renderPdfPage(currentPdfPage);
+          goToPdfPage(currentPdfPage);
           hidePdfMeaningUI();
         } else {
           cleanupPeelDom();
@@ -14832,6 +15240,241 @@ updateStudyTimeLabel();
     const page = await currentPdfDoc.getPage(currentPdfPage);
     const content = await page.getTextContent();
     return content.items.map(it=> it.str).join(' ').replace(/\s+/g,' ').trim();
+  }
+
+  /* ================= VOCAB GATE (pehle mushkil words seekho, phir page khule) ================= */
+  const VOCAB_GATE_STORAGE = 'itihaas_vocab_gate_on';
+  let vocabGateOn = (function(){ try{ return localStorage.getItem(VOCAB_GATE_STORAGE) === '1'; }catch(e){ return false; } })();
+  const pdfVocabGateToggleBtn = document.getElementById('pdfVocabGateToggleBtn');
+  const pdfVocabGateOverlay = document.getElementById('pdfVocabGateOverlay');
+  const pdfVocabGateBody = document.getElementById('pdfVocabGateBody');
+  function refreshVocabGateBtn(){
+    pdfVocabGateToggleBtn.innerHTML = '&#128218; Vocab Test: ' + (vocabGateOn ? 'ON' : 'OFF');
+    pdfVocabGateToggleBtn.style.background = vocabGateOn ? 'rgba(179,63,63,0.18)' : '';
+    pdfVocabGateToggleBtn.classList.toggle('active', vocabGateOn);
+  }
+  refreshVocabGateBtn();
+  pdfVocabGateToggleBtn.addEventListener('click', ()=>{
+    vocabGateOn = !vocabGateOn;
+    try{ localStorage.setItem(VOCAB_GATE_STORAGE, vocabGateOn ? '1' : '0'); }catch(e){}
+    refreshVocabGateBtn();
+    if(vocabGateOn && !getGeminiKey()){
+      alert('Vocab Test ON kar diya. Isse kaam karne ke liye pehle "AI Key" button se apni free Gemini key daal do.');
+    }
+  });
+
+  async function getPdfPageTextByNum(num){
+    if(!currentPdfDoc) return '';
+    try{
+      const page = await currentPdfDoc.getPage(num);
+      const content = await page.getTextContent();
+      return content.items.map(it=> it.str).join(' ').replace(/\s+/g,' ').trim();
+    }catch(e){ return ''; }
+  }
+
+  // Loosely parse JSON out of an AI response that might be wrapped in ```json fences or have stray text.
+  function parseLooseJson(text){
+    let t = text.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+    try{ return JSON.parse(t); }catch(e){}
+    const start = t.indexOf('['); const end = t.lastIndexOf(']');
+    if(start !== -1 && end !== -1 && end > start){
+      try{ return JSON.parse(t.slice(start, end+1)); }catch(e){}
+    }
+    return null;
+  }
+
+  async function extractVocabWords(pageText){
+    if(!pageText) return [];
+    const prompt = `Tum ek Hinglish tutor ho (Hindi+English mix, Roman letters mein, Devanagari script bilkul mat likhna). Neeche kisi kitaab ke page ka text hai. Isme se 3 se 6 tak HARD ya MEDIUM difficulty ke words/terms chuno jo ek student ko mushkil lag sakte hain (agar bahut simple page hai to kam bhi chalega, ya khaali list bhi de sakte ho). Har word ka ek chhota, saaf Hinglish meaning do (1 line, 12-18 words).
+
+Sirf ek JSON array return karo, kuch aur text mat likho, koi markdown fence mat lagao. Format bilkul aise:
+[{"word":"...","meaning":"..."}]
+
+Page text:
+"""
+${pageText.slice(0, 6000)}
+"""`;
+    try{
+      const raw = await callGeminiSingle(prompt);
+      const parsed = parseLooseJson(raw);
+      if(!Array.isArray(parsed)) return [];
+      return parsed.filter(w=> w && w.word && w.meaning).slice(0, 6).map(w=> ({word: String(w.word).trim(), meaning: String(w.meaning).trim()}));
+    }catch(e){
+      return [];
+    }
+  }
+
+  async function checkVocabSentence(word, meaning, sentence){
+    const prompt = `Tum ek friendly Hinglish tutor ho (Roman letters, Devanagari mat likhna). Student ne word "${word}" (matlab: ${meaning}) ka use karke ye sentence likha hai:
+"""
+${sentence}
+"""
+Check karo ki word sahi tarah/sahi meaning ke saath use hua hai ya nahi. Sirf ek JSON object return karo, kuch aur text ya markdown fence mat likho:
+{"ok": true ya false, "tip": "1 chhoti line Hinglish mein - agar sahi hai to shaabashi, agar galat hai to kya sudhaarna hai"}`;
+    try{
+      const raw = await callGeminiSingle(prompt);
+      let t = raw.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+      const parsed = JSON.parse(t);
+      return {ok: !!parsed.ok, tip: String(parsed.tip||'').trim()};
+    }catch(e){
+      return {ok:true, tip:'Theek hai, aage badhte hain.'};
+    }
+  }
+
+  function shuffleArr(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+
+  let vocabGateSession = 0; // bumped whenever gate is skipped/closed, to cancel stale async chains
+
+  function closeVocabGate(){
+    vocabGateSession++;
+    pdfVocabGateOverlay.classList.remove('open');
+    pdfVocabGateBody.innerHTML = '';
+  }
+  document.getElementById('pdfVocabGateSkipBtn').addEventListener('click', ()=>{
+    closeVocabGate();
+    if(pendingGateRender) { const fn = pendingGateRender; pendingGateRender = null; fn(); }
+  });
+
+  let pendingGateRender = null; // the actual page render call, fired once gate finishes or is skipped
+
+  // Wraps every real page-navigation call: gate runs first (if ON), then the page renders.
+  async function goToPdfPage(num, dir){
+    if(!vocabGateOn || !getGeminiKey()){
+      renderPdfPage(num, dir);
+      return;
+    }
+    const mySession = ++vocabGateSession;
+    pendingGateRender = ()=> renderPdfPage(num, dir);
+    pdfVocabGateBody.innerHTML = `<div class="vg-spinner">Is page ke hard/medium words dhoondh rahe hain...</div>`;
+    pdfVocabGateOverlay.classList.add('open');
+    const pageText = await getPdfPageTextByNum(num);
+    if(mySession !== vocabGateSession) return; // user hit skip meanwhile
+    const words = await extractVocabWords(pageText);
+    if(mySession !== vocabGateSession) return;
+
+    if(!words.length){
+      pdfVocabGateBody.innerHTML = `<h4>Sab clear hai!</h4><p class="sub">Is page pe koi mushkil word nahi mila, seedha aage badhte hain.</p>`;
+      setTimeout(()=>{
+        if(mySession !== vocabGateSession) return;
+        closeVocabGate();
+        renderPdfPage(num, dir);
+      }, 1300);
+      return;
+    }
+    renderVocabStudy(words, mySession, ()=>{
+      renderVocabQuiz(words, mySession, ()=>{
+        renderVocabSentence(words, mySession, ()=>{
+          if(mySession !== vocabGateSession) return;
+          closeVocabGate();
+          renderPdfPage(num, dir);
+        });
+      });
+    });
+  }
+
+  function renderVocabStudy(words, mySession, onDone){
+    if(mySession !== vocabGateSession) return;
+    const cards = words.map(w=> `<div class="vg-card"><div class="word">${escapeHtml(w.word)}</div><div class="meaning">${escapeHtml(w.meaning)}</div></div>`).join('');
+    pdfVocabGateBody.innerHTML = `
+      <h4>Pehle ye words yaad karo</h4>
+      <p class="sub">Ye page kholne se pehle in ${words.length} words ko dhyaan se padho. Yaad ho jaye to test shuru karo.</p>
+      ${cards}
+      <div class="vg-actions"><button id="vgStudyDoneBtn">Yaad ho gaya, Test lo &#8594;</button></div>
+    `;
+    document.getElementById('vgStudyDoneBtn').addEventListener('click', ()=>{ if(mySession === vocabGateSession) onDone(); });
+  }
+
+  function renderVocabQuiz(words, mySession, onDone){
+    if(mySession !== vocabGateSession) return;
+    let remaining = words.slice(); // words still needing a correct answer
+    let idx = 0;
+    function askNext(){
+      if(mySession !== vocabGateSession) return;
+      if(idx >= remaining.length){
+        if(remaining.some(w=> !w._correct)){
+          // loop again over the ones still wrong
+          remaining = remaining.filter(w=> !w._correct);
+          idx = 0;
+          if(remaining.length === 0){ onDone(); return; }
+        } else {
+          onDone(); return;
+        }
+      }
+      const w = remaining[idx];
+      const distractorPool = words.filter(x=> x.word !== w.word).map(x=> x.meaning);
+      let opts = shuffleArr(distractorPool).slice(0, 3);
+      if(opts.length < 1) opts = ['Is se koi matlab nahi (galat option)'];
+      opts.push(w.meaning);
+      opts = shuffleArr(opts);
+      pdfVocabGateBody.innerHTML = `
+        <h4>Quick Test</h4>
+        <p class="vg-progress">Sawaal ${idx+1} / ${remaining.length} &middot; jab tak sab sahi na ho, chalta rahega</p>
+        <div class="vg-quiz-q">"<b>${escapeHtml(w.word)}</b>" ka sahi matlab kaunsa hai?</div>
+        <div id="vgOptsWrap"></div>
+        <div id="vgQuizFb"></div>
+      `;
+      const wrap = document.getElementById('vgOptsWrap');
+      opts.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'vg-option';
+        btn.textContent = opt;
+        btn.addEventListener('click', ()=>{
+          if(mySession !== vocabGateSession) return;
+          [...wrap.querySelectorAll('.vg-option')].forEach(b=> b.disabled = true);
+          const fb = document.getElementById('vgQuizFb');
+          if(opt === w.meaning){
+            btn.classList.add('correct');
+            w._correct = true;
+            fb.innerHTML = `<div class="vg-fb ok">Sahi jawab! &#10003;</div>`;
+          } else {
+            btn.classList.add('wrong');
+            [...wrap.querySelectorAll('.vg-option')].find(b=> b.textContent === w.meaning)?.classList.add('correct');
+            fb.innerHTML = `<div class="vg-fb no">Galat — sahi matlab: ${escapeHtml(w.meaning)}. Ye phir se poochha jayega.</div>`;
+          }
+          setTimeout(()=>{ if(mySession === vocabGateSession){ idx++; askNext(); } }, 1100);
+        });
+        wrap.appendChild(btn);
+      });
+    }
+    askNext();
+  }
+
+  function renderVocabSentence(words, mySession, onDone){
+    if(mySession !== vocabGateSession) return;
+    let idx = 0;
+    function askNext(){
+      if(mySession !== vocabGateSession) return;
+      if(idx >= words.length){ onDone(); return; }
+      const w = words[idx];
+      pdfVocabGateBody.innerHTML = `
+        <h4>Ab sentence banao</h4>
+        <p class="vg-progress">Word ${idx+1} / ${words.length}</p>
+        <div class="vg-quiz-q">"<b>${escapeHtml(w.word)}</b>" (${escapeHtml(w.meaning)}) ko ek sentence mein use karo:</div>
+        <textarea id="vgSentInput" placeholder="Apna sentence yahan likho..."></textarea>
+        <div class="vg-actions"><button id="vgSentCheckBtn">Check karo</button></div>
+        <div id="vgSentFb"></div>
+      `;
+      const btn = document.getElementById('vgSentCheckBtn');
+      btn.addEventListener('click', async ()=>{
+        const val = document.getElementById('vgSentInput').value.trim();
+        if(!val){ alert('Pehle sentence likho.'); return; }
+        btn.disabled = true; btn.textContent = 'Check ho raha hai...';
+        const res = await checkVocabSentence(w.word, w.meaning, val);
+        if(mySession !== vocabGateSession) return;
+        const fb = document.getElementById('vgSentFb');
+        fb.innerHTML = `<div class="vg-fb ${res.ok?'ok':'no'}">${escapeHtml(res.tip || (res.ok?'Sahi hai!':'Thoda aur try karo.'))}</div>
+          <div class="vg-actions"><button id="vgSentNextBtn">${idx+1 < words.length ? 'Agla word &#8594;' : 'Ho gaya, page dikhao &#8594;'}</button></div>`;
+        document.getElementById('vgSentNextBtn').addEventListener('click', ()=>{
+          if(mySession !== vocabGateSession) return;
+          idx++; askNext();
+        });
+      });
+    }
+    askNext();
   }
 
   /* ---- AI Key modal ---- */
