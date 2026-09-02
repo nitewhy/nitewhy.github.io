@@ -532,6 +532,16 @@
   .pdf-reader.full-view .pdf-canvas-wrap{ gap:8px; }
   .pdf-reader.full-view .pdf-hint{ display:none; }
   #pdfFullViewBtn.active{ background: var(--gold); color:#0B0E17; }
+  /* ---- collapsible AI-tools panel, keeps the main reader toolbar short ---- */
+  .pdf-reader-tools-panel{
+    display:none; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px;
+    padding:10px 8px; margin:-4px auto 14px; max-width:820px;
+    background: rgba(11,14,23,0.72); backdrop-filter: blur(10px);
+    border-radius:12px; border:1px solid rgba(127,227,216,0.18);
+  }
+  body.light .pdf-reader-tools-panel{ background: rgba(239,232,216,0.85); }
+  .pdf-reader-tools-panel.open{ display:flex; }
+  #pdfToolsToggleBtn.active{ background: var(--glow); color:#0B0E17; }
   .pdf-page-wrap{
     position:relative; box-shadow:0 3px 0 rgba(0,0,0,0.25), 0 8px 0 rgba(0,0,0,0.15), 0 22px 40px -8px rgba(0,0,0,0.55); background:#fff;
     transform-style:preserve-3d; backface-visibility:hidden;
@@ -1313,13 +1323,16 @@
       <button class="pill small" id="pdfNextPage">&#9654;</button>
       <button class="pill small" id="pdfZoomOut">A-</button>
       <button class="pill small" id="pdfZoomIn">A+</button>
+      <button class="pill small" id="pdfFullViewBtn" style="border-color:var(--gold);color:var(--gold);">&#9974; Full View</button>
+      <button class="pill small" id="pdfToolsToggleBtn" style="border-color:var(--glow);color:var(--glow);">&#10024; Tools</button>
+    </div>
+    <div class="pdf-reader-tools-panel" id="pdfToolsPanel">
       <button class="pill small" id="pdfTranslateBtn" style="border-color:var(--glow);color:var(--glow);">&#127760; Meaning</button>
       <button class="pill small" id="pdfSummariseBtn" style="border-color:var(--gold);color:var(--gold);">&#128221; Summary</button>
       <button class="pill small" id="pdfChatBtn" style="border-color:var(--leaf-bright);color:var(--leaf-bright);">&#128172; Chat</button>
-      <button class="pill small" id="pdfAiKeyBtn">&#128273; AI Key</button>
-      <button class="pill small" id="pdfVocabGateToggleBtn" style="border-color:var(--sindoor);color:var(--sindoor);">&#128218; Vocab Test: OFF</button>
       <button class="pill small" id="pdfNotesBtn" style="border-color:var(--leaf-bright);color:var(--leaf-bright);">&#128221; Notes</button>
-      <button class="pill small" id="pdfFullViewBtn" style="border-color:var(--gold);color:var(--gold);">&#9974; Full View</button>
+      <button class="pill small" id="pdfVocabGateToggleBtn" style="border-color:var(--sindoor);color:var(--sindoor);">&#128218; Vocab Test: OFF</button>
+      <button class="pill small" id="pdfAiKeyBtn">&#128273; AI Key</button>
     </div>
     <div class="pdf-side-handle" id="pdfSideHandle" style="display:none;">&#9776;</div>
     <div class="pdf-hint" id="pdfHint">Text select karo, fir "Meaning" ya "Note" dabao</div>
@@ -14391,6 +14404,35 @@ updateStudyTimeLabel();
     for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) | 0; }
     return Math.abs(h);
   }
+  // ---- turn messy uploaded filenames / URL slugs into readable spine titles ----
+  // e.g. "ilide.info-the-subtle-art-of-not-giving-a-fuck-f5297bdf73d5f...-z-lib.org.pdf"
+  //   -> "The Subtle Art Of Not Giving A Fuck"
+  const _cleanTitleCache = new Map();
+  function cleanBookTitle(raw){
+    if(!raw) return raw;
+    if(_cleanTitleCache.has(raw)) return _cleanTitleCache.get(raw);
+    let name = raw.replace(/\.(pdf|epub|djvu|mobi)$/i, '');
+    // drop a leading site/domain slug, e.g. "ilide.info-", "www.example.com-"
+    name = name.replace(/^[a-z0-9]+(?:\.[a-z]{2,}){1,2}-/i, '');
+    // drop known repository/site name tokens anywhere in the string
+    name = name.replace(/[-_ ]*(z-?lib(?:\.org)?|libgen(?:\.\w+)?|annas-?archive|scribd|academia\.edu)[-_ ]*/gi, ' ');
+    // turn separators into spaces
+    name = name.replace(/[_]+/g, ' ').replace(/-+/g, ' ');
+    // strip long random-looking id/hash tokens (10+ chars, mixed letters+digits),
+    // plus a few common site/upload-artifact words that leak into slugs
+    const junkWords = new Set(['pdf','ebook','epub','room','copy']);
+    name = name.split(' ').filter(tok=>{
+      if(junkWords.has(tok.toLowerCase())) return false;
+      return !(tok.length >= 10 && /[0-9]/.test(tok) && /[a-zA-Z]/.test(tok) && !/^[A-Za-z]+$/.test(tok));
+    }).join(' ');
+    // collapse whitespace
+    name = name.replace(/\s{2,}/g, ' ').trim();
+    // title-case each word (keep already-capitalized acronyms as-is)
+    name = name.split(' ').map(w=> w ? (w === w.toUpperCase() ? w : w[0].toUpperCase() + w.slice(1)) : w).join(' ');
+    if(!name || name.length < 2) name = raw.replace(/\.(pdf|epub|djvu|mobi)$/i, '');
+    _cleanTitleCache.set(raw, name);
+    return name;
+  }
   function pdfProgress(f){
     const hasTotal = f.totalPages && f.totalPages > 0;
     const lastPage = f.lastPage || 1;
@@ -14455,7 +14497,7 @@ updateStudyTimeLabel();
       const card = document.createElement('div');
       card.className = 'continue-card';
       card.innerHTML = `
-        <div class="cc-title">${f.name}</div>
+        <div class="cc-title" title="${f.name}">${cleanBookTitle(f.name)}</div>
         <div class="cc-track"><div class="cc-fill" style="width:${pct}%;"></div></div>
         <div class="cc-pct">${pct}%</div>`;
       card.addEventListener('click', ()=> openPdfReader(f.id));
@@ -14566,6 +14608,7 @@ updateStudyTimeLabel();
       book.className = 'shelf-book';
       book.style.height = height + 'px';
       book.style.background = `linear-gradient(180deg, ${theme.a}, ${theme.b})`;
+      const displayTitle = cleanBookTitle(f.name);
       book.title = f.name;
       const noteCount = lastNoteCounts[f.id] || 0;
       // badges: trophy = finished, open-book = in progress
@@ -14577,7 +14620,7 @@ updateStudyTimeLabel();
         ${statusIcon ? `<span class="status-badge" title="${statusTitle}">${statusIcon}</span>` : ''}
         ${noteCount ? `<span class="note-badge" title="${noteCount} notes">&#128221;${noteCount}</span>` : ''}
         <span class="edit" title="${settings.lang==='hi'?'Naam/category badlein':'Rename / set category'}">&#9998;</span>
-        <span class="spine-title">${f.name}</span>
+        <span class="spine-title">${displayTitle}</span>
         ${category !== 'General' ? `<span class="cat-badge">${category}</span>` : ''}
         <div class="vine-track"><div class="vine-fill" style="height:${pct}%;"></div></div>
         <span class="del" title="Delete">&times;</span>
@@ -14632,14 +14675,14 @@ updateStudyTimeLabel();
     pdfDbUpdateMeta(id, {lastOpenedAt: Date.now()});
     pdfListView.style.display = 'none';
     pdfReaderView.style.display = 'block';
-    pdfReaderTitle.textContent = rec.name;
+    pdfReaderTitle.textContent = cleanBookTitle(rec.name);
     pdfReaderTitle.title = rec.name;
     if(typeof clearPageBitmapCache === 'function') clearPageBitmapCache();
     pdfCanvasWrap.innerHTML = `<div style="padding:30px;font-size:0.85rem;opacity:0.7;">${settings.lang==='hi'?'PDF khul rahi hai...':'Opening PDF...'}</div>`;
     currentPdfId = id;
     currentPdfZoomMult = 1.0;
     notesPanel.classList.remove('open');
-    notesPanelTitle.textContent = settings.lang==='hi' ? `Notes — ${rec.name}` : `Notes — ${rec.name}`;
+    notesPanelTitle.textContent = `Notes — ${cleanBookTitle(rec.name)}`;
     try{
       const loadingTask = pdfjsLib.getDocument({data: rec.data.slice(0)});
       currentPdfDoc = await loadingTask.promise;
@@ -14692,6 +14735,20 @@ updateStudyTimeLabel();
     pdfCanvasWrap.addEventListener('pointerdown', ()=>{
       if(fullViewOn && toolbar.classList.contains('peek')) setPeek(false);
     });
+  })();
+
+  /* ---- AI-tools panel: Meaning/Summary/Chat/Notes/Vocab/AI-Key hidden behind
+     one "Tools" button so the main toolbar stays short and scannable ---- */
+  (function(){
+    const toggleBtn = document.getElementById('pdfToolsToggleBtn');
+    const panel = document.getElementById('pdfToolsPanel');
+    if(!toggleBtn || !panel) return;
+    toggleBtn.addEventListener('click', ()=>{
+      const open = panel.classList.toggle('open');
+      toggleBtn.classList.toggle('active', open);
+    });
+    // any tool click inside the panel keeps it open (user may use several in a row);
+    // but opening a modal-style tool (Meaning/Summary popups stay inline, fine as-is)
   })();
 
   let pdfFlipCleanupTimer = null;
@@ -15211,7 +15268,7 @@ updateStudyTimeLabel();
   // Turn plain AI text into safe HTML with line breaks preserved.
   function aiTextToHtml(s){ return escapeHtml(s).replace(/\n/g, '<br>'); }
 
-  const GEMINI_MODEL = 'gemini-2.0-flash';
+  const GEMINI_MODEL = 'gemini-3.6-flash';
   async function callGemini(contents){
     const key = getGeminiKey();
     if(!key) throw new Error('no-key');
